@@ -1,5 +1,5 @@
 /* Postřehy pro dashboard – jednoduchá pravidla, žádné LLM. Čisté funkce (testované). */
-import { FUNNEL } from './events';
+import { FUNNEL } from './events.js';
 
 type Counts = Record<string, number>;
 const MIN_VISITS = 30;

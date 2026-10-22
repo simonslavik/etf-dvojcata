@@ -1,5 +1,5 @@
 /* Typovaný přístup k ověřeným datům (data/etfs.json). Každý údaj má zdroj a datum. */
-import raw from '../data/etfs.json';
+import raw from '../data/etfs.json' with { type: 'json' };
 
 export interface Fact { label: string; url: string; cs: string; accessed: string }
 
