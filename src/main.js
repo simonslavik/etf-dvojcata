@@ -211,7 +211,7 @@ function wireSticky() {
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) e.isIntersecting ? visible.add(e.target) : visible.delete(e.target);
     update();
-  });
+  }, { rootMargin: '0px 0px -90px 0px' }); // spodní pás zakrývá sám sticky pruh – CTA v něm se nepočítá jako viditelné
   blockers.forEach((el) => io.observe(el));
   sheet.addEventListener('close', update);
   $$('[data-cta]').forEach((b) => b.addEventListener('click', () => requestAnimationFrame(update)));
