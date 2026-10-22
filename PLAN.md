@@ -112,3 +112,39 @@ projektový kľúč) **alebo** vlastný endpoint `/api/track` na Verceli + Upsta
 7. Reklamy A/B
 8. Deploy na Vercel, Lighthouse audit na mobile
 9. README + ai-log
+
+---
+
+# Plán v2 – stack a lead pipeline (22. 10. 2026)
+
+Spätná väzba po prvej verzii: (1) stránka má mať skutočný stack, nie len statický web,
+(2) dizajn má byť bližšie k vizuálnemu jazyku Clientela (clientelo.cz).
+
+## Stack
+
+| Vrstva | Voľba | Prečo |
+|---|---|---|
+| Front-end | **Next.js 16 (App Router) + React 19 + TypeScript** | Obe varianty reklamy staticky predrenderované (rýchly LCP), interaktívne časti ako klientske komponenty |
+| Štýly | **Tailwind CSS 4** + dizajnové tokeny v `@theme` | Konzistentné tokeny (farby, písma, rádiusy) namiesto ručného CSS |
+| Varianta reklamy | **`proxy.ts`** (Next 16 middleware) | `?ad=fees` → interný rewrite na `/v/fees`; varianta sa drží v cookie, bez blikania a bez inline skriptu |
+| Databáza | **Postgres + Drizzle ORM** – Neon (prod, free) / PGlite (lokálne, Postgres vo WASM) | Lokálne beží bez účtov a nastavovania, v produkcii stačí `DATABASE_URL` |
+| E-mail | **Resend** + **Vercel Cron** | Okamžitý e-mail s prehľadom + sekvencia D2/D5/D9 |
+| Testy | **Vitest** (výpočty, skóre) + **Puppeteer E2E** (celá cesta + pipeline) | |
+
+## Lead pipeline (podľa lievika Clientela)
+
+`Reklama → Návštěva → Lead → Kvalifikace → Předání → Péče`
+
+1. **Návštěva** – udalosti v tabuľke `events` (relácia, variant, UTM, zariadenie).
+2. **Lead** – e-mail (1 pole). Upsert do `leads`, prepojenie s reláciou (`sid`), okamžitý e-mail.
+3. **Kvalifikace** – nepovinná otázka „kolik měsíčně investujete“ + **skóre leadu** z odpovede a správania (kalkulačka, kopírovanie ISIN, otvorený prehľad, kliky v e-mailoch).
+4. **Předání** – nepovinná ponuka „pomůžeme s prvním nákupem, zavoláme vám“ (telefón + výslovný súhlas). Lead sa odošle webhookom do CRM/call centra (`HANDOFF_WEBHOOK_URL`). Bez súhlasu sa nič neodovzdáva.
+5. **Péče** – e-mailová sekvencia (D0 prehľad, D2 ako kúpiť, D5 dane, D9 kontrola + ponuka pomoci), odhlásenie jedným klikom, sledovanie klikov.
+
+## Admin (`/admin`, chránené `ADMIN_TOKEN`)
+
+Pipeline s počtami, KPI (leady, náklad na lead z vloženého spendu, kvalifikované, odovzdané), lievik podľa variantu, náklad a konverzia podľa kampane, tabuľka leadov so skóre a fázou, detail leadu s celou cestou relácie, CSV export.
+
+## Dizajn
+
+Vizuálny jazyk Clientela, značka zostáva „ETF dvojčata“: serifové nadpisy (Lora) + Lexend, tmavá petrolejová a tehlová, eyebrow nadpisy s prestrihom, karty s ikonou v tónovanom štvorci, „okno aplikácie“ pre nástroje, slovníček pojmov s otáznikom (UCITS, TER, ISIN, KID). Žiadne vymyslené referencie – namiesto nich karty dôvery postavené na faktoch.
