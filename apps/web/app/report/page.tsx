@@ -5,6 +5,7 @@ import { Shell } from '@/components/Shell';
 import { PrintButton } from '@/components/PrintButton';
 import { TrackView } from '@/components/TrackView';
 import { CallOffer } from '@/components/report/CallOffer';
+import { ReportNav } from '@/components/report/ReportNav';
 import { TwinList } from '@/components/report/TwinList';
 import { Check, Phone, Search } from '@/components/ui/icons';
 
@@ -22,7 +23,6 @@ const TAX = [
   { big: 'Acc', t: 'Dividendy', d: f.dividends.cs, f: f.dividends },
 ];
 
-const NAV = [['#navod', 'Jak koupit'], ['#dvojcata', 'Dvojčata'], ['#dane', 'Daně']];
 
 export default function Report() {
   return (
@@ -45,16 +45,10 @@ export default function Report() {
       </dl>
 
       {/* Přilepená navigace po sekcích */}
-      <nav aria-label="Obsah" className="sticky top-0 z-30 -mx-4 mt-8 border-b border-line/70 bg-paper/90 px-4 py-2.5 backdrop-blur-md sm:mx-0 sm:rounded-2xl sm:border sm:px-2 print:hidden">
-        <ul className="flex gap-1.5">
-          {NAV.map(([href, label]) => (
-            <li key={href}><a href={href} className="inline-flex min-h-10 items-center rounded-xl px-3.5 text-[14px] font-semibold text-ink transition-colors hover:bg-white">{label}</a></li>
-          ))}
-        </ul>
-      </nav>
+      <ReportNav />
 
       {/* Jak koupit */}
-      <section id="navod" aria-labelledby="navod-title" className="mt-10 scroll-mt-20">
+      <section id="navod" aria-labelledby="navod-title" className="mt-10 scroll-mt-24">
         <h2 id="navod-title" className="font-display text-[26px] font-bold text-ink sm:text-[30px]">Jak dvojče koupit</h2>
         <ol className="mt-4 grid gap-3 sm:grid-cols-3">
           {HOW_TO_BUY.map((s, i) => (
@@ -73,14 +67,14 @@ export default function Report() {
       </section>
 
       {/* Dvojčata */}
-      <section id="dvojcata" aria-labelledby="dvojcata-title" className="mt-12 scroll-mt-20">
+      <section id="dvojcata" aria-labelledby="dvojcata-title" className="mt-12 scroll-mt-24">
         <h2 id="dvojcata-title" className="font-display text-[26px] font-bold text-ink sm:text-[30px]">Všechna dvojčata</h2>
         <p className="mt-1 mb-4 text-[14.5px] text-muted">Najděte své americké ETF a zkopírujte ISIN jeho evropské verze.</p>
         <TwinList />
       </section>
 
       {/* Daně */}
-      <section id="dane" aria-labelledby="dane-title" className="mt-12 scroll-mt-20">
+      <section id="dane" aria-labelledby="dane-title" className="mt-12 scroll-mt-24">
         <h2 id="dane-title" className="font-display text-[26px] font-bold text-ink sm:text-[30px]">Daně v Česku stručně</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {TAX.map((x) => (
