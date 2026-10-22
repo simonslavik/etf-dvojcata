@@ -24,7 +24,7 @@ for (const [v, file] of [['twin', 'mobile-a'], ['fees', 'mobile-b']]) {
 
 const p = await fresh(mobile);
 await p.goto(`${base}/?ad=twin`, { waitUntil: 'networkidle0' });
-await p.$eval('[data-hero] [role="tabpanel"]:not([hidden]) [data-cta]', (b) => b.click());
+await p.$eval('[data-hero] [data-cta]', (b) => b.click());
 await sleep(500);
 await p.type('#email-sheet', `readme${Date.now()}@example.com`);
 await p.$eval('[data-form="sheet"] button[type="submit"]', (b) => b.click());

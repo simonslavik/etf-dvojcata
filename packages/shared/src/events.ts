@@ -2,7 +2,7 @@
 export const EVENTS = [
   'page_view', 'scroll', 'finder_select', 'isin_copy', 'calc_change', 'cta_click', 'sticky_view',
   'form_view', 'form_start', 'form_error', 'form_submit', 'report_open', 'report_view',
-  'faq_open', 'term_open', 'tool_switch',
+  'faq_open', 'term_open',
 ] as const;
 export type EventName = (typeof EVENTS)[number];
 /** Události, které zapisuje jen server – z prohlížeče je nejde podvrhnout */

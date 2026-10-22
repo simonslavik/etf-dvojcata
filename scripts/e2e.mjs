@@ -29,23 +29,18 @@ async function journey({ query, variant }) {
   await page.goto(`${base}/${query}`, { waitUntil: 'networkidle0' });
 
   assert.equal(await page.$eval('main', (m) => m.dataset.variant), variant, 'varianta podle ?ad=');
-  const visibleTool = () => page.$eval('[data-hero] [role="tabpanel"]:not([hidden]) [data-module]', (m) => m.dataset.module);
-  assert.equal(await visibleTool(), variant === 'fees' ? 'calc' : 'finder', 'výchozí záložka podle varianty reklamy');
+  assert.equal(await page.$eval('[data-hero] [data-module]', (m) => m.dataset.module), variant === 'fees' ? 'calc' : 'finder', 'hero obsahuje nástroj podle varianty reklamy');
+  assert.equal(await page.$$eval('[data-module]', (els) => els.length), 2, 'druhý nástroj má vlastní sekci');
 
-  // vyhledávač (ve variantě B se na něj přepne záložkou)
-  if (variant === 'fees') await page.click('[data-tab="finder"]');
-  assert.equal(await visibleTool(), 'finder');
-  await page.click('[data-ticker="SPY"]');
+  await page.$eval('[data-ticker="SPY"]', (b) => b.click());
   await page.waitForFunction(() => document.querySelector('[data-twin-ticker]')?.textContent === 'SPYL');
-  await page.click('[data-tab="calc"]');
-  assert.equal(await visibleTool(), 'calc');
   const savedBefore = await page.$eval('[data-out="saved"]', (e) => e.textContent);
   await setRange(page, '[data-in="monthly"]', 5000);
   await page.waitForFunction((b) => document.querySelector('[data-out="saved"]').textContent !== b, {}, savedBefore);
   await page.$eval('[data-copy-isin]', (b) => b.click());
 
   // CTA → sheet → špatný e-mail → chyba → správný e-mail → hotovo
-  await page.$eval('[data-hero] [role="tabpanel"]:not([hidden]) [data-cta]', (b) => { b.scrollIntoView({ block: 'center' }); b.click(); });
+  await page.$eval('[data-hero] [data-cta]', (b) => { b.scrollIntoView({ block: 'center' }); b.click(); });
   await page.waitForSelector('dialog[open] #email-sheet');
   await sleep(450); // animace vysunutí sheetu
   assert.equal(await page.evaluate(() => document.activeElement?.id), 'email-sheet', 'fokus je v poli e-mailu');

@@ -87,6 +87,30 @@ export function ProofStrip() {
   );
 }
 
+const SECOND: Record<Variant, { eyebrow: string; title: string; lead: string }> = {
+  // varianta A má v hero vyhledávač → tady kalkulačka; varianta B naopak
+  twin: { eyebrow: 'Kalkulačka poplatků', title: 'Máte peníze ve fondu z banky?', lead: 'Spočítejte si, kolik vás za roky stojí oproti ETF na stejný trh.' },
+  fees: { eyebrow: 'Vyhledávač dvojčat', title: 'Chtěli jste VOO nebo SPY?', lead: 'V aplikaci je nenajdete. Klepněte na ticker a uvidíte evropskou verzi, kterou koupíte.' },
+};
+
+/** Druhý nástroj jako vlastní kompaktní sekce – v hero je vždy jen jeden (podle reklamy), bez přepínače */
+export function SecondTool({ variant, tool }: { variant: Variant; tool: React.ReactNode }) {
+  const s = SECOND[variant];
+  return (
+    <section id="tool-2" aria-labelledby="second-title" className="relative overflow-hidden bg-teal-900 py-10 text-white sm:py-14">
+      <div className="facets" aria-hidden="true" />
+      <div className="reveal wrap relative grid grid-cols-1 items-center gap-6 lg:grid-cols-[1fr_minmax(0,500px)] lg:gap-14">
+        <div>
+          <p className="eyebrow eyebrow-light">{s.eyebrow}</p>
+          <h2 id="second-title" className="mt-2 font-display text-[clamp(26px,4vw,40px)] leading-[1.08] font-bold text-balance">{s.title}</h2>
+          <p className="mt-3 max-w-[30em] text-[15.5px] leading-relaxed text-white/75 sm:text-[17px]">{s.lead}</p>
+        </div>
+        <div className="text-text">{tool}</div>
+      </div>
+    </section>
+  );
+}
+
 /** Jak to funguje: 3 kroky od tickeru k nákupu. Odpovídá na „a co s tím udělám?“ a navazuje na návod v přehledu. */
 export function HowItWorks() {
   const steps = [
