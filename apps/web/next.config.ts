@@ -1,13 +1,16 @@
 import type { NextConfig } from 'next';
 
+/** NestJS API (apps/api). Rewrity se vyhodnocují při buildu – v Dockeru se předává jako build arg. */
+const API_URL = process.env.API_URL || 'http://localhost:4000';
+
 const config: NextConfig = {
-  // Docker image (Dockerfile nastaví NEXT_OUTPUT=standalone) – minimální server.js bez celého node_modules. Vercel to nepotřebuje.
+  // Docker image (NEXT_OUTPUT=standalone) – minimální server.js bez celého node_modules
   output: process.env.NEXT_OUTPUT === 'standalone' ? 'standalone' : undefined,
-  // PGlite (lokální Postgres ve WASM) se nesmí bundlovat – načítá .wasm a .data soubory z node_modules
-  serverExternalPackages: ['@electric-sql/pglite'],
-  // PGlite migruje za běhu (lib/db) – SQL soubory a WASM musí být v balíčku serverových funkcí
-  outputFileTracingIncludes: { '/**': ['./lib/db/migrations/**/*', './node_modules/@electric-sql/pglite/dist/**/*'] },
   poweredByHeader: false,
+  // Prohlížeč volá /api/* na stejné doméně (bez CORS, admin cookie zůstává first-party) → Next to přepošle na Nest
+  async rewrites() {
+    return [{ source: '/api/:path*', destination: `${API_URL}/:path*` }];
+  },
   async headers() {
     return [
       {

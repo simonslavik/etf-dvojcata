@@ -1,1 +1,0 @@
-ALTER TABLE "email_jobs" ADD COLUMN "attempts" integer DEFAULT 0 NOT NULL;

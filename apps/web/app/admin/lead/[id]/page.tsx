@@ -1,23 +1,19 @@
 import { notFound } from 'next/navigation';
-import { getDb } from '@/lib/db';
+import { apiGet, type LeadDetailDto } from '@/lib/api';
 import { MONTHLY_BANDS, isMonthlyBand } from '@etfd/shared';
-import { leadDetail } from '@/lib/server/stats';
 import { Panel, StageChip } from '@/components/admin/ui';
 import { Logo } from '@/components/landing/Sections';
-import { manualHandoff } from '../../actions';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false } };
 
-const fmt = (d: Date) => d.toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+const fmt = (d: string | Date) => new Date(d).toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
-  const d = await leadDetail(await getDb(), id);
-  if (!d) notFound();
-  const { lead, journey, jobs } = d;
-  const t0 = journey[0]?.createdAt.getTime() ?? lead.createdAt.getTime();
+  const { lead, journey, jobs } = await apiGet<LeadDetailDto>(`/admin/leads/${id}`);
+  const t0 = new Date(journey[0]?.createdAt ?? lead.createdAt).getTime();
   const facts: [string, React.ReactNode][] = [
     ['Vytvořen', fmt(lead.createdAt)],
     ['Varianta / zdroj', `${lead.variant === 'fees' ? 'B · Poplatky' : 'A · Dvojče'} · ${lead.utmSource ?? '–'} / ${lead.utmCampaign ?? '–'} / ${lead.utmContent ?? '–'}`],
@@ -41,7 +37,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           <h1 className="text-[24px] font-bold text-ink">{lead.email}</h1>
           <StageChip stage={lead.stage} />
           {!lead.handedOverAt && lead.wantsCall && (
-            <form action={manualHandoff.bind(null, lead.id)}><button className="btn btn-primary !min-h-10 !px-4 !text-[14px]">Označit jako předaný</button></form>
+            <form action={`/api/admin/leads/${lead.id}/handoff`} method="post"><button className="btn btn-primary !min-h-10 !px-4 !text-[14px]">Označit jako předaný</button></form>
           )}
         </div>
         <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
@@ -63,7 +59,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
               {journey.map((e) => (
                 <li key={e.id} className="relative">
                   <span className={`absolute top-1.5 -left-[21px] h-2.5 w-2.5 rounded-full ring-2 ring-white ${['lead_ok', 'handoff'].includes(e.event) ? 'bg-brick' : 'bg-teal-700'}`} />
-                  <span className="num mr-2 text-muted">+{Math.round((e.createdAt.getTime() - t0) / 1000)} s</span>
+                  <span className="num mr-2 text-muted">+{Math.round((new Date(e.createdAt).getTime() - t0) / 1000)} s</span>
                   <b className="text-ink">{e.event}</b>
                   {e.props && Object.keys(e.props).length > 0 && <span className="ml-2 font-mono text-[12px] text-muted">{JSON.stringify(e.props)}</span>}
                 </li>

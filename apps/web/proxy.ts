@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { ADMIN_COOKIE, isAdmin } from '@/lib/server/auth';
 
 const VARIANT_COOKIE = 'etfd_v';
 
@@ -10,7 +9,7 @@ function variantFromQuery(sp: URLSearchParams) {
   return ['fees', 'b', 'ad_b'].includes(v) ? 'fees' : ['twin', 'a', 'ad_a'].includes(v) ? 'twin' : null;
 }
 
-export async function proxy(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
 
   // Message match: obě varianty jsou staticky předrenderované (/v/twin, /v/fees) – URL v prohlížeči zůstane „/?ad=…“
@@ -23,12 +22,9 @@ export async function proxy(req: NextRequest) {
     return res;
   }
 
-  if (pathname.startsWith('/admin/login')) return NextResponse.next();
-  if (!(await isAdmin(req.cookies.get(ADMIN_COOKIE)?.value))) {
-    if (pathname.startsWith('/api/')) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-    return NextResponse.redirect(new URL('/admin/login', req.url));
-  }
-  return NextResponse.next();
+  // Admin: bez cookie rovnou na přihlášení. Platnost cookie ověřuje API (AdminGuard) – stránky při 401 také přesměrují.
+  if (pathname.startsWith('/admin/login') || req.cookies.has('etfd_admin') || process.env.NODE_ENV === 'development') return NextResponse.next();
+  return NextResponse.redirect(new URL('/admin/login', req.url));
 }
 
-export const config = { matcher: ['/', '/admin/:path*', '/api/admin/:path*'] };
+export const config = { matcher: ['/', '/admin/:path*'] };

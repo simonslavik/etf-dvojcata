@@ -1,16 +1,9 @@
 import type { Metadata } from 'next';
-import { getDb, dbMode } from '@/lib/db';
-import { FUNNEL, VARIANT_LABEL, VARIANTS } from '@etfd/shared';
-import { fmtDate } from '@etfd/shared';
-import { insights } from '@etfd/shared';
-import { MONTHLY_BANDS, isMonthlyBand } from '@etfd/shared';
-import { SEQUENCE } from '@etfd/shared';
-import { emailEnabled } from '@/lib/server/email';
-import { campaigns, dailyLeads, funnel, recentLeads, sequenceStats, stageCounts } from '@/lib/server/stats';
+import { FUNNEL, fmtDate, isMonthlyBand, MONTHLY_BANDS, SEQUENCE, VARIANT_LABEL, VARIANTS } from '@etfd/shared';
+import { apiGet, type DashboardDto } from '@/lib/api';
 import { Columns, HBars, Kpi, Legend, Panel, SERIES, StageChip, kc, pct } from '@/components/admin/ui';
 import { ArrowRight } from '@/components/ui/icons';
 import { Logo } from '@/components/landing/Sections';
-import { logout, runSequenceNow, saveSpend } from './actions';
 
 export const metadata: Metadata = { title: 'Pipeline – ETF dvojčata', robots: { index: false } };
 export const dynamic = 'force-dynamic';
@@ -18,19 +11,15 @@ export const dynamic = 'force-dynamic';
 const PERIODS = [7, 30, 90];
 
 export default async function Admin({ searchParams }: { searchParams: Promise<{ d?: string }> }) {
-  const days = PERIODS.includes(Number((await searchParams).d)) ? Number((await searchParams).d) : 30;
-  const since = new Date(Date.now() - days * 86_400_000);
-  const db = await getDb();
-  const [f, stages, camps, daily, seq, latest] = await Promise.all([
-    funnel(db, since), stageCounts(db, since), campaigns(db, since), dailyLeads(db), sequenceStats(db), recentLeads(db, 50),
-  ]);
+  const requested = Number((await searchParams).d);
+  const { days, funnel: f, stages, campaigns: camps, daily, sequence: seq, latest, insights: notes, emailEnabled } =
+    await apiGet<DashboardDto>(`/admin/dashboard?d=${PERIODS.includes(requested) ? requested : 30}`);
 
   const leadsN = Object.values(stages.all).reduce((a, b) => a + b, 0);
   const qualifiedN = stages.all.qualified + stages.all.handed_over;
   const spend = camps.reduce((a, c) => a + (c.spend ?? 0), 0);
   const spendLeads = camps.filter((c) => c.spend != null).reduce((a, c) => a + c.leads, 0);
   const sent = seq.rows.filter((r) => r.status === 'sent').reduce((a, r) => a + r.n, 0);
-  const notes = insights(f.all, f.twin, f.fees);
 
   const pipeline = [
     { label: 'Reklama', value: spend ? kc(spend) : '–' },
@@ -51,16 +40,15 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
               {PERIODS.map((p) => <a key={p} href={`/admin?d=${p}`} aria-current={p === days ? 'page' : undefined} className="rounded-lg px-3 py-1.5 text-muted aria-[current=page]:bg-teal-800 aria-[current=page]:text-white">{p} dní</a>)}
             </nav>
             <a href="/api/admin/export" className="btn btn-ghost !min-h-10 !px-3.5 !text-[14px]">CSV</a>
-            <form action={logout}><button className="btn btn-ghost !min-h-10 !px-3.5 !text-[14px]">Odhlásit</button></form>
+            <form action="/api/admin/logout" method="post"><button className="btn btn-ghost !min-h-10 !px-3.5 !text-[14px]">Odhlásit</button></form>
           </div>
         </div>
       </header>
 
       <main className="wrap space-y-5 py-6 sm:py-8">
-        {(dbMode === 'pglite' || !emailEnabled) && (
+        {!emailEnabled && (
           <p className="rounded-xl border border-brick-100 bg-brick-50 px-4 py-3 text-[14px] text-brick-700">
-            {dbMode === 'pglite' && <>Databáze běží v PGlite (lokálně / Docker) – pro nasazení na Vercel nastavte <code>DATABASE_URL</code> (Neon). </>}
-            {!emailEnabled && <>E-maily jsou vypnuté (chybí <code>RESEND_API_KEY</code> / <code>RESEND_FROM</code>) – kroky sekvence se označují jako přeskočené.</>}
+            E-maily jsou vypnuté (chybí <code>RESEND_API_KEY</code> / <code>RESEND_FROM</code>) – kroky sekvence se označují jako přeskočené.
           </p>
         )}
 
@@ -148,7 +136,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                       <td className="py-2.5 font-mono text-[13px] text-ink">{c.key}</td>
                       <td>{c.visits}</td><td><b className="text-ink">{c.leads}</b></td><td>{c.conv == null ? '–' : pct(c.leads, c.visits)}</td><td>{c.qualified}</td><td>{kc(c.cpl)}</td>
                       <td>
-                        <form action={saveSpend} className="flex gap-1.5">
+                        <form action="/api/admin/spend" method="post" className="flex gap-1.5">
                           <input type="hidden" name="key" value={c.key} />
                           <input name="czk" inputMode="numeric" defaultValue={c.spend ?? ''} aria-label={`Útrata ${c.key}`} className="input !min-h-9 w-24 !rounded-lg !px-2 !text-[13px]" />
                           <button className="rounded-lg border border-line px-2 text-[12px] text-muted hover:border-teal-500">Uložit</button>
@@ -163,7 +151,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
           </Panel>
 
           {/* E-mailová péče */}
-          <Panel title="Péče: e-mailová sekvence" action={<form action={runSequenceNow}><button className="text-[13px] font-medium text-teal-700 hover:underline">Odeslat splatné teď</button></form>}>
+          <Panel title="Péče: e-mailová sekvence" action={<form action="/api/admin/sequence/run" method="post"><button className="text-[13px] font-medium text-teal-700 hover:underline">Odeslat splatné teď</button></form>}>
             <ul className="space-y-3 text-[14px]">
               {SEQUENCE.map((s) => {
                 const by = (st: string) => seq.rows.find((r) => r.step === s.step && r.status === st)?.n ?? 0;
@@ -188,7 +176,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
               <tbody>
                 {latest.map((l) => (
                   <tr key={l.id} className="border-t border-line hover:bg-paper">
-                    <td className="num py-2.5 text-muted">{l.createdAt.toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+                    <td className="num py-2.5 text-muted">{new Date(l.createdAt).toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
                     <td><a href={`/admin/lead/${l.id}`} className="font-medium text-ink hover:underline">{l.email}</a>{l.phone && <span className="ml-1.5 text-[12px] text-muted">☎</span>}</td>
                     <td><StageChip stage={l.stage} /></td>
                     <td className="num font-semibold text-ink">{l.score}</td>
