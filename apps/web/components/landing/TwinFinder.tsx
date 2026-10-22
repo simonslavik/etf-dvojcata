@@ -58,13 +58,13 @@ export function TwinFinder() {
             <p className="mt-1 truncate text-[13px] text-muted" title={t.name}>{t.name}</p>
 
             <div className="mt-3 flex gap-6 text-[13px] text-muted">
-              <span><Term k="TER">Poplatek</Term> <b className="num text-[15px] text-ink">{formatPct(t.ter_pct)}</b></span>
+              <span><Term k="TER">Roční poplatek</Term> <b className="num text-[15px] text-ink">{formatPct(t.ter_pct)}</b></span>
               <span>Burza <b className="text-[15px] text-ink">{t.exchange}</b></span>
             </div>
 
             <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-line bg-white py-1.5 pr-1.5 pl-3.5">
               <div className="min-w-0">
-                <span className="block text-[11px] text-muted"><Term k="ISIN" /> do aplikace brokera</span>
+                <span className="block text-[11px] text-muted"><Term k="ISIN" /> – vložte do vyhledávání v aplikaci</span>
                 <span className="font-mono text-[15px] font-bold tracking-wide text-ink">{t.isin}</span>
               </div>
               <button type="button" onClick={copy} data-copy-isin className="inline-flex min-h-10 flex-none items-center gap-1.5 rounded-lg bg-teal-900 px-3 text-[13px] font-semibold text-white transition-colors hover:bg-teal-700 data-[copied]:bg-ok" data-copied={copied || undefined}>

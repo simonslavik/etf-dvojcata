@@ -20,9 +20,8 @@ function Slider({ label, value, min, max, step, display, onChange, name }: {
 }) {
   return (
     <label className="block">
-      <span className="flex items-baseline justify-between gap-2 text-[13px] text-muted">
-        {label} <output className="num text-[16px] font-semibold whitespace-nowrap text-ink">{display}</output>
-      </span>
+      <span className="block text-[13px] leading-tight text-muted">{label}</span>
+      <output className="num mt-0.5 block text-[18px] font-bold whitespace-nowrap text-ink">{display}</output>
       <input
         type="range" className="range mt-1" min={min} max={max} step={step} value={value} data-in={name}
         style={{ ['--p' as string]: `${((value - min) / (max - min)) * 100}%` }}
@@ -45,35 +44,39 @@ export function FeeCalculator() {
   return (
     <div className="card overflow-hidden" data-module="calc">
       <div className="p-4 sm:p-5">
+        <p className="mb-3 text-[15px] font-semibold text-ink">Spočítejte si, kolik vás stojí poplatky</p>
         <div className="grid grid-cols-2 gap-4 sm:gap-6">
-          <Slider name="monthly" label="Měsíčně" value={calc.monthly} min={500} max={30000} step={500} display={formatKc(calc.monthly)} onChange={(m) => setCalc({ ...calc, monthly: m })} />
-          <Slider name="years" label="Po dobu" value={calc.years} min={5} max={40} step={1} display={yearsLabel(calc.years)} onChange={(y) => setCalc({ ...calc, years: y })} />
+          <Slider name="monthly" label="Kolik měsíčně investujete" value={calc.monthly} min={500} max={30000} step={500} display={formatKc(calc.monthly)} onChange={(m) => setCalc({ ...calc, monthly: m })} />
+          <Slider name="years" label="Jak dlouho" value={calc.years} min={5} max={40} step={1} display={yearsLabel(calc.years)} onChange={(y) => setCalc({ ...calc, years: y })} />
         </div>
 
-        {/* Kolik zaplatíte na poplatcích – dva pruhy vedle sebe */}
-        <div className="mt-4 space-y-2.5 rounded-2xl bg-paper p-3.5" aria-live="polite">
+        {/* Kolik zaplatíte na poplatcích – dva pruhy pod sebou, popisky lidsky */}
+        <div className="mt-4 space-y-3 rounded-2xl bg-paper p-3.5" aria-live="polite">
+          <p className="text-[12px] font-semibold tracking-[0.14em] text-muted uppercase">Za {yearsLabel(calc.years)} zaplatíte na poplatcích</p>
           <div>
-            <div className="flex items-baseline justify-between text-[13px]">
-              <span className="text-text">Fond z banky <span className="text-muted">{formatPct(bank.ter_pct)} + vstup {formatPct(bank.entry_fee_pct)}</span></span>
-              <b className="num text-brick" data-out="bankFees">{formatKc(bankCost)}</b>
+            <div className="flex items-baseline justify-between gap-3 text-[13.5px]">
+              <span className="font-semibold text-text">Fond z banky</span>
+              <b className="num text-[15px] text-brick" data-out="bankFees">{formatKc(bankCost)}</b>
             </div>
-            <span className="mt-1 block h-2.5 rounded-full bg-gradient-to-r from-brick-700 to-brick" />
+            <p className="text-[12px] text-muted">{formatPct(bank.ter_pct)} ročně + {formatPct(bank.entry_fee_pct)} z každého vkladu</p>
+            <span className="mt-1.5 block h-2.5 rounded-full bg-gradient-to-r from-brick-700 to-brick" />
           </div>
           <div>
-            <div className="flex items-baseline justify-between text-[13px]">
-              <span className="text-text">ETF dvojče <span className="text-muted"><Term k="TER" /> {formatPct(etf.ter_pct)}</span></span>
-              <b className="num text-teal-700" data-out="etfFees">{formatKc(etfCost)}</b>
+            <div className="flex items-baseline justify-between gap-3 text-[13.5px]">
+              <span className="font-semibold text-text">ETF dvojče</span>
+              <b className="num text-[15px] text-teal-700" data-out="etfFees">{formatKc(etfCost)}</b>
             </div>
-            <span className="mt-1 block h-2.5 rounded-full bg-teal-100">
+            <p className="text-[12px] text-muted"><Term k="TER">{formatPct(etf.ter_pct)} ročně</Term>, bez vstupního poplatku</p>
+            <span className="mt-1.5 block h-2.5 rounded-full bg-teal-100">
               <span className="block h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-500 transition-[width] duration-300" style={{ width: `${v.etfBarPct}%` }} />
             </span>
           </div>
         </div>
 
         <div className="mt-4 text-center">
-          <p className="text-[13.5px] text-muted">Na poplatcích ušetříte</p>
+          <p className="text-[14px] text-muted">S ETF vám za {yearsLabel(calc.years)} zůstane navíc</p>
           <p className="num font-display text-[clamp(36px,8vw,46px)] leading-none font-bold text-brick" data-out="saved">{formatKc(saved)}</p>
-          <p className="mt-1 text-[13px] text-muted">= {formatInt(v.months)} měsíčních vkladů</p>
+          <p className="mt-1 text-[13px] text-muted">to je jako {formatInt(v.months)} vašich měsíčních vkladů</p>
         </div>
 
         {unlocked ? (

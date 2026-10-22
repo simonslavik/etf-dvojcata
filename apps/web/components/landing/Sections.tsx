@@ -28,8 +28,8 @@ const HERO: Record<Variant, { eyebrow: string; title: [string, string]; lead: Re
   fees: {
     eyebrow: 'Poplatky · pro investory z Česka',
     title: [`Fond z banky si bere až ${formatPct(Math.round(data.calc.bank.ter_pct * 10) / 10)} ročně.`, `ETF jen ${formatPct(data.calc.etf.ter_pct)}.`],
-    lead: <>Spočítejte si, kolik vám fond z banky za 20 let sebere – a které evropské <Term k="UCITS">ETF</Term> na S&amp;P&nbsp;500 si místo něj koupíte.</>,
-    short: <>Spočítejte si, kolik vám fond z banky sebere – a které <Term k="UCITS">ETF</Term> koupit místo něj.</>,
+    lead: <>Spočítejte si, kolik vám fond z banky za roky sebere na poplatcích – a které evropské <Term k="UCITS">ETF</Term> na S&amp;P&nbsp;500 si místo něj koupíte.</>,
+    short: <>Posuňte posuvníky a uvidíte, kolik vám s <Term k="UCITS">ETF</Term> zůstane navíc.</>,
   },
 };
 
