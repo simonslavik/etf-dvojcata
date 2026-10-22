@@ -86,7 +86,7 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
                 <span className="block text-[11px] text-muted"><Term k="ISIN" /> – zadejte u brokera</span>
                 <span className="font-mono text-[15px] font-bold tracking-wide text-ink">{t.isin}</span>
               </div>
-              <button type="button" onClick={copy} className="inline-flex min-h-11 flex-none items-center gap-1.5 rounded-lg bg-teal-900 px-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-teal-700 data-[copied]:bg-ok" data-copied={copied || undefined}>
+              <button type="button" onClick={copy} data-copy-isin className="inline-flex min-h-11 flex-none items-center gap-1.5 rounded-lg bg-teal-900 px-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-teal-700 data-[copied]:bg-ok" data-copied={copied || undefined}>
                 {copied ? <><Check className="h-4 w-4" /> Zkopírováno</> : <><Copy className="h-4 w-4" /> Kopírovat</>}
               </button>
             </div>

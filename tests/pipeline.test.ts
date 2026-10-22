@@ -51,3 +51,22 @@ describe('telefon', () => {
 
   test.each(['12', '077712345', '777 123 45', '+421 777 123 456'])('%s je neplatné', (input) => expect(normalizePhone(input)).toBeNull());
 });
+
+import { biggestDrop, insights, zTest } from '@/lib/pipeline/insights';
+
+describe('postřehy pro dashboard', () => {
+  const base = { visit: 1000, interact: 550, cta: 200, form_view: 190, form_start: 150, lead: 110, qualify: 60, handoff: 8 };
+
+  test('najde krok s největší relativní ztrátou cestou k leadu', () => {
+    expect(biggestDrop(base)).toMatchObject({ from: 'Interakce s nástrojem', to: 'Klik na CTA' });
+  });
+
+  test('z-test: stejné podíly = 0, výrazný rozdíl > 1.96', () => {
+    expect(zTest(100, 1000, 100, 1000)).toBe(0);
+    expect(zTest(150, 1000, 100, 1000)).toBeGreaterThan(1.96);
+  });
+
+  test('málo dat = jen upozornění', () => {
+    expect(insights({ ...base, visit: 12 }, base, base)).toHaveLength(1);
+  });
+});

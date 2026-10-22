@@ -23,6 +23,8 @@ export function LeadSheet() {
     if (sheet.open && !d.open) {
       // iOS Safari < 15.4 nemá showModal – zobrazíme aspoň jako fixní panel
       if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+      // showModal dá fokus prvnímu prvku (zavírací křížek) – chceme rovnou e-mail (na iOS v rámci gesta → otevře klávesnici)
+      d.querySelector<HTMLInputElement>('input[type="email"]')?.focus();
     }
     if (!sheet.open && d.open) d.close();
   }, [sheet.open]);
@@ -64,7 +66,7 @@ export function LeadSheet() {
                 <li key={x} className="flex items-center gap-2"><Check className="h-4 w-4 flex-none text-ok" />{x}</li>
               ))}
             </ul>
-            {sheet.open && <LeadForm name="sheet" cta="Odemknout přehled" stacked autoFocus />}
+            {sheet.open && <LeadForm name="sheet" cta="Odemknout přehled" stacked />}
           </div>
         ) : (
           <div data-sheet-step="done" className="animate-rise">

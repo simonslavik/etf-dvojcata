@@ -45,7 +45,7 @@ const HERO: Record<Variant, { eyebrow: string; title: [string, string]; lead: Re
     lead: <>Evropský broker vám americká ETF kvůli regulaci <Term k="PRIIPs" /> neprodá. Ukážeme vám jejich evropskou verzi se stejným indexem – i&nbsp;s&nbsp;<Term k="ISIN" />, který zadáte do aplikace.</>,
   },
   fees: {
-    eyebrow: 'Poplatky · ETF · pro investory z Česka',
+    eyebrow: 'Poplatky · pro investory z Česka',
     title: [`Fond z banky si bere až ${formatPct(Math.round(data.calc.bank.ter_pct * 10) / 10)} ročně.`, `ETF jen ${formatPct(data.calc.etf.ter_pct)}.`],
     lead: <>Spočítejte si, kolik vám fond z banky za 20 let sebere – a které evropské <Term k="UCITS">ETF</Term> na S&amp;P&nbsp;500 si místo něj koupíte.</>,
   },
