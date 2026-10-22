@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { getDb } from '@/lib/db';
+import { consentRecord } from '@/lib/consent';
 import { isVariant } from '@/lib/events';
 import { captureLead, mask } from '@/lib/server/pipeline';
 import { allowedOrigin, clientIp, clip, json, readJson } from '@/lib/server/http';
@@ -18,7 +19,7 @@ const Body = z.object({
   utm_source: z.string().nullish(), utm_campaign: z.string().nullish(), utm_content: z.string().nullish(), device: z.string().nullish(),
   interest: z.string().nullish(),
   calc_monthly: z.number().int().nonnegative().max(1_000_000).nullish(),
-  consent_text: z.string().nullish(),
+  consent_id: z.string().max(20).nullish(),
 });
 
 export async function POST(req: Request) {
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
     const res = await captureLead(db, {
       email: b.email, sid: clip(b.sid, 64), variant, source: clip(b.source, 20),
       utmSource: clip(b.utm_source, 60), utmCampaign: clip(b.utm_campaign, 60), utmContent: clip(b.utm_content, 60), device: clip(b.device, 10),
-      interest: clip(b.interest, 20), calcMonthly: b.calc_monthly ?? null, consentText: clip(b.consent_text, 200),
+      interest: clip(b.interest, 20), calcMonthly: b.calc_monthly ?? null, consentText: b.consent_id ? consentRecord(b.consent_id) : null,
     });
     console.log(JSON.stringify({ k: 'lead', email: mask(b.email), variant, source: b.source, isNew: res.isNew, mail: res.emailSent }));
     return json(200, { ok: true, emailSent: res.emailSent, token: res.token });

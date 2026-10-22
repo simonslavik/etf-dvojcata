@@ -24,7 +24,7 @@ interface LeadState {
   sheet: { open: boolean; step: SheetStep; source: string };
   openSheet: (source: string) => void;
   closeSheet: () => void;
-  submitLead: (email: string, opts: { form: string; consentText: string; hp: string }) => Promise<SubmitResult>;
+  submitLead: (email: string, opts: { form: string; consentId: string; hp: string }) => Promise<SubmitResult>;
 }
 
 const Ctx = createContext<LeadState | null>(null);
@@ -86,7 +86,7 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
 
   const closeSheet = useCallback(() => setSheet((s) => ({ ...s, open: false })), []);
 
-  const submitLead = useCallback(async (email: string, { form, consentText, hp }: { form: string; consentText: string; hp: string }): Promise<SubmitResult> => {
+  const submitLead = useCallback(async (email: string, { form, consentId, hp }: { form: string; consentId: string; hp: string }): Promise<SubmitResult> => {
     const fail = (message: string, reason: string) => {
       track('form_error', { form, reason });
       return { ok: false, message };
@@ -102,7 +102,7 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
           email, hp_f7: hp, source, ...trackContext(),
           interest: selected,
           calc_monthly: calcTouched.current ? calc.monthly : null,
-          consent_text: consentText,
+          consent_id: consentId,
         }),
       });
       const res = await r.json().catch(() => ({}));

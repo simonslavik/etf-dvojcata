@@ -50,8 +50,9 @@ export const emailJobs = pgTable('email_jobs', {
   step: text('step').notNull(),
   sendAt: timestamp('send_at', { withTimezone: true }).notNull(),
   sentAt: timestamp('sent_at', { withTimezone: true }),
-  /** scheduled | sent | failed | skipped | cancelled */
+  /** scheduled | sending | sent | failed | skipped | cancelled */
   status: text('status').notNull().default('scheduled'),
+  attempts: integer('attempts').notNull().default(0),
   error: text('error'),
 }, (t) => [uniqueIndex('email_jobs_lead_step_uq').on(t.leadId, t.step), index('email_jobs_due_idx').on(t.status, t.sendAt)]);
 

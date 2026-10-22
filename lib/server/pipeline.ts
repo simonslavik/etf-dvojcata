@@ -12,7 +12,11 @@ import type { Variant } from '@/lib/events';
 import { sendSequenceEmail } from './email';
 import { withinLimit } from './rate';
 
+// Okamžitý přehled (D0) má vlastní denní strop, aby ho nemohla vyčerpat sekvence (a naopak)
 const DAILY_EMAIL_CAP = Number(process.env.DAILY_EMAIL_CAP) || 300;
+const DAILY_NURTURE_CAP = Number(process.env.DAILY_NURTURE_CAP) || 300;
+const MAX_ATTEMPTS = 3;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export const mask = (e: string) => e.replace(/^(.).*(@.*)$/, '$1***$2');
 /** Relace leadu pro události mimo prohlížeč (klik v e-mailu, předání) */
 const leadSid = (l: Pick<Lead, 'id' | 'sid'>) => l.sid || `lead:${l.id}`;
@@ -49,7 +53,7 @@ export async function captureLead(db: Db, input: LeadInput) {
   if (isNew) {
     const now = new Date();
     await db.insert(emailJobs).values(scheduleFor(now).map((j) => ({ leadId: row.id, step: j.step, sendAt: j.sendAt }))).onConflictDoNothing();
-    emailSent = await sendJob(db, { leadId: row.id, email: input.email, token: row.token, step: 'd0_report' });
+    emailSent = await sendJob(db, row.id, 'd0_report');
   }
   await rescore(db, row.id);
   // Token (odhlášení, kvalifikace) dostane jen ten, kdo lead právě založil – ne kdokoli, kdo zná cizí e-mail
@@ -89,7 +93,9 @@ export async function requestCall(db: Db, token: string, phone: string, consentT
   await db.update(leads).set({ wantsCall: true, phone, callConsentText: consentText }).where(eq(leads.id, lead.id));
   await recordEvent(db, { sid: leadSid(lead), event: 'call_request', variant: lead.variant as Variant });
   const updated = await rescore(db, lead.id);
-  return updated ? handoff(db, updated) : null;
+  // Už předaný lead (dvojí odeslání, /pomoc z e-mailu) se do CRM neposílá znovu – jen se aktualizuje telefon
+  if (!updated || lead.handedOverAt) return updated;
+  return handoff(db, updated);
 }
 
 /**
@@ -108,6 +114,7 @@ export async function handoff(db: Db, lead: Lead, { manual = false } = {}) {
         headers: { 'content-type': 'application/json', ...(process.env.HANDOFF_WEBHOOK_SECRET ? { 'x-webhook-secret': process.env.HANDOFF_WEBHOOK_SECRET } : {}) },
         body: JSON.stringify({
           type: 'lead.handoff',
+          idempotency_key: lead.id, // CRM může odmítnout duplicitu při opakovaném pokusu
           lead: {
             id: lead.id, email: lead.email, phone: lead.phone, created_at: lead.createdAt,
             score: lead.score, score_reasons: lead.scoreReasons, monthly_band: lead.monthlyBand,
@@ -132,28 +139,55 @@ export async function handoff(db: Db, lead: Lead, { manual = false } = {}) {
 
 /* ---------- Péče: e-mailová sekvence ---------- */
 
-async function sendJob(db: Db, job: { leadId: string; email: string; token: string; step: SequenceStep }) {
+/**
+ * Odešle jeden krok sekvence. Job se nejdřív atomicky „zabere“ (scheduled → sending), takže ho cron
+ * a odeslání formuláře nikdy nepošlou dvakrát; odhlášený lead se zkontroluje až po zabrání.
+ */
+async function sendJob(db: Db, leadId: string, step: SequenceStep) {
+  const [job] = await db.update(emailJobs)
+    .set({ status: 'sending', attempts: sql`${emailJobs.attempts} + 1` })
+    .where(and(eq(emailJobs.leadId, leadId), eq(emailJobs.step, step), eq(emailJobs.status, 'scheduled')))
+    .returning({ attempts: emailJobs.attempts });
+  if (!job) return false;
+  const setJob = (v: Partial<typeof emailJobs.$inferInsert>) =>
+    db.update(emailJobs).set(v).where(and(eq(emailJobs.leadId, leadId), eq(emailJobs.step, step)));
+
+  const [lead] = await db.select({ email: leads.email, token: leads.token, unsubscribedAt: leads.unsubscribedAt }).from(leads).where(eq(leads.id, leadId));
+  if (!lead || lead.unsubscribedAt) {
+    await setJob({ status: 'cancelled' });
+    return false;
+  }
+
   const day = new Date().toISOString().slice(0, 10);
-  const res = !(await withinLimit(db, `mail:${day}`, DAILY_EMAIL_CAP, 86_400))
-    ? { sent: false, reason: 'daily_cap' }
-    : await sendSequenceEmail(job.email, job.token, job.step).catch((e: Error) => ({ sent: false, reason: e.message }));
-  // disabled = Resend není nastavený → skipped (ne chyba); daily_cap → zůstane naplánovaný na další běh
-  const status = res.sent ? 'sent' : res.reason === 'disabled' ? 'skipped' : res.reason === 'daily_cap' ? 'scheduled' : 'failed';
-  await db.update(emailJobs)
-    .set({ status, sentAt: res.sent ? new Date() : null, error: res.sent ? null : res.reason })
-    .where(and(eq(emailJobs.leadId, job.leadId), eq(emailJobs.step, job.step)));
+  const [capKey, cap] = step === 'd0_report' ? [`mail0:${day}`, DAILY_EMAIL_CAP] : [`mail:${day}`, DAILY_NURTURE_CAP];
+  if (!(await withinLimit(db, capKey, cap, 86_400))) {
+    await setJob({ status: 'scheduled', attempts: job.attempts - 1, error: 'daily_cap' }); // zkusí další běh cronu
+    return false;
+  }
+
+  const res = await sendSequenceEmail(lead.email, lead.token, step)
+    .catch((e: Error) => ({ sent: false, reason: e.name === 'TimeoutError' ? 'timeout' : e.message, retryable: true }));
+  if (res.sent) await setJob({ status: 'sent', sentAt: new Date(), error: null });
+  else if (res.reason === 'disabled') await setJob({ status: 'skipped', error: 'disabled' });
+  // 429 / 5xx / síť: zkusí to znovu další běh cronu, po MAX_ATTEMPTS pokusech failed
+  else await setJob({ status: res.retryable && job.attempts < MAX_ATTEMPTS ? 'scheduled' : 'failed', error: res.reason });
   return res.sent;
 }
 
-/** Volá denní cron: pošle všechny splatné kroky sekvence (odhlášeným nic) */
-export async function runDueEmails(db: Db, limit = 200) {
-  const due = await db.select({ leadId: emailJobs.leadId, step: emailJobs.step, email: leads.email, token: leads.token })
-    .from(emailJobs).innerJoin(leads, eq(leads.id, emailJobs.leadId))
-    .where(and(eq(emailJobs.status, 'scheduled'), lte(emailJobs.sendAt, new Date()), isNull(leads.unsubscribedAt)))
+/** Denní cron: splatné kroky sekvence (s odstupem kvůli limitu Resend API) + opakování neúspěšných předání */
+export async function runDueEmails(db: Db, limit = 50) {
+  const due = await db.select({ leadId: emailJobs.leadId, step: emailJobs.step }).from(emailJobs)
+    .where(and(eq(emailJobs.status, 'scheduled'), lte(emailJobs.sendAt, new Date())))
     .orderBy(emailJobs.sendAt).limit(limit);
   let sent = 0;
-  for (const j of due) if (await sendJob(db, { ...j, step: j.step as SequenceStep })) sent++;
-  return { due: due.length, sent };
+  for (const j of due) {
+    if (await sendJob(db, j.leadId, j.step as SequenceStep)) sent++;
+    await sleep(550); // Resend: ~2 požadavky/s
+  }
+  const failedHandoffs = await db.select().from(leads)
+    .where(and(eq(leads.wantsCall, true), isNull(leads.handedOverAt), isNull(leads.unsubscribedAt), sql`${leads.handoffStatus} like 'failed_%'`)).limit(20);
+  for (const l of failedHandoffs) await handoff(db, l);
+  return { due: due.length, sent, handoffRetries: failedHandoffs.length };
 }
 
 export async function recordEmailClick(db: Db, token: string, step: string) {

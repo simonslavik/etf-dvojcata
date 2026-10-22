@@ -32,12 +32,11 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
 
       <div className="p-4 sm:p-6">
         <h2 id="finder-title" className="mb-3 text-[15px] font-semibold text-ink">Které ETF jste chtěli koupit?</h2>
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0" role="tablist" aria-labelledby="finder-title">
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0" role="group" aria-labelledby="finder-title">
           {data.pairs.map((x) => (
             <button
               key={x.us.ticker}
-              role="tab"
-              aria-selected={x.us.ticker === selected}
+              aria-pressed={x.us.ticker === selected}
               aria-controls="twin-result"
               className="chip flex-none"
               onClick={() => select(x.us.ticker)}
@@ -48,7 +47,8 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
           ))}
         </div>
 
-        <div id="twin-result" role="tabpanel" aria-live="polite" key={selected} className="animate-rise mt-4">
+        <div id="twin-result" aria-live="polite" className="mt-4">
+        <div key={selected} className="animate-rise">
           {/* Americký originál – přeškrtnutý */}
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-line bg-paper px-4 py-3">
             <div className="min-w-0">
@@ -99,6 +99,7 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
           <p className="mt-1.5 text-[12px] text-muted">
             Zdroj: <a className="src-link" href={t.source_url} target="_blank" rel="noopener">{host(t.source_url)}</a>, <a className="src-link" href={p.us.source_url} target="_blank" rel="noopener">{host(p.us.source_url)}</a> · {fmtDate(data.as_of)}
           </p>
+        </div>
         </div>
 
         <button className="btn btn-primary mt-4 w-full" onClick={() => openSheet('finder')} data-cta="finder">

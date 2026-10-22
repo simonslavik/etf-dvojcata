@@ -69,8 +69,8 @@ const templates: Record<SequenceStep, (token: string) => string> = {
 
 export const subjectFor = (step: SequenceStep) => SEQUENCE.find((s) => s.step === step)!.subject;
 
-export async function sendSequenceEmail(to: string, token: string, step: SequenceStep): Promise<{ sent: boolean; reason: string | null }> {
-  if (!emailEnabled) return { sent: false, reason: 'disabled' };
+export async function sendSequenceEmail(to: string, token: string, step: SequenceStep): Promise<{ sent: boolean; reason: string | null; retryable: boolean }> {
+  if (!emailEnabled) return { sent: false, reason: 'disabled', retryable: false };
   const unsub = `${siteUrl()}/api/unsubscribe?t=${encodeURIComponent(token)}`;
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -83,8 +83,9 @@ export async function sendSequenceEmail(to: string, token: string, step: Sequenc
       // One-click odhlášení (RFC 8058) – Gmail/Yahoo ho u hromadných odesílatelů vyžadují
       headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
     }),
+    signal: AbortSignal.timeout(8000), // pomalý Resend nesmí zdržet odpověď formuláře
   });
-  return { sent: r.ok, reason: r.ok ? null : `resend ${r.status}` };
+  return { sent: r.ok, reason: r.ok ? null : `resend ${r.status}`, retryable: r.status === 429 || r.status >= 500 };
 }
 
 /** Náhled šablony v adminu */

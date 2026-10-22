@@ -21,16 +21,30 @@ export async function readJson(req: Request): Promise<Record<string, unknown>> {
 export const clientIp = (req: Request) => (req.headers.get('x-forwarded-for') || 'local').split(',')[0].trim();
 
 /** Kanonická adresa webu pro odkazy v e-mailech – nikdy z hlavičky Host (ta jde podvrhnout) */
-export const siteUrl = () => (process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+export const siteUrl = () =>
+  (process.env.SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000')).replace(/\/$/, '');
 
-/** Formulář smí odesílat jen náš web (když je SITE_URL nastavená); Vercel preview domény povolíme mimo produkci. */
+/**
+ * Formulář smí odesílat jen náš web. Prohlížeč posílá Origin u každého POST z fetch – chybí jen u skriptů (curl),
+ * proto mimo vývoj bez Originu odmítneme (jinak by šlo /api/lead zneužít k rozesílání e-mailů na cizí adresy).
+ */
 export function allowedOrigin(req: Request) {
   const origin = req.headers.get('origin');
-  if (!origin || !process.env.SITE_URL) return true;
+  if (process.env.NODE_ENV === 'development') return true;
+  if (!origin) return false;
   try {
     const h = new URL(origin).host;
-    return h === new URL(process.env.SITE_URL).host || (process.env.VERCEL_ENV !== 'production' && h.endsWith('.vercel.app'));
+    return h === new URL(siteUrl()).host || h === new URL(req.url).host || (process.env.VERCEL_ENV !== 'production' && h.endsWith('.vercel.app'));
   } catch {
     return false;
   }
+}
+
+/** Cíl přesměrování se rozparsuje stejně jako v prohlížeči a musí zůstat na našem originu (\t, \n, //, \\ → zpět na /) */
+export function sameOriginUrl(to: string | null, origin: string) {
+  try {
+    const u = new URL(to || '/', origin);
+    if (u.origin === origin) return u;
+  } catch { /* neplatná URL */ }
+  return new URL('/', origin);
 }

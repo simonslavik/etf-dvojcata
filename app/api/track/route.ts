@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { getDb } from '@/lib/db';
 import { EVENTS, isVariant } from '@/lib/events';
 import { recordEvent } from '@/lib/server/pipeline';
-import { clip, json, readJson } from '@/lib/server/http';
+import { clientIp, clip, json, readJson } from '@/lib/server/http';
+import { withinLimit } from '@/lib/server/rate';
 
 const Body = z.object({
   event: z.enum(EVENTS),
@@ -19,8 +20,11 @@ export async function POST(req: Request) {
   if (!parsed.success) return json(400, { error: 'invalid' });
   const b = parsed.data;
   try {
+    const db = await getDb();
+    // Ochrana proti zaplavení tabulky (a zkreslení A/B): běžná relace pošle desítky událostí, ne stovky
+    if (!(await withinLimit(db, `track:${clientIp(req)}`, 600, 600))) return json(429, { error: 'rate' });
     const props = b.props && JSON.stringify(b.props).length <= 400 ? b.props : null;
-    await recordEvent(await getDb(), {
+    await recordEvent(db, {
       sid: b.sid, event: b.event, variant: isVariant(b.variant) ? b.variant : 'twin',
       utmSource: clip(b.utm_source, 60), utmCampaign: clip(b.utm_campaign, 60), utmContent: clip(b.utm_content, 60), device: clip(b.device, 10),
       props, tMs: b.t != null ? Math.round(b.t) : null,

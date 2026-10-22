@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   // PGlite (lokální Postgres ve WASM) se nesmí bundlovat – načítá .wasm a .data soubory z node_modules
   serverExternalPackages: ['@electric-sql/pglite'],
-  // Migrace se spouští za běhu (lib/db) – SQL soubory musí být v balíčku serverových funkcí
+  // PGlite migruje za běhu (lib/db) – SQL soubory a WASM musí být v balíčku serverových funkcí
   outputFileTracingIncludes: { '/**': ['./lib/db/migrations/**/*', './node_modules/@electric-sql/pglite/dist/**/*'] },
   poweredByHeader: false,
   async headers() {

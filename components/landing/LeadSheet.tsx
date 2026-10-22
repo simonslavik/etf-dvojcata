@@ -41,7 +41,6 @@ export function LeadSheet() {
 
   const answer = (b: MonthlyBand) => {
     setBand(b);
-    track('qualify', { band: b });
     if (token) fetch('/api/qualify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token, band: b }) }).catch(() => {});
   };
 

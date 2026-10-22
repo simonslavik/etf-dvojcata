@@ -1,12 +1,12 @@
 /* Jediný seznam událostí – sdílí ho prohlížeč (track), API (validace) i dashboard (popisky). */
 export const EVENTS = [
   'page_view', 'scroll', 'finder_select', 'isin_copy', 'calc_change', 'cta_click', 'sticky_view',
-  'form_view', 'form_start', 'form_error', 'form_submit', 'qualify', 'call_request', 'report_open', 'report_view',
+  'form_view', 'form_start', 'form_error', 'form_submit', 'report_open', 'report_view',
   'faq_open', 'term_open',
 ] as const;
 export type EventName = (typeof EVENTS)[number];
 /** Události, které zapisuje jen server – z prohlížeče je nejde podvrhnout */
-export type ServerEvent = 'lead_ok' | 'handoff' | 'email_sent' | 'email_click' | 'unsubscribe';
+export type ServerEvent = 'lead_ok' | 'qualify' | 'call_request' | 'handoff' | 'email_click' | 'unsubscribe';
 
 export const VARIANTS = ['twin', 'fees'] as const;
 export type Variant = (typeof VARIANTS)[number];

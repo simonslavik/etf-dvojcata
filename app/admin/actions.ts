@@ -6,7 +6,9 @@ import { revalidatePath } from 'next/cache';
 import { eq } from 'drizzle-orm';
 import { getDb } from '@/lib/db';
 import { adSpend, leads } from '@/lib/db/schema';
-import { ADMIN_COOKIE, adminCookieValue, isAdmin } from '@/lib/server/auth';
+import { headers } from 'next/headers';
+import { ADMIN_COOKIE, adminCookieValue, isAdmin, timingSafeEqual } from '@/lib/server/auth';
+import { withinLimit } from '@/lib/server/rate';
 import { handoff, runDueEmails } from '@/lib/server/pipeline';
 
 /** Server actions kontrolují přístup samy – proxy.ts je jen první vrstva */
@@ -16,7 +18,9 @@ async function guard() {
 
 export async function login(_: unknown, form: FormData) {
   const token = process.env.ADMIN_TOKEN;
-  if (!token || form.get('token') !== token) return { error: 'Neplatný token.' };
+  const ip = ((await headers()).get('x-forwarded-for') || 'local').split(',')[0].trim();
+  if (!(await withinLimit(await getDb(), `login:${ip}`, 10, 900))) return { error: 'Příliš mnoho pokusů, zkuste to za 15 minut.' };
+  if (!token || !timingSafeEqual(String(form.get('token') ?? ''), token)) return { error: 'Neplatný token.' };
   (await cookies()).set(ADMIN_COOKIE, await adminCookieValue(token), { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 14 });
   redirect('/admin');
 }

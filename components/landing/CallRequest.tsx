@@ -1,10 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { track } from '@/lib/track';
+import { CALL_CONSENT, CONSENTS } from '@/lib/consent';
 import { Check, Phone } from '@/components/ui/icons';
-
-export const CALL_CONSENT = 'Souhlasím, aby mi kvůli pomoci s prvním nákupem ETF zavolal člověk z týmu ETF dvojčata. Souhlas můžu kdykoli odvolat.';
 
 /** Předání: nepovinný telefon + výslovný souhlas → /api/call → webhook do CRM / call centra */
 export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?: () => void; onSkip?: () => void }) {
@@ -19,14 +17,13 @@ export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?:
     setState('busy');
     const r = await fetch('/api/call', {
       method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ token, phone: (f.elements.namedItem('phone') as HTMLInputElement).value, consent: true, consent_text: CALL_CONSENT }),
+      body: JSON.stringify({ token, phone: (f.elements.namedItem('phone') as HTMLInputElement).value, consent: true, consent_id: CALL_CONSENT }),
     }).catch(() => null);
     const res = await r?.json().catch(() => ({}));
     if (!r?.ok) {
       setState('idle');
       return setError(res?.message || 'Nepodařilo se odeslat. Zkuste to prosím znovu.');
     }
-    track('call_request');
     setState('done');
     onDone?.();
   }
@@ -53,7 +50,7 @@ export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?:
       <input id="call-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="777 123 456" className="input mt-3" aria-invalid={error ? true : undefined} onInput={() => setError(null)} />
       <label className="mt-3 flex items-start gap-2.5 text-[13px] leading-snug text-muted">
         <input name="consent" type="checkbox" className="mt-0.5 h-5 w-5 flex-none accent-brick" />
-        <span>{CALL_CONSENT} <a href="/soukromi" className="src-link">Ochrana údajů</a></span>
+        <span>{CONSENTS[CALL_CONSENT]} <a href="/soukromi" className="src-link">Ochrana údajů</a></span>
       </label>
       {error && <p role="alert" className="mt-2 text-[14px] font-medium text-brick">{error}</p>}
       <div className="mt-3 flex gap-2">

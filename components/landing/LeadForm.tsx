@@ -1,10 +1,9 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { CONSENTS, EMAIL_CONSENT } from '@/lib/consent';
 import { track } from '@/lib/track';
 import { useLead } from './LeadProvider';
-
-export const CONSENT = 'Pošleme přehled a občas tip k ETF. Odhlásíte se jedním klikem.';
 
 /** E-mailový formulář s jedním polem. Použitý v sheetu, pod náhledem přehledu i v závěrečném CTA. */
 export function LeadForm({ name, cta, tone = 'light', stacked = false, autoFocus = false, id }: {
@@ -21,7 +20,7 @@ export function LeadForm({ name, cta, tone = 'light', stacked = false, autoFocus
     const f = e.currentTarget;
     setBusy(true);
     const res = await submitLead((f.elements.namedItem('email') as HTMLInputElement).value.trim(), {
-      form: name, consentText: CONSENT, hp: (f.elements.namedItem('hp_f7') as HTMLInputElement).value,
+      form: name, consentId: EMAIL_CONSENT, hp: (f.elements.namedItem('hp_f7') as HTMLInputElement).value,
     });
     setBusy(false);
     if (res.ok) {
@@ -57,7 +56,7 @@ export function LeadForm({ name, cta, tone = 'light', stacked = false, autoFocus
       <input className="hidden" type="text" name="hp_f7" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       {error && <p id={`${inputId}-err`} role="alert" className={`mt-2 text-[14px] font-medium ${dark ? 'text-[#f3b2aa]' : 'text-brick'}`}>{error}</p>}
       <p className={`mt-2.5 text-[12.5px] ${dark ? 'text-white/60' : 'text-muted'}`}>
-        {CONSENT} <a href="/soukromi" className="src-link">Ochrana údajů</a>
+        {CONSENTS[EMAIL_CONSENT]} <a href="/soukromi" className="src-link">Ochrana údajů</a>
       </p>
     </form>
   );
