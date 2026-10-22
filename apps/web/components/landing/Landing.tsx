@@ -3,13 +3,13 @@ import { FeeCalculator } from './FeeCalculator';
 import { LeadProvider } from './LeadProvider';
 import { LeadSheet } from './LeadSheet';
 import { MagnetPreview } from './MagnetPreview';
-import { Faq, FinalCta, Footer, Header, Hero, SecondTool, Stats, Trust, Why } from './Sections';
+import { Faq, FinalCta, Footer, Header, Hero, ProofStrip, SecondTool, Trust } from './Sections';
 import { StickyCta } from './StickyCta';
 import { TwinFinder } from './TwinFinder';
 
 /**
  * Pořadí sekcí (zdůvodnění v README):
- * hero = slib reklamy + funkční nástroj → čísla → druhý nástroj → náhled magnetu + formulář → proč → důvěra → FAQ → závěrečné CTA
+ * hero = slib reklamy + funkční nástroj → důkaz (zdroje, čísla) → druhý nástroj → magnet + formulář → důvěra → FAQ → závěrečné CTA
  * Varianta B (poplatky) jen prohodí nástroje: kalkulačka v hero, vyhledávač níž.
  */
 export function Landing({ variant }: { variant: Variant }) {
@@ -20,10 +20,9 @@ export function Landing({ variant }: { variant: Variant }) {
       <Header />
       <main id="main" data-variant={variant}>
         <Hero variant={variant} tool={first} />
-        <Stats />
+        <ProofStrip />
         <SecondTool variant={variant} tool={second} />
         <MagnetPreview />
-        <Why />
         <Trust />
         <Faq />
         <FinalCta />

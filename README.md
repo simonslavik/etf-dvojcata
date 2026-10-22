@@ -49,13 +49,14 @@ Väčšina českých stránok o ETF porovnáva americké fondy, ktoré si čitat
 1. **Hero = sľub reklamy + funkčný nástroj.** Návštevník strávi na stránke pár sekúnd, preto prvá obrazovka nadpisom opakuje reklamu (message match) a **hneď pod ním ukazuje výsledok** (VOO → VUAA). Obe varianty sú staticky predrenderované a `proxy.ts` podľa `?ad=` vyberie správnu, takže stránka nebliká.
    - `ad=twin`: „VOO si v Česku nekoupíte. Jeho dvojče ano.“ + vyhľadávač
    - `ad=fees`: „Fond z banky si bere až 2,6 % ročně. ETF jen 0,07 %.“ + kalkulačka
-2. **Čísla (4 karty).** 12 dvojčiat, 5 s rovnakým indexom, TER od 0,03 %, 100 % údajov so zdrojom. Rýchly dôkaz pre toho, kto len skroluje.
+2. **Pás dôvery hneď pod hero:** odkiaľ sú dáta (Vanguard, iShares, SPDR, justETF, zákony ČR) a tri čísla (12 dvojčiat, 5 s rovnakým indexom, TER od 0,03 %). Rýchly dôkaz, ktorý na mobile zaberie len pár riadkov.
 3. **Druhý nástroj** (kalkulačka alebo vyhľadávač podľa varianty) v tmavej sekcii. Kto nereagoval na prvý uhol, dostane druhý.
-4. **Náhľad lead magnetu + formulár.** Konkrétne ukazuje, čo návštevník dostane: tri riadky sú čitateľné, ďalšie rozmazané.
-5. **Prečo to nejde kúpiť (PRIIPs).** Buduje dôveru u skeptikov. Je až za formulárom, lebo kto stránke verí, nemusí to čítať.
-6. **Karty dôvery** namiesto referencií: nie sme broker, každé číslo má zdroj, čo sa stane s e-mailom, GDPR. Referencie by pri novom produkte boli vymyslené.
-7. **FAQ** (dane, rozdiel medzi dvojčatami, kde kúpiť, čo s e-mailom) vrátane zdrojov.
-8. **Záverečné CTA** a **pätička** s upozornením a všetkými zdrojmi s dátumom.
+4. **Lead magnet ako konkrétna vec:** „Přehled 12 dvojčat + návod na první nákup“ s obálkou dokumentu, čitateľnými aj rozmazanými riadkami a formulárom priamo pod nimi.
+5. **Dôvera** v troch riadkoch: nie sme broker, každé číslo má zdroj, čo sa stane s e-mailom. Referencie by pri novom produkte boli vymyslené, preto ich nepoužívam.
+6. **FAQ:** prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť, čo s e-mailom. Vrátane zdrojov.
+7. **Záverečné CTA** a **pätička** s upozornením a všetkými zdrojmi s dátumom.
+
+**Výzvy sú personalizované** podľa toho, čo návštevník práve robí: „Poslat VUAA + 11 dalších“ po výbere ETF, „Chci ušetřit 429 100 Kč“ po výpočte. Lepkavé CTA na mobile sa ukáže až po odscrollovaní za hero, aby na prvej obrazovke nezakrývalo ISIN, teda práve tú hodnotu, ktorá má presvedčiť.
 
 Navigácia ani odkazy, ktoré by viedli preč, na stránke nie sú. Jediný cieľ je kontakt.
 

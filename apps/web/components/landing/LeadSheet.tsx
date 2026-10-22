@@ -8,6 +8,7 @@ import { ArrowRight, Check, X } from '@/components/ui/icons';
 import { CallRequest } from './CallRequest';
 import { LeadForm } from './LeadForm';
 import { useLead } from './LeadProvider';
+import { ReportCover } from './ReportCover';
 
 /** Bottom sheet: e-mail → hotovo + kvalifikace (1 klepnutí) → nabídka hovoru (předání) */
 export function LeadSheet() {
@@ -58,10 +59,15 @@ export function LeadSheet() {
 
         {sheet.step === 'form' ? (
           <div data-sheet-step="form">
-            <p className="eyebrow">Zdarma · hned na obrazovce</p>
-            <h2 id="sheet-title" className="mt-2 pr-8 font-display text-[26px] leading-tight font-bold text-ink">Kam pošleme přehled {data.pairs.length} dvojčat?</h2>
-            <ul className="mt-3 mb-5 space-y-1 text-[14.5px] text-muted">
-              {['ISIN ke zkopírování u všech dvojčat', 'Poplatky vedle sebe + daně v Česku'].map((x) => (
+            <div className="flex items-start gap-4 pr-8">
+              <div className="flex-none pt-1"><ReportCover size="sm" /></div>
+              <div>
+                <p className="eyebrow">Zdarma · hned</p>
+                <h2 id="sheet-title" className="mt-2 font-display text-[24px] leading-tight font-bold text-ink">Kam pošleme přehled {data.pairs.length} dvojčat?</h2>
+              </div>
+            </div>
+            <ul className="mt-4 mb-5 space-y-1 text-[14.5px] text-muted">
+              {['ISIN ke zkopírování u všech dvojčat', 'Návod na první nákup + daně v Česku'].map((x) => (
                 <li key={x} className="flex items-center gap-2"><Check className="h-4 w-4 flex-none text-ok" />{x}</li>
               ))}
             </ul>

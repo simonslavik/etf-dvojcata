@@ -4,10 +4,11 @@ import { data } from '@etfd/shared';
 import { formatPct } from '@etfd/shared';
 import { ArrowRight, Check, Lock } from '@/components/ui/icons';
 import { LeadForm } from './LeadForm';
+import { ReportCover } from './ReportCover';
 import { useLead } from './LeadProvider';
 
 const FREE_ROWS = 3;
-const PREVIEW_ROWS = 7; // 3 čitelné + 4 rozmazané stačí, aby bylo jasné, co návštěvník dostane
+const PREVIEW_ROWS = 6; // 3 čitelné + 3 rozmazané stačí, aby bylo jasné, co návštěvník dostane
 
 /** Náhled lead magnetu: první řádky čitelné, zbytek rozmazaný + formulář přímo na místě */
 export function MagnetPreview() {
@@ -16,13 +17,19 @@ export function MagnetPreview() {
     <section id="report" aria-labelledby="magnet-title" className="bg-paper py-14 sm:py-20">
       <div className="wrap grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
         <div>
-          <p className="eyebrow">Zdarma výměnou za e-mail</p>
-          <h2 id="magnet-title" className="h2 mt-3">Celý přehled na jedné stránce</h2>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="eyebrow">Zdarma za e-mail</p>
+              <h2 id="magnet-title" className="h2 mt-3">Přehled {data.pairs.length} dvojčat + návod na první nákup</h2>
+            </div>
+            <div className="mt-1 flex-none lg:hidden"><ReportCover size="sm" /></div>
+          </div>
           <ul className="mt-6 space-y-3 text-[16px]">
             {[
               [`${data.pairs.length} amerických ETF`, 'a jejich evropská dvojčata'],
               ['ISIN a burza', '– zkopírujete a koupíte u svého brokera'],
               ['Poplatky vedle sebe', '– US originál, dvojče, fond z banky'],
+              ['Návod na první nákup', '– 3 kroky v aplikaci brokera'],
               ['Daně v Česku', '– časový test 3 roky a proč volit akumulační fond'],
             ].map(([b, t]) => (
               <li key={b} className="flex items-start gap-3">
@@ -31,6 +38,7 @@ export function MagnetPreview() {
               </li>
             ))}
           </ul>
+          <div className="mt-10 hidden pl-4 lg:block"><ReportCover /></div>
         </div>
 
         <div className="window">

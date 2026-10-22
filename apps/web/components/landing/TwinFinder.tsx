@@ -103,10 +103,10 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
         </div>
 
         <button className="btn btn-primary mt-4 w-full" onClick={() => openSheet('finder')} data-cta="finder">
-          {unlocked ? 'Otevřít celý přehled' : <>Poslat všech {data.pairs.length} dvojčat do e-mailu</>}
+          {unlocked ? 'Otevřít celý přehled' : <>Poslat {t.ticker} + {data.pairs.length - 1} dalších</>}
           <ArrowRight />
         </button>
-        <p className="mt-2 text-center text-[12.5px] text-muted">Zdarma · 1 pole · přehled hned na obrazovce</p>
+        <p className="mt-2 text-center text-[12.5px] text-muted">Přehled + návod na první nákup · zdarma</p>
       </div>
     </div>
   );

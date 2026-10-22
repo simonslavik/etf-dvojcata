@@ -70,19 +70,20 @@ export function FeeCalculator({ title }: { title?: string }) {
         </div>
 
         {/* Poznámka ve stylu „AI“ řádku z dashboardu Clientela */}
-        <p className="mt-4 flex items-start gap-2.5 rounded-xl bg-brick-50 px-3.5 py-3 text-[13.5px] leading-snug text-brick-700">
+        <p className="mt-3 flex items-start gap-2.5 rounded-xl bg-brick-50 px-3.5 py-3 text-[13.5px] leading-snug text-brick-700">
           <span className="mt-px flex-none rounded-md border border-brick-100 bg-white px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-brick">TIP</span>
           <span>Rozdíl odpovídá <b>{formatInt(v.months)} měsíčním vkladům</b>. Stejný trh, jen jiný „obal“.</span>
         </p>
 
-        <p className="mt-3 text-[11.5px] leading-relaxed text-muted" id="calc-note">
-          Příklad fondu z banky: {bank.example} (<a className="src-link" href={bank.source_url} target="_blank" rel="noopener">KID</a>). Výnos trhu {formatPct(annualReturn * 100)} ročně před poplatky, srovnáváme jen náklady. Ilustrace, ne předpověď.
-        </p>
 
         <button className="btn btn-primary mt-4 w-full" onClick={() => openSheet('calc')} data-cta="calc">
-          {unlocked ? 'Otevřít celý přehled' : 'Chci přehled levných ETF do e-mailu'}
+          {unlocked ? 'Otevřít celý přehled' : <>Chci ušetřit {formatKc(v.saved)}</>}
           <ArrowRight />
         </button>
+        <p className="mt-2 text-center text-[12.5px] text-muted">Levná ETF dvojčata + návod na první nákup · zdarma</p>
+        <p className="mt-4 border-t border-line pt-3 text-[11.5px] leading-relaxed text-muted" id="calc-note">
+          Příklad fondu z banky: {bank.example} (<a className="src-link" href={bank.source_url} target="_blank" rel="noopener">KID</a>). Výnos trhu {formatPct(annualReturn * 100)} ročně před poplatky, srovnáváme jen náklady. Ilustrace, ne předpověď.
+        </p>
       </div>
     </div>
   );
