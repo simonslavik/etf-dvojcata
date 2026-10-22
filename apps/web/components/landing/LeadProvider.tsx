@@ -7,6 +7,7 @@ import { initPosthog, initTracking, track, trackContext, trackScrollDepth } from
 
 const UNLOCK_KEY = 'etfd_unlocked';
 const TOKEN_KEY = 'etfd_lead';
+const CALLED_KEY = 'etfd_called';
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 type SheetStep = 'form' | 'done';
@@ -20,6 +21,9 @@ interface LeadState {
   setCalc: (c: { monthly: number; years: number }) => void;
   unlocked: boolean;
   token: string | null;
+  /** Návštěvník už požádal o hovor – další nabídky hovoru se nezobrazují */
+  called: boolean;
+  markCalled: () => void;
   emailSent: boolean;
   sheet: { open: boolean; step: SheetStep; source: string };
   openSheet: (source: string) => void;
@@ -46,6 +50,7 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
   const calcDebounce = useRef<ReturnType<typeof setTimeout>>(undefined);
   const [unlocked, setUnlocked] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [called, setCalled] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [sheet, setSheet] = useState<{ open: boolean; step: SheetStep; source: string }>({ open: false, step: 'form', source: '' });
 
@@ -53,6 +58,7 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
     const ctx = initTracking(variant);
     if (store.get(UNLOCK_KEY) === '1') setUnlocked(true);
     setToken(store.get(TOKEN_KEY));
+    setCalled(store.get(CALLED_KEY) === '1');
     // Reklama může poslat konkrétní ticker: ?utm_content=VT
     const fromAd = ctx.utm_content?.toUpperCase();
     if (fromAd && data.pairs.some((p) => p.us.ticker === fromAd)) setSelected(fromAd);
@@ -82,6 +88,11 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
     }
     setSheet({ open: true, step: 'form', source });
     track('form_view', { form: 'sheet', source });
+  }, []);
+
+  const markCalled = useCallback(() => {
+    setCalled(true);
+    store.set(CALLED_KEY, '1');
   }, []);
 
   const closeSheet = useCallback(() => setSheet((s) => ({ ...s, open: false })), []);
@@ -123,8 +134,8 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
   }, [calc.monthly, selected, sheet.source]);
 
   const value = useMemo<LeadState>(() => ({
-    variant, selected, select, calc, setCalc, unlocked, token, emailSent, sheet, openSheet, closeSheet, submitLead,
-  }), [variant, selected, select, calc, setCalc, unlocked, token, emailSent, sheet, openSheet, closeSheet, submitLead]);
+    variant, selected, select, calc, setCalc, unlocked, token, called, markCalled, emailSent, sheet, openSheet, closeSheet, submitLead,
+  }), [variant, selected, select, calc, setCalc, unlocked, token, called, markCalled, emailSent, sheet, openSheet, closeSheet, submitLead]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

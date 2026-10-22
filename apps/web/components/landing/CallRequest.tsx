@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { CALL_CONSENT, CONSENTS } from '@etfd/shared';
 import { Check, Phone } from '@/components/ui/icons';
 
@@ -8,6 +8,7 @@ import { Check, Phone } from '@/components/ui/icons';
 export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?: () => void; onSkip?: () => void }) {
   const [state, setState] = useState<'idle' | 'busy' | 'done'>('idle');
   const [error, setError] = useState<string | null>(null);
+  const phoneId = `${useId()}-phone`; // formulář může být na stránce víckrát (sheet, závěr)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,8 +47,8 @@ export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?:
           <p className="text-[14px] text-muted">Zavoláme vám a za 10 minut spolu najdete dvojče v aplikaci a nastavíte pravidelný nákup. Zdarma, nic neprodáváme.</p>
         </div>
       </div>
-      <label htmlFor="call-phone" className="sr-only">Telefon</label>
-      <input id="call-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="777 123 456" className="input mt-3" aria-invalid={error ? true : undefined} onInput={() => setError(null)} />
+      <label htmlFor={phoneId} className="sr-only">Telefon</label>
+      <input id={phoneId} name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="777 123 456" className="input mt-3" aria-invalid={error ? true : undefined} onInput={() => setError(null)} />
       <label className="mt-3 flex items-start gap-2.5 text-[13px] leading-snug text-muted">
         <input name="consent" type="checkbox" className="mt-0.5 h-5 w-5 flex-none accent-brick" />
         <span>{CONSENTS[CALL_CONSENT]} <a href="/privacy" className="src-link">Ochrana údajů</a></span>

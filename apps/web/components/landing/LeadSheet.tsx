@@ -13,7 +13,7 @@ import { SuccessCheck } from '@/components/ui/SuccessCheck';
 
 /** Bottom sheet: e-mail → hotovo + kvalifikace (1 klepnutí) → nabídka hovoru (předání) */
 export function LeadSheet() {
-  const { sheet, closeSheet, token, emailSent } = useLead();
+  const { sheet, closeSheet, token, emailSent, markCalled } = useLead();
   const ref = useRef<HTMLDialogElement>(null);
   const [band, setBand] = useState<MonthlyBand | null>(null);
   const [callDone, setCallDone] = useState(false);
@@ -99,7 +99,7 @@ export function LeadSheet() {
             {token && band && !callSkipped && (
               <div className="mt-6 animate-rise" data-call-offer>
                 {!callDone && <p className="mb-3 text-[14px] text-muted">Díky! Podle toho vám budeme posílat jen relevantní tipy.</p>}
-                <CallRequest token={token} onDone={() => setCallDone(true)} onSkip={() => setCallSkipped(true)} />
+                <CallRequest token={token} onDone={() => { setCallDone(true); markCalled(); }} onSkip={() => setCallSkipped(true)} />
               </div>
             )}
             {callSkipped && <p className="mt-5 text-[14px] text-muted" data-qualify-thanks>Díky! Podle toho vám budeme posílat jen relevantní tipy.</p>}

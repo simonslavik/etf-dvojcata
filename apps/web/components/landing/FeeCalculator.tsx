@@ -3,6 +3,7 @@
 import { compare, data, formatInt, formatKc, formatPct, yearsLabel } from '@etfd/shared';
 import { ArrowRight } from '@/components/ui/icons';
 import { Term } from '@/components/ui/Term';
+import { track } from '@/lib/track';
 import { useCountUp } from '@/lib/useCountUp';
 import { useLead } from './LeadProvider';
 
@@ -75,10 +76,16 @@ export function FeeCalculator() {
           <p className="mt-1 text-[13px] text-muted">= {formatInt(v.months)} měsíčních vkladů</p>
         </div>
 
-        <button className="btn btn-primary mt-4 w-full" onClick={() => openSheet('calc')} data-cta="calc">
-          {unlocked ? 'Otevřít celý přehled' : <>Chci ušetřit {formatKc(v.saved)}</>}
-          <ArrowRight />
-        </button>
+        {unlocked ? (
+          <a href="/report#dvojcata" onClick={() => track('report_open', { from: 'calc' })} className="group mt-4 flex min-h-11 items-center justify-center gap-1.5 text-[14px] font-semibold text-teal-700 hover:text-teal-900">
+            Levná ETF dvojčata najdete v přehledu <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </a>
+        ) : (
+          <button className="btn btn-primary mt-4 w-full" onClick={() => openSheet('calc')} data-cta="calc">
+            Chci ušetřit {formatKc(v.saved)}
+            <ArrowRight />
+          </button>
+        )}
         <details className="smooth mt-2 text-center text-[11.5px] text-muted">
           <summary className="cursor-pointer list-none text-teal-700 [&::-webkit-details-marker]:hidden">Jak počítáme?</summary>
           <p className="mt-2 text-left leading-relaxed" id="calc-note">

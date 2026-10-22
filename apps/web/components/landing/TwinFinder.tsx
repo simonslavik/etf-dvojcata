@@ -74,10 +74,17 @@ export function TwinFinder() {
           </div>
         </div>
 
-        <button className="btn btn-primary mt-3 w-full" onClick={() => openSheet('finder')} data-cta="finder">
-          {unlocked ? 'Otevřít celý přehled' : <>Poslat {t.ticker} + {data.pairs.length - 1} dalších<span className="hidden sm:inline">&nbsp;zdarma</span></>}
-          <ArrowRight />
-        </button>
+        {/* Po odemčení už žádné další velké tlačítko – jen nenápadný odkaz (hlavní vstup je v headeru a v sekci přehledu) */}
+        {unlocked ? (
+          <a href="/report#dvojcata" onClick={() => track('report_open', { from: 'finder' })} className="group mt-3 flex min-h-11 items-center justify-center gap-1.5 text-[14px] font-semibold text-teal-700 hover:text-teal-900">
+            {t.ticker} a dalších {data.pairs.length - 1} najdete v přehledu <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </a>
+        ) : (
+          <button className="btn btn-primary mt-3 w-full" onClick={() => openSheet('finder')} data-cta="finder">
+            <>Poslat {t.ticker} + {data.pairs.length - 1} dalších<span className="hidden sm:inline">&nbsp;zdarma</span></>
+            <ArrowRight />
+          </button>
+        )}
         <p className="mt-2 text-center text-[11.5px] text-muted">
           Zdroj: <a className="src-link" href={t.source_url} target="_blank" rel="noopener">{host(t.source_url)}</a>, <a className="src-link" href={p.us.source_url} target="_blank" rel="noopener">{host(p.us.source_url)}</a>
         </p>

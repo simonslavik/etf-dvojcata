@@ -56,13 +56,15 @@ async function journey({ query, variant }) {
 
   // kvalifikace → nabídka hovoru → telefon + souhlas
   await page.click('[data-q="2-10k"]');
-  await page.waitForSelector('[data-call-offer] #call-phone');
-  await page.type('#call-phone', '777 123 456');
-  await page.click('[data-form="call"] button[type="submit"]');
-  await page.waitForSelector('[data-form="call"] [role="alert"]'); // bez souhlasu neprojde
-  await page.click('[data-form="call"] input[name="consent"]');
-  await page.click('[data-form="call"] button[type="submit"]');
-  await page.waitForFunction(() => document.querySelector('[role="status"]')?.textContent.includes('ozveme'));
+  const call = 'dialog [data-form="call"]';
+  await page.waitForSelector(`${call} input[name="phone"]`);
+  await page.type(`${call} input[name="phone"]`, '777 123 456');
+  await page.click(`${call} button[type="submit"]`);
+  await page.waitForSelector(`${call} [role="alert"]`); // bez souhlasu neprojde
+  await page.click(`${call} input[name="consent"]`);
+  await page.click(`${call} button[type="submit"]`);
+  await page.waitForFunction(() => document.querySelector('dialog [role="status"]')?.textContent.includes('ozveme'));
+  assert.equal(await page.$('[aria-labelledby="final-title"]'), null, 'po žádosti o hovor ho závěr už znovu nenabízí');
 
   // odemčený přehled na stránce
   await page.keyboard.press('Escape');
