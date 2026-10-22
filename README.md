@@ -46,14 +46,15 @@ Väčšina českých stránok o ETF porovnáva americké fondy, ktoré si čitat
 
 ## 3. Poradie sekcií a prečo
 
-Stránka má iba **4 sekcie** (na mobile asi 3,8 obrazovky). Návštevník z reklamy jej venuje pár sekúnd, preto každá sekcia robí jednu vec a nič sa neopakuje.
+Stránka má iba **5 krátkych sekcií** (na mobile asi 4 obrazovky, na desktope 3,4). Hero aj prehľad s formulárom sa zmestia na jednu obrazovku. Návštevník z reklamy jej venuje pár sekúnd, preto každá sekcia robí jednu vec a nič sa neopakuje.
 
 1. **Hero = sľub reklamy + oba nástroje v jednej karte.** Nadpis opakuje reklamu (message match) a hneď pod ním je funkčný nástroj s prepínačom **„Najít dvojče | Spočítat poplatky“**. Varianta reklamy určuje predvolenú záložku, takže obe interakcie sú k dispozícii bez ďalšej sekcie.
    - `ad=twin`: „VOO si v Česku nekoupíte. Jeho dvojče ano.“ + vyhľadávač
    - `ad=fees`: „Fond z banky si bere až 2,6 % ročně. ETF jen 0,07 %.“ + kalkulačka
 2. **Dôkaz a dôvera v jednom páse:** štyri čísla (12 dvojčiat, 5 s rovnakým indexom, TER od 0,03 %, 34 zdrojov) a tri záruky (nie sme broker, žiadny spam, odkiaľ sú dáta). Referencie nepoužívam, pri novom produkte by boli vymyslené.
-3. **Lead magnet a formulár:** „Přehled 12 dvojčat + návod na první nákup“ s obálkou dokumentu, čitateľnými aj rozmazanými riadkami a formulárom priamo pod nimi.
-4. **FAQ** (4 zbalené otázky): prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť. Vrátane zdrojov.
+3. **Jak to funguje (3 kroky):** Najděte dvojče → Zkopírujte ISIN → Kupte v aplikaci. Odpovedá na otázku „a čo s tým urobím?“ a nadväzuje na návod v prehľade.
+4. **Lead magnet a formulár:** „Přehled 12 dvojčat + návod na první nákup“ s obálkou dokumentu, piatimi riadkami tabuľky (3 čitateľné, 2 rozmazané) a formulárom priamo pod nimi. Po odomknutí tabuľka nenarastie na 12 riadkov, zobrazí sa „+ 7 dalších v přehledu“ a tlačidlo.
+5. **FAQ** (4 zbalené otázky): prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť. Vrátane zdrojov.
 
 **Čo som vedome vynechal:** samostatnú sekciu s druhým nástrojom (je v prepínači), veľké karty dôvery (sú v jednom páse) a záverečné CTA. Výzva „Přehled zdarma“ je stále v **lepkavom headeri**, takže na konci stránky netreba ďalší formulár. Podrobnosti (výpočet kalkulačky, alternatívne fondy, všetky zdroje) sú v rozbaľovacích prvkoch alebo v prehľade za e-mailom.
 

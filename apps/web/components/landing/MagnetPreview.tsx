@@ -22,7 +22,7 @@ export function MagnetPreview() {
               <p className="eyebrow">Zdarma za e-mail</p>
               <h2 id="magnet-title" className="h2 mt-3">Přehled {data.pairs.length} dvojčat + návod na první nákup</h2>
             </div>
-            <div className="mt-1 flex-none lg:hidden"><ReportCover size="sm" /></div>
+            <div className="animate-float mt-1 flex-none"><ReportCover size="sm" /></div>
           </div>
           <ul className="mt-4 space-y-2 text-[15.5px] sm:mt-6 sm:space-y-3 sm:text-[16px]">
             {[
@@ -36,7 +36,6 @@ export function MagnetPreview() {
               </li>
             ))}
           </ul>
-          <div className="animate-float mt-10 hidden pl-4 lg:block"><ReportCover /></div>
         </div>
 
         <div className="window">
@@ -54,7 +53,7 @@ export function MagnetPreview() {
                 </tr>
               </thead>
               <tbody>
-                {data.pairs.slice(0, unlocked ? data.pairs.length : PREVIEW_ROWS).map((p, i) => {
+                {data.pairs.slice(0, PREVIEW_ROWS).map((p, i) => {
                   const locked = !unlocked && i >= FREE_ROWS;
                   return (
                     <tr key={p.us.ticker} className={`border-t border-line ${locked ? 'blur-[5px] select-none' : ''}`} aria-hidden={locked || undefined}>
@@ -68,8 +67,9 @@ export function MagnetPreview() {
             </table>
 
             {unlocked ? (
-              <div className="border-t border-line p-4 sm:p-6">
-                <a href="/report" className="btn btn-primary w-full" data-open-report>Otevřít celý přehled s daněmi <ArrowRight /></a>
+              <div className="border-t border-line p-4 sm:p-5">
+                <p className="mb-3 text-center text-[13px] text-muted">+ {data.pairs.length - PREVIEW_ROWS} dalších dvojčat, návod a daně v přehledu</p>
+                <a href="/report" className="btn btn-primary w-full" data-open-report>Otevřít celý přehled <ArrowRight /></a>
               </div>
             ) : (
               <div className="relative -mt-20 bg-gradient-to-t from-white from-55% to-white/0 px-4 pt-14 pb-5 sm:px-6">

@@ -1,7 +1,7 @@
 /* Serverové sekce landing page. Interaktivní části (nástroje, formuláře) jsou klientské ostrůvky. */
 import { data, exactTickers, fmtDate, formatPct, host, type Variant } from '@etfd/shared';
 import { FAQ } from '@/lib/content';
-import { Chart, Check, Layers, Link, Mail, ShieldCheck, Target } from '@/components/ui/icons';
+import { Chart, Check, Copy, Layers, Link, Mail, Pointer, Search, ShieldCheck, Target } from '@/components/ui/icons';
 import { Term } from '@/components/ui/Term';
 import { FaqList } from './FaqList';
 import { StatCard } from './StatCard';
@@ -82,6 +82,44 @@ export function ProofStrip() {
             <li key={String(t)} className="flex items-center gap-2 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:flex-none [&_svg]:text-teal-600">{icon}{t}</li>
           ))}
         </ul>
+      </div>
+    </section>
+  );
+}
+
+/** Jak to funguje: 3 kroky od tickeru k nákupu. Odpovídá na „a co s tím udělám?“ a navazuje na návod v přehledu. */
+export function HowItWorks() {
+  const steps = [
+    { icon: <Search />, t: 'Najděte dvojče', d: 'Klepněte na americké ETF a uvidíte jeho evropskou verzi.' },
+    { icon: <Copy />, t: 'Zkopírujte ISIN', d: 'Jednoznačný kód fondu – ticker se mezi burzami liší.' },
+    { icon: <Pointer />, t: 'Kupte v aplikaci', d: 'XTB, Trading 212, DEGIRO… vložte ISIN a hotovo.' },
+  ];
+  return (
+    <section aria-labelledby="how-title" className="bg-white py-10 sm:py-14">
+      <div className="wrap">
+        <div className="reveal flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="eyebrow">Jak to funguje</p>
+            <h2 id="how-title" className="mt-2 font-display text-[26px] leading-tight font-bold text-ink sm:text-[32px]">Od tickeru k nákupu ve 3 krocích</h2>
+          </div>
+          <p className="text-[14px] text-muted">Podrobný návod je v přehledu zdarma.</p>
+        </div>
+        <ol className="stagger relative mt-6 grid gap-3 sm:mt-8 sm:gap-5 md:grid-cols-3">
+          {/* spojnice kroků – na desktopu se při scrollu „nakreslí“ zleva doprava */}
+          <span aria-hidden="true" className="how-line absolute top-[42px] right-[16%] left-[16%] hidden h-[2px] origin-left bg-gradient-to-r from-teal-200 via-teal-500 to-brick md:block" />
+          {steps.map((s, i) => (
+            <li key={s.t} className="lift card group relative flex items-start gap-4 p-4 shadow-none md:flex-col md:items-center md:p-6 md:text-center">
+              <span className="relative grid h-14 w-14 flex-none place-items-center rounded-2xl bg-teal-800 text-white shadow-[0_10px_24px_-12px_rgb(22_59_59/0.6)] transition-transform duration-300 group-hover:-rotate-6 [&_svg]:h-6 [&_svg]:w-6">
+                {s.icon}
+                <span className="absolute -top-2 -right-2 grid h-6 w-6 place-items-center rounded-full bg-brick text-[12px] font-bold text-white ring-2 ring-white">{i + 1}</span>
+              </span>
+              <div>
+                <p className="text-[17px] font-bold text-ink">{s.t}</p>
+                <p className="mt-1 text-[14.5px] leading-snug text-muted">{s.d}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
