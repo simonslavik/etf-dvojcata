@@ -7,11 +7,15 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "npm run build -w @etfd/shared && npm run build -w @etfd/web",
-    "test": "npm test -w @etfd/shared",
+    "db": "docker compose up -d db",
+    "build": "npm run build -w @etfd/shared && npm run build -w @etfd/api && npm run build -w @etfd/web",
+    "dev:api": "npm run build -w @etfd/shared && npm run dev -w @etfd/api",
+    "dev:web": "npm run dev -w @etfd/web",
+    "test": "npm run build -w @etfd/shared && npm test -w @etfd/shared && npm test -w @etfd/api",
+    "typecheck": "npm run typecheck -w @etfd/api && npm run typecheck -w @etfd/web",
     "e2e": "node scripts/e2e.mjs",
-    "ads": "node scripts/render-ads.mjs",
-    "simulate": "node scripts/simulate.mjs"
+    "simulate": "node scripts/simulate.mjs",
+    "ads": "node scripts/render-ads.mjs"
   },
   "engines": {
     "node": ">=22"

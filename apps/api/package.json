@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "dev": "node --watch --enable-source-maps dist/main.js",
+    "dev": "tsc -p tsconfig.build.json && (tsc -p tsconfig.build.json --watch --preserveWatchOutput & node --watch --enable-source-maps --env-file-if-exists=../../.env dist/main.js)",
     "start": "node --enable-source-maps dist/main.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

@@ -1,7 +1,7 @@
 // Screenshoty do README: node scripts/readme-shots.mjs [baseUrl] [ADMIN_TOKEN]
 import puppeteer from 'puppeteer-core';
 
-const base = process.argv[2] || 'http://localhost:3100';
+const base = process.argv[2] || 'http://localhost:3000';
 const token = process.argv[3] || process.env.ADMIN_TOKEN;
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true });

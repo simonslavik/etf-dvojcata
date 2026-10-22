@@ -4,7 +4,7 @@ import puppeteer from 'puppeteer-core';
 import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
 
-const base = process.argv[2] || 'http://localhost:3100';
+const base = process.argv[2] || 'http://localhost:3000';
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true });
 // Stejná admin cookie, jakou nastaví přihlášení (lib/server/auth.ts)

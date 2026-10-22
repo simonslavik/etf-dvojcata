@@ -2,7 +2,7 @@
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
 
-const url = process.argv[2] || 'http://localhost:3100/';
+const url = process.argv[2] || 'http://localhost:3000/';
 const out = process.argv[3] || 'screenshots';
 mkdirSync(out, { recursive: true });
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';

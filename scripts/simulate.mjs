@@ -1,8 +1,8 @@
 // Simulace návštěvnosti přes skutečné API (jen pro lokální vývoj a screenshoty dashboardu).
 // node scripts/simulate.mjs [baseUrl] [počet relací]   – e-maily jsou @example.com
-const base = process.argv[2] || 'http://localhost:3100';
+const base = process.argv[2] || 'http://localhost:3000';
 const sessions = Number(process.argv[3]) || 400;
-if (!/^http:\/\/(localhost|127\.0\.0\.1|app)(:\d+)?/.test(base)) throw new Error('Simulace běží jen proti lokálnímu serveru nebo Docker službě „app“ – do produkce data nepatří.');
+if (!/^http:\/\/(localhost|127\.0\.0\.1|web)(:\d+)?/.test(base)) throw new Error('Simulace běží jen proti lokálnímu serveru nebo Docker službě „web“ – do produkce data nepatří.');
 
 const rnd = Math.random;
 const pick = (a) => a[Math.floor(rnd() * a.length)];

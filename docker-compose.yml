@@ -1,19 +1,38 @@
-# docker compose up --build        → web na http://localhost:3000, admin http://localhost:3000/admin (token: review)
+# docker compose up --build        → web http://localhost:3000 · admin http://localhost:3000/admin (token: review)
+# docker compose --profile demo run --rm demo-data   → 400 simulovaných návštěv do dashboardu
 # jiný port: PORT=8080 docker compose up --build
-# docker compose --profile demo run --rm demo-data   → nasimuluje 400 návštěv do dashboardu
 services:
-  app:
-    build: .
-    ports: ["${PORT:-3000}:3000"]
+  db:
+    image: postgres:17-alpine
+    environment: { POSTGRES_USER: etfd, POSTGRES_PASSWORD: etfd, POSTGRES_DB: etfd }
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./apps/api/test/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+    # jen na localhost – pro integrační testy API z hostitele
+    ports: ["127.0.0.1:${DB_PORT:-5544}:5432"]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U etfd -d etfd"], interval: 5s, timeout: 3s, retries: 20 }
+    restart: unless-stopped
+
+  api:
+    build: { context: ., dockerfile: apps/api/Dockerfile }
     environment:
+      DATABASE_URL: postgres://etfd:etfd@db:5432/etfd
       SITE_URL: http://localhost:${PORT:-3000}
-      ADMIN_TOKEN: ${ADMIN_TOKEN:-review}
-      CRON_SECRET: ${CRON_SECRET:-review}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-review-token}
+      CRON_SECRET: ${CRON_SECRET:-review-cron}
       # Volitelné – bez nich se e-maily jen označí jako přeskočené a předání čeká ve frontě
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       RESEND_FROM: ${RESEND_FROM:-}
       HANDOFF_WEBHOOK_URL: ${HANDOFF_WEBHOOK_URL:-}
-    volumes: ["pgdata:/data"]
+      HANDOFF_WEBHOOK_SECRET: ${HANDOFF_WEBHOOK_SECRET:-}
+    depends_on: { db: { condition: service_healthy } }
+    restart: unless-stopped
+
+  web:
+    build: { context: ., dockerfile: apps/web/Dockerfile, args: { API_URL: http://api:4000 } }
+    environment: { API_URL: http://api:4000 }
+    ports: ["${PORT:-3000}:3000"]
+    depends_on: { api: { condition: service_healthy } }
     restart: unless-stopped
 
   # Simulovaná návštěvnost přes skutečné API (e-maily @example.com) – jen pro ukázku dashboardu
@@ -22,11 +41,10 @@ services:
     image: node:22-alpine
     working_dir: /scripts
     volumes: ["./scripts/simulate.mjs:/scripts/simulate.mjs:ro"]
-    command: ["node", "simulate.mjs", "http://app:3000", "400"]
-    # Formulář přijímá jen Origin webu (ochrana proti zneužití) – simulace se tváří jako prohlížeč na localhostu
+    command: ["node", "simulate.mjs", "http://web:3000", "400"]
+    # Formuláře přijímají jen Origin webu (ochrana proti zneužití) – simulace se tváří jako prohlížeč
     environment: { SIM_ORIGIN: "http://localhost:${PORT:-3000}" }
-    depends_on:
-      app: { condition: service_healthy }
+    depends_on: { web: { condition: service_healthy } }
 
 volumes:
-  pgdata:
+  postgres-data:
