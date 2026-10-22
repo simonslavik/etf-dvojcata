@@ -1,69 +1,104 @@
 import type { Metadata } from 'next';
-import { data } from '@etfd/shared';
-import { HOW_TO_BUY, Src, TAX } from '@/lib/content';
-import { fmtDate, formatPct, host } from '@etfd/shared';
+import { data, exactTickers, fmtDate, formatPct } from '@etfd/shared';
+import { HOW_TO_BUY, Src } from '@/lib/content';
 import { Shell } from '@/components/Shell';
 import { PrintButton } from '@/components/PrintButton';
 import { TrackView } from '@/components/TrackView';
+import { CallOffer } from '@/components/report/CallOffer';
+import { TwinList } from '@/components/report/TwinList';
+import { Check, Phone, Search } from '@/components/ui/icons';
 
 export const metadata: Metadata = { title: `Přehled ${data.pairs.length} ETF dvojčat`, robots: { index: false } };
 
-const DIST: Record<string, string> = { Acc: 'akumulační', Dist: 'distribuční' };
+const f = data.facts;
+const minTer = Math.min(...data.pairs.map((p) => p.twin.ter_pct));
+// otevřít aplikaci · vyhledat ISIN · vybrat burzu a koupit
+const STEP_ICONS = [<Phone key="p" />, <Search key="s" />, <Check key="c" />];
+
+/* Daně: klíčové číslo velkým písmem, vysvětlení a zdroj pod ním */
+const TAX = [
+  { big: '3 roky', t: 'Časový test', d: f.time_test.cs, f: f.time_test },
+  { big: '100 000 Kč', t: 'Malé prodeje', d: f.value_limit.cs, f: f.value_limit },
+  { big: 'Acc', t: 'Dividendy', d: f.dividends.cs, f: f.dividends },
+];
+
+const NAV = [['#navod', 'Jak koupit'], ['#dvojcata', 'Dvojčata'], ['#dane', 'Daně']];
 
 export default function Report() {
   return (
     <Shell action={<PrintButton />}>
       <TrackView event="report_view" />
-      <p className="eyebrow">Data k {fmtDate(data.as_of)}</p>
-      <h1 className="mt-3 font-display text-[clamp(32px,5vw,52px)] leading-[1.05] font-bold text-ink">Přehled {data.pairs.length} ETF dvojčat</h1>
-      <p className="mt-4 max-w-[40em] text-[17px] leading-relaxed text-muted">Americká ETF z burzy NYSE a jejich evropské verze, které si jako investor z Česka koupíte. ISIN zkopírujte do vyhledávání ve své aplikaci.</p>
 
-      <h2 className="h2 mt-12 !text-[28px]">Jak dvojče koupit</h2>
-      <ol className="mt-5 grid gap-3 sm:grid-cols-3">
-        {HOW_TO_BUY.map((s, i) => (
-          <li key={s.t} className="card p-5 shadow-none">
-            <span className="font-display text-[28px] font-bold text-teal-200">0{i + 1}</span>
-            <p className="mt-2 font-semibold text-ink">{s.t}</p>
-            <p className="mt-1 text-[14.5px] text-muted">{s.d}</p>
-          </li>
+      {/* Úvod */}
+      <p className="eyebrow">Váš přehled · data k {fmtDate(data.as_of)}</p>
+      <h1 className="mt-3 font-display text-[clamp(30px,5vw,48px)] leading-[1.05] font-bold text-ink">
+        {data.pairs.length} ETF dvojčat <span className="text-brick">+ návod na první nákup</span>
+      </h1>
+      <p className="mt-3 max-w-[40em] text-[16.5px] leading-relaxed text-muted">Evropské verze amerických ETF z burzy NYSE, které si jako investor z Česka koupíte. Najděte své ETF, zkopírujte ISIN a vložte ho do aplikace brokera.</p>
+      <dl className="mt-6 grid grid-cols-3 gap-2.5 sm:max-w-[560px]">
+        {[[String(data.pairs.length), 'dvojčat'], [String(exactTickers.length), 'se stejným indexem'], [formatPct(minTer), 'nejnižší TER']].map(([v, l]) => (
+          <div key={l} className="card flex flex-col-reverse border-t-[3px] border-t-teal-700 p-3 shadow-none sm:p-4">
+            <dt className="mt-1 text-[12.5px] text-muted">{l}</dt>
+            <dd className="num font-display text-[24px] leading-none font-bold text-ink sm:text-[28px]">{v}</dd>
+          </div>
         ))}
-      </ol>
+      </dl>
 
-      <h2 className="h2 mt-12 !text-[28px]">Všechna dvojčata</h2>
-      <div className="mt-5 grid gap-4 md:grid-cols-2">
-        {data.pairs.map((p) => (
-          <article key={p.us.ticker} className="card break-inside-avoid p-5 shadow-none">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono font-bold text-muted line-through decoration-brick/70">{p.us.ticker}</span>
-              <span className="text-teal-500">→</span>
-              <span className="font-mono text-[20px] font-bold text-ink">{p.twin.ticker}</span>
-              {p.twin.aka && <span className="text-[12px] text-muted">též {p.twin.aka}</span>}
-              <span className={`ml-auto rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase ${p.match === 'exact' ? 'bg-ok-50 text-ok' : 'bg-teal-50 text-teal-700'}`}>{p.match === 'exact' ? 'stejný index' : 'podobný index'}</span>
+      {/* Přilepená navigace po sekcích */}
+      <nav aria-label="Obsah" className="sticky top-0 z-30 -mx-4 mt-8 border-b border-line/70 bg-paper/90 px-4 py-2.5 backdrop-blur-md sm:mx-0 sm:rounded-2xl sm:border sm:px-2 print:hidden">
+        <ul className="flex gap-1.5">
+          {NAV.map(([href, label]) => (
+            <li key={href}><a href={href} className="inline-flex min-h-10 items-center rounded-xl px-3.5 text-[14px] font-semibold text-ink transition-colors hover:bg-white">{label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Jak koupit */}
+      <section id="navod" aria-labelledby="navod-title" className="mt-10 scroll-mt-20">
+        <h2 id="navod-title" className="font-display text-[26px] font-bold text-ink sm:text-[30px]">Jak dvojče koupit</h2>
+        <ol className="mt-4 grid gap-3 sm:grid-cols-3">
+          {HOW_TO_BUY.map((s, i) => (
+            <li key={s.t} className="card flex items-start gap-4 p-4 shadow-none sm:flex-col sm:p-5">
+              <span className="relative grid h-12 w-12 flex-none place-items-center rounded-2xl bg-teal-800 text-white [&_svg]:h-5 [&_svg]:w-5">
+                {STEP_ICONS[i]}
+                <span className="absolute -top-2 -right-2 grid h-5 w-5 place-items-center rounded-full bg-brick text-[11px] font-bold text-white ring-2 ring-white">{i + 1}</span>
+              </span>
+              <div>
+                <p className="font-semibold text-ink">{s.t}</p>
+                <p className="mt-1 text-[14px] leading-snug text-muted">{s.d}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* Dvojčata */}
+      <section id="dvojcata" aria-labelledby="dvojcata-title" className="mt-12 scroll-mt-20">
+        <h2 id="dvojcata-title" className="font-display text-[26px] font-bold text-ink sm:text-[30px]">Všechna dvojčata</h2>
+        <p className="mt-1 mb-4 text-[14.5px] text-muted">Najděte své americké ETF a zkopírujte ISIN jeho evropské verze.</p>
+        <TwinList />
+      </section>
+
+      {/* Daně */}
+      <section id="dane" aria-labelledby="dane-title" className="mt-12 scroll-mt-20">
+        <h2 id="dane-title" className="font-display text-[26px] font-bold text-ink sm:text-[30px]">Daně v Česku stručně</h2>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {TAX.map((x) => (
+            <div key={x.t} className="card p-5 shadow-none">
+              <p className="font-display text-[28px] leading-none font-bold text-brick">{x.big}</p>
+              <p className="mt-2 font-semibold text-ink">{x.t}</p>
+              <p className="mt-1 text-[14px] leading-relaxed text-muted">{x.d}<Src f={x.f} /></p>
             </div>
-            <p className="mt-1 text-[14px] text-muted">{p.twin.name}</p>
-            <dl className="num mt-4 grid grid-cols-2 gap-3 text-[13px]">
-              <div><dt className="text-muted">ISIN</dt><dd className="font-mono font-bold text-ink">{p.twin.isin}</dd></div>
-              <div><dt className="text-muted">TER dvojče / USA</dt><dd className="font-semibold text-ink">{formatPct(p.twin.ter_pct)} / {formatPct(p.us.ter_pct)}</dd></div>
-              <div><dt className="text-muted">Typ</dt><dd className="text-ink">{p.twin.form} · {DIST[p.twin.distribution] ?? 'bez výnosu'}</dd></div>
-              <div><dt className="text-muted">Index</dt><dd className="text-ink">{p.twin.index}</dd></div>
-            </dl>
-            {p.note && <p className="mt-3 rounded-xl bg-paper px-3 py-2 text-[13.5px] text-text">{p.match === 'exact' ? '' : 'Rozdíl: '}{p.note}</p>}
-            {p.alts.length > 0 && <p className="mt-3 text-[13px] text-muted">Alternativy: {p.alts.map((a, i) => <span key={a.ticker}>{i > 0 && ' · '}<b className="text-ink">{a.ticker}</b> {formatPct(a.ter_pct)} ({a.isin})</span>)}</p>}
-            <p className="mt-3 text-[12px] text-muted">Zdroje: <a className="src-link" href={p.twin.source_url} target="_blank" rel="noopener">{host(p.twin.source_url)}</a>, <a className="src-link" href={p.us.source_url} target="_blank" rel="noopener">{host(p.us.source_url)}</a> · {fmtDate(p.twin.accessed)}</p>
-          </article>
-        ))}
-      </div>
+          ))}
+        </div>
+        <p className="mt-3 text-[13px] text-muted">Zjednodušeno pro fyzické osoby mimo podnikání. U vlastní situace se poraďte s daňovým poradcem.</p>
+      </section>
 
-      <h2 id="taxes" className="h2 mt-12 !text-[28px]">Daně v Česku stručně</h2>
-      <ol className="mt-5 space-y-3">
-        {TAX.map((x) => (
-          <li key={x.t} className="card p-5 text-[15px] leading-relaxed text-text shadow-none"><b className="text-ink">{x.t}.</b> {x.f.cs}<Src f={x.f} /></li>
-        ))}
-      </ol>
-      <p className="mt-3 text-[13.5px] text-muted">Zjednodušeno pro fyzické osoby, které neobchodují v rámci podnikání. U vlastní situace se poraďte s daňovým poradcem.</p>
+      <CallOffer />
 
-      <h2 className="h2 mt-12 !text-[28px]">Co v přehledu není</h2>
-      <p className="mt-3 text-[15px] text-muted">{data.excluded.map((e) => e.ticker).join(', ')} – obchodují se na burze Nasdaq, ne na NYSE. Údaje jsou orientační, před nákupem si je ověřte v dokumentu KID u svého brokera. Nejde o investiční doporučení.</p>
+      <p className="mt-12 border-t border-line pt-5 text-[13px] text-muted">
+        <b className="text-ink">Co v přehledu není:</b> {data.excluded.map((e) => e.ticker).join(', ')} – obchodují se na burze Nasdaq, ne na NYSE. Údaje jsou orientační, před nákupem si je ověřte v dokumentu KID u svého brokera. Nejde o investiční doporučení.
+      </p>
     </Shell>
   );
 }

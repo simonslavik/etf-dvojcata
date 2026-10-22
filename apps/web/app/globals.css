@@ -191,3 +191,12 @@
 :root { interpolate-size: allow-keywords; }
 details.smooth::details-content { height: 0; overflow: clip; transition: height .3s var(--ease-out-soft), content-visibility .3s allow-discrete; }
 details.smooth[open]::details-content { height: auto; }
+
+/* Tisk / „Uložit jako PDF“: bez ovládacích prvků, všechny detaily rozbalené, bez stínů */
+@media print {
+  body { background: #fff; }
+  details::details-content { content-visibility: visible !important; height: auto !important; }
+  details > :not(summary) { display: block !important; }
+  .card, details { box-shadow: none !important; break-inside: avoid; }
+  nav, .print\:hidden { display: none !important; }
+}
