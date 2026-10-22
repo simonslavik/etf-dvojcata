@@ -62,7 +62,7 @@ async function journey({ query, variant }) {
 
   // odemčený přehled na stránce
   await page.keyboard.press('Escape');
-  assert.ok(await page.$('#prehled [data-open-report]'), 'přehled odemčen');
+  assert.ok(await page.$('#report [data-open-report]'), 'přehled odemčen');
   await sleep(900); // calc_change má debounce 600 ms
   assert.deepEqual(errors, [], 'žádné JS chyby');
   await ctx.close();

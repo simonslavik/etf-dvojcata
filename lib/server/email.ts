@@ -24,7 +24,7 @@ function layout(token: string, body: string) {
     <hr style="border:0;border-top:1px solid ${C.line};margin:32px 0 16px">
     <p style="font-size:12px;color:${C.muted}">Data k ${fmtDate(data.as_of)}. Nejde o investiční doporučení – investice nesou riziko.<br>
     Tento e-mail jste dostali, protože jste si na webu vyžádali přehled ETF dvojčat.
-    <a href="${siteUrl()}/odhlaseni?t=${encodeURIComponent(token)}" style="color:${C.muted}">Odhlásit se jedním klikem</a> · <a href="${siteUrl()}/soukromi" style="color:${C.muted}">Ochrana údajů</a></p>
+    <a href="${siteUrl()}/unsubscribe?t=${encodeURIComponent(token)}" style="color:${C.muted}">Odhlásit se jedním klikem</a> · <a href="${siteUrl()}/privacy" style="color:${C.muted}">Ochrana údajů</a></p>
   </div>`;
 }
 
@@ -43,7 +43,7 @@ const templates: Record<SequenceStep, (token: string) => string> = {
       <table style="width:100%;border-collapse:collapse;font-size:14px">
         <tr style="text-align:left;color:${C.muted};font-size:12px"><th style="padding:6px">USA</th><th style="padding:6px">Dvojče v EU</th><th style="padding:6px;text-align:right">TER</th></tr>${rows}
       </table>
-      ${button(link(token, 'd0_report', '/prehled'), 'Celý přehled s daněmi a zdroji')}
+      ${button(link(token, 'd0_report', '/report'), 'Celý přehled s daněmi a zdroji')}
       <p style="color:${C.muted};font-size:14px">Za dva dny vám pošleme krátký návod, jak dvojče koupit za 3 minuty.</p>`;
   },
   d2_howto: (token) => `${h1('Jak koupit ETF dvojče za 3 minuty')}
@@ -53,17 +53,17 @@ const templates: Record<SequenceStep, (token: string) => string> = {
       <li style="margin-bottom:10px"><b>Nastavte pravidelný nákup.</b> Pravidelná částka každý měsíc je jednodušší než hledat „správný okamžik“.</li>
     </ol>
     <p style="background:${C.mint};padding:14px 16px;border-radius:12px;font-size:14px">${data.facts.brokers.cs}${src(data.facts.brokers)}</p>
-    ${button(link(token, 'd2_howto', '/prehled'), 'Najít ISIN svého dvojčete')}`,
+    ${button(link(token, 'd2_howto', '/report'), 'Najít ISIN svého dvojčete')}`,
   d5_tax: (token) => `${h1('Daně z ETF v Česku: 3 pravidla')}
     <p><b>1. Časový test.</b> ${data.facts.time_test.cs}${src(data.facts.time_test)}</p>
     <p><b>2. Malé prodeje.</b> ${data.facts.value_limit.cs}${src(data.facts.value_limit)}</p>
     <p><b>3. Dividendy.</b> ${data.facts.dividends.cs}${src(data.facts.dividends)}</p>
     <p style="color:${C.muted};font-size:14px">Zjednodušeno pro fyzické osoby mimo podnikání. U vlastní situace se poraďte s daňovým poradcem.</p>
-    ${button(link(token, 'd5_tax', '/prehled#dane'), 'Daně v přehledu')}`,
+    ${button(link(token, 'd5_tax', '/report#taxes'), 'Daně v přehledu')}`,
   d9_check: (token) => `${h1('Už máte první ETF?')}
     <p>Většina lidí, kteří si přehled stáhnou, se zasekne u stejné věci: aplikace brokera ukazuje 5 verzí téhož fondu a nevědí, kterou vybrat.</p>
     <p>Když chcete, <b>projdeme to s vámi po telefonu</b> – 10 minut, zdarma a nezávazně. Nic neprodáváme, jen pomůžeme dvojče najít a nastavit pravidelný nákup.</p>
-    ${button(link(token, 'd9_check', `/pomoc?t=${encodeURIComponent(token)}`), 'Chci pomoct s prvním nákupem')}
+    ${button(link(token, 'd9_check', `/help?t=${encodeURIComponent(token)}`), 'Chci pomoct s prvním nákupem')}
     <p style="color:${C.muted};font-size:14px">Nepotřebujete? V pořádku – tohle je poslední e-mail ze série.</p>`,
 };
 

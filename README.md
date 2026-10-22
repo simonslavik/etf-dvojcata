@@ -202,8 +202,8 @@ Review agent dostal kód bez kontextu konverzácie a jediný pokyn: „iba repor
 
 - [ ] **Nasadenie na Vercel** a URL do README.
 - [ ] **Env premenné v produkcii:** `DATABASE_URL` (Neon cez Vercel Marketplace), `ADMIN_TOKEN`, `CRON_SECRET`, `SITE_URL`, `RESEND_API_KEY` + `RESEND_FROM` (overená doména), voliteľne `HANDOFF_WEBHOOK_URL`. Bez DB beží produkcia na PGlite v `/tmp`, takže dáta nevydržia reštart.
-- [ ] **Právne:** prevádzkovateľ v `/soukromi`, kto volá (vlastný tým alebo partner), posúdenie súhlasov, srovnávacia reklama s konkrétnym fondom (reklama B), Meta „special ad category“.
-- [ ] **Prehľad je „mäkko“ zamknutý:** `/prehled` je dostupný aj bez e-mailu (noindex). Kto ho hľadá cez URL, by e-mail aj tak nezadal.
+- [ ] **Právne:** prevádzkovateľ v `/privacy`, kto volá (vlastný tým alebo partner), posúdenie súhlasov, srovnávacia reklama s konkrétnym fondom (reklama B), Meta „special ad category“.
+- [ ] **Prehľad je „mäkko“ zamknutý:** `/report` je dostupný aj bez e-mailu (noindex). Kto ho hľadá cez URL, by e-mail aj tak nezadal.
 - [ ] **PDF** je zatiaľ „uložiť ako PDF“ cez tlač, nie generovaný súbor.
 - [ ] **Dostupnosť u brokerov** je overená iba pre XTB.
 - [ ] **Aktualizácia dát:** TER a veľkosti fondov sú snímka k 22. 10. 2026. Pre produkciu by bol potrebný mesačný job s výskumným a kontrolným agentom.

@@ -10,7 +10,7 @@ describe('přesměrování z e-mailu zůstane na webu', () => {
     expect(sameOriginUrl(to, O).origin).toBe(O);
   });
   test('vlastní cesta projde i s parametry', () => {
-    expect(sameOriginUrl('/pomoc?t=abc#x', O).href).toBe(`${O}/pomoc?t=abc#x`);
+    expect(sameOriginUrl('/help?t=abc#x', O).href).toBe(`${O}/help?t=abc#x`);
   });
 });
 

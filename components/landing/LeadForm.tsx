@@ -56,7 +56,7 @@ export function LeadForm({ name, cta, tone = 'light', stacked = false, autoFocus
       <input className="hidden" type="text" name="hp_f7" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       {error && <p id={`${inputId}-err`} role="alert" className={`mt-2 text-[14px] font-medium ${dark ? 'text-[#f3b2aa]' : 'text-brick'}`}>{error}</p>}
       <p className={`mt-2.5 text-[12.5px] ${dark ? 'text-white/60' : 'text-muted'}`}>
-        {CONSENTS[EMAIL_CONSENT]} <a href="/soukromi" className="src-link">Ochrana údajů</a>
+        {CONSENTS[EMAIL_CONSENT]} <a href="/privacy" className="src-link">Ochrana údajů</a>
       </p>
     </form>
   );

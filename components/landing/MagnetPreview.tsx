@@ -13,7 +13,7 @@ const PREVIEW_ROWS = 7; // 3 čitelné + 4 rozmazané stačí, aby bylo jasné, 
 export function MagnetPreview() {
   const { unlocked } = useLead();
   return (
-    <section id="prehled" aria-labelledby="magnet-title" className="bg-paper py-14 sm:py-20">
+    <section id="report" aria-labelledby="magnet-title" className="bg-paper py-14 sm:py-20">
       <div className="wrap grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
         <div>
           <p className="eyebrow">Zdarma výměnou za e-mail</p>
@@ -63,7 +63,7 @@ export function MagnetPreview() {
 
             {unlocked ? (
               <div className="border-t border-line p-4 sm:p-6">
-                <a href="/prehled" className="btn btn-primary w-full" data-open-report>Otevřít celý přehled s daněmi <ArrowRight /></a>
+                <a href="/report" className="btn btn-primary w-full" data-open-report>Otevřít celý přehled s daněmi <ArrowRight /></a>
               </div>
             ) : (
               <div className="relative -mt-20 bg-gradient-to-t from-white from-55% to-white/0 px-4 pt-14 pb-5 sm:px-6">

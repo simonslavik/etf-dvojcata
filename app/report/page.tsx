@@ -54,7 +54,7 @@ export default function Report() {
         ))}
       </div>
 
-      <h2 id="dane" className="h2 mt-12 !text-[28px]">Daně v Česku stručně</h2>
+      <h2 id="taxes" className="h2 mt-12 !text-[28px]">Daně v Česku stručně</h2>
       <ol className="mt-5 space-y-3">
         {TAX.map((x) => (
           <li key={x.t} className="card p-5 text-[15px] leading-relaxed text-text shadow-none"><b className="text-ink">{x.t}.</b> {x.f.cs}<Src f={x.f} /></li>

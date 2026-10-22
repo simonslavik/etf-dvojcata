@@ -13,5 +13,5 @@ export async function POST(req: Request) {
 /** GET (otevření odkazu v prohlížeči) nic nemění – skenery odkazů by jinak odhlašovaly samy */
 export function GET(req: Request) {
   const url = new URL(req.url);
-  return NextResponse.redirect(new URL(`/odhlaseni?t=${encodeURIComponent(url.searchParams.get('t') || '')}`, url.origin), 302);
+  return NextResponse.redirect(new URL(`/unsubscribe?t=${encodeURIComponent(url.searchParams.get('t') || '')}`, url.origin), 302);
 }

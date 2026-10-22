@@ -16,7 +16,7 @@ const config: NextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
-      { source: '/(prehled|admin|soukromi|odhlaseni)(.*)', headers: [{ key: 'X-Robots-Tag', value: 'noindex' }] },
+      { source: '/(report|admin|privacy|unsubscribe|help)(.*)', headers: [{ key: 'X-Robots-Tag', value: 'noindex' }] },
     ];
   },
 };

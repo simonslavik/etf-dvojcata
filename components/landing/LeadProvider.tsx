@@ -77,7 +77,7 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
   const openSheet = useCallback((source: string) => {
     track('cta_click', { source });
     if (store.get(UNLOCK_KEY) === '1') {
-      location.href = '/prehled';
+      location.href = '/report';
       return;
     }
     setSheet({ open: true, step: 'form', source });

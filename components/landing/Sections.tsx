@@ -256,7 +256,7 @@ export function Footer() {
             ))}
           </ul>
         </details>
-        <p><a className="src-link" href="/soukromi">Ochrana osobních údajů</a></p>
+        <p><a className="src-link" href="/privacy">Ochrana osobních údajů</a></p>
       </div>
     </footer>
   );

@@ -93,7 +93,7 @@ export async function requestCall(db: Db, token: string, phone: string, consentT
   await db.update(leads).set({ wantsCall: true, phone, callConsentText: consentText }).where(eq(leads.id, lead.id));
   await recordEvent(db, { sid: leadSid(lead), event: 'call_request', variant: lead.variant as Variant });
   const updated = await rescore(db, lead.id);
-  // Už předaný lead (dvojí odeslání, /pomoc z e-mailu) se do CRM neposílá znovu – jen se aktualizuje telefon
+  // Už předaný lead (dvojí odeslání, /help z e-mailu) se do CRM neposílá znovu – jen se aktualizuje telefon
   if (!updated || lead.handedOverAt) return updated;
   return handoff(db, updated);
 }

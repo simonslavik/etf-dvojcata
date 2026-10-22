@@ -74,7 +74,7 @@ export function LeadSheet() {
             <p className="mt-1.5 text-[15px] text-muted">
               {emailSent ? 'Najdete ho níže na stránce a poslali jsme ho i na váš e-mail.' : 'Najdete ho níže na stránce – můžete ho rovnou otevřít.'}
             </p>
-            <a href="/prehled" className="btn btn-primary mt-5 w-full" onClick={() => track('report_open')} data-open-report>
+            <a href="/report" className="btn btn-primary mt-5 w-full" onClick={() => track('report_open')} data-open-report>
               Otevřít celý přehled <ArrowRight />
             </a>
 
