@@ -42,19 +42,15 @@ export function Hero({ variant, tool }: { variant: Variant; tool: React.ReactNod
         <div className="absolute -top-20 right-[-8%] h-[130%] w-[46%] skew-x-[-24deg] bg-teal-50/80" />
         <div className="absolute top-[30%] right-[-12%] h-[90%] w-[30%] skew-x-[-24deg] bg-teal-100/40" />
       </div>
-      <div className="wrap relative grid grid-cols-1 items-center gap-5 pt-5 pb-8 sm:gap-7 sm:pt-10 sm:pb-10 lg:grid-cols-[1.02fr_1fr] lg:gap-14 lg:pt-16 lg:pb-20">
+      <div className="wrap relative grid grid-cols-1 items-center gap-5 pt-5 pb-8 sm:gap-7 sm:pt-8 sm:pb-10 lg:grid-cols-[1fr_minmax(0,500px)] lg:gap-14 lg:pt-10 lg:pb-14">
         <div>
           <p className="eyebrow">{h.eyebrow}</p>
-          <h1 id="hero-title" className="mt-2.5 font-display text-[clamp(31px,6.4vw,64px)] leading-[1.04] font-bold tracking-[-0.015em] text-ink text-balance">
+          <h1 id="hero-title" className="mt-2.5 font-display text-[clamp(31px,5.2vw,56px)] leading-[1.05] font-bold tracking-[-0.015em] text-ink text-balance">
             {h.title[0]} <span className="text-brick">{h.title[1]}</span>
           </h1>
           <p className="mt-3 text-[16px] leading-snug text-muted sm:hidden">{h.short}</p>
           <p className="mt-4 hidden max-w-[34em] text-[19px] leading-relaxed text-muted sm:block">{h.lead}</p>
-          <ul className="mt-6 hidden gap-x-6 gap-y-2 text-[15px] text-text lg:flex lg:flex-wrap">
-            {['Zdarma, bez registrace', 'Každý údaj se zdrojem', 'Nejsme broker'].map((x) => (
-              <li key={x} className="flex items-center gap-2"><Check className="h-4 w-4 text-ok" />{x}</li>
-            ))}
-          </ul>
+          <p className="mt-6 hidden items-center gap-2 text-[14.5px] text-muted lg:flex"><Check className="h-4 w-4 text-ok" />Zdarma, bez registrace · výsledek hned</p>
         </div>
         <div className="animate-rise-late relative">{tool}</div>
       </div>

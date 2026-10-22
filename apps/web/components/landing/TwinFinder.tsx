@@ -1,16 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { data, pairByTicker } from '@etfd/shared';
-import { fmtDate, formatPct, host } from '@etfd/shared';
+import { data, formatPct, host, pairByTicker } from '@etfd/shared';
 import { track } from '@/lib/track';
-import { ArrowDown, ArrowRight, Check, Copy } from '@/components/ui/icons';
+import { ArrowRight, Check, Copy } from '@/components/ui/icons';
 import { Term } from '@/components/ui/Term';
 import { useLead } from './LeadProvider';
 
-const DIVIDENDS: Record<string, string> = { Acc: 'reinvestuje', Dist: 'vyplácí' };
-
-export function TwinFinder({ compact = false }: { compact?: boolean }) {
+/**
+ * Vyhledávač dvojčat – jen to, co návštěvník potřebuje k rozhodnutí: co místo amerického ETF koupit,
+ * kolik stojí, kde se obchoduje a ISIN do aplikace. Detaily (alternativy, dividendy, index) jsou v přehledu.
+ */
+export function TwinFinder() {
   const { selected, select, openSheet, unlocked } = useLead();
   const p = pairByTicker(selected)!;
   const t = p.twin;
@@ -24,21 +25,17 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
   };
 
   return (
-    <div className="window" data-module="finder">
-      <div className="window-bar">
-        <span className="window-dots" aria-hidden="true"><i /><i /><i /></span>
-        <span className="window-url">etf-dvojcata · vyhledávač dvojčat</span>
-      </div>
-
-      <div className="p-4 sm:p-6">
-        <h2 id="finder-title" className="mb-3 text-[15px] font-semibold text-ink">Které ETF jste chtěli koupit?</h2>
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0" role="group" aria-labelledby="finder-title">
+    <div className="card overflow-hidden" data-module="finder">
+      <div className="p-4 sm:p-5">
+        <p id="finder-title" className="text-[14px] font-medium text-muted">Které ETF jste chtěli koupit?</p>
+        {/* jeden posuvný řádek tickerů místo dvou řádků */}
+        <div className="-mx-4 mt-2.5 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:-mx-5 sm:px-5 [&::-webkit-scrollbar]:hidden" role="group" aria-labelledby="finder-title">
           {data.pairs.map((x) => (
             <button
               key={x.us.ticker}
               aria-pressed={x.us.ticker === selected}
               aria-controls="twin-result"
-              className="chip flex-none"
+              className="chip flex-none !min-h-10 !px-3.5"
               onClick={() => select(x.us.ticker)}
               data-ticker={x.us.ticker}
             >
@@ -47,66 +44,43 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
           ))}
         </div>
 
-        <div id="twin-result" aria-live="polite" className="mt-4">
-        <div key={selected} className="animate-rise">
-          {/* Americký originál – přeškrtnutý */}
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-line bg-paper px-4 py-3">
-            <div className="min-w-0">
-              <span className="strike font-mono text-[19px] font-bold text-muted">{p.us.ticker}</span>
-              <p className="truncate text-[13px] text-muted">{p.us.name} · {p.us.exchange}</p>
-            </div>
-            <span className="flex-none rounded-full bg-brick-50 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-brick uppercase">V EU nekoupíte</span>
-          </div>
-
-          <div className="flex items-center gap-2 py-2 pl-4 text-[13px] font-medium text-teal-700">
-            <ArrowDown className="animate-nudge h-4 w-4" /> evropské dvojče
-          </div>
-
-          {/* Evropské dvojče */}
-          <div className="animate-rise-late rounded-2xl border border-teal-200 bg-teal-50 p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <span className="font-mono text-[26px] leading-none font-bold text-ink" data-twin-ticker>{t.ticker}</span>
-                {t.aka && <span className="ml-2 text-[12px] text-muted">též {t.aka}</span>}
-                <p className="mt-1.5 text-[13.5px] text-muted">{t.name}</p>
-              </div>
-              <span className="inline-flex flex-none items-center gap-1 rounded-full bg-ok-50 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-ok uppercase">
-                <Check className="h-3 w-3" /> {t.form === 'ETC' ? 'ETC' : 'UCITS'} · koupíte
+        <div id="twin-result" aria-live="polite" className="mt-3">
+          <div key={selected} className="animate-rise rounded-2xl border border-teal-200 bg-teal-50 p-4">
+            <p className="text-[13.5px] text-muted">
+              Místo <span className="strike font-mono font-bold text-ink">{p.us.ticker}</span> <span className="text-brick">(v EU nekoupíte)</span> kupte:
+            </p>
+            <div className="mt-1.5 flex items-center justify-between gap-3">
+              <span className="animate-rise-late font-mono text-[30px] leading-none font-bold text-ink" data-twin-ticker>{t.ticker}</span>
+              <span className={`inline-flex flex-none items-center gap-1 rounded-full px-2.5 py-1 text-[11.5px] font-semibold ${p.match === 'exact' ? 'bg-ok-50 text-ok' : 'bg-white text-teal-700'}`}>
+                <Check className="h-3.5 w-3.5" /> {p.match === 'exact' ? 'Stejný index' : 'Podobný index'}
               </span>
             </div>
+            <p className="mt-1 truncate text-[13px] text-muted" title={t.name}>{t.name}</p>
 
-            <dl className="mt-4 grid grid-cols-3 gap-2 text-[12px] text-muted">
-              <div><dt><Term k="TER">Poplatek</Term></dt><dd className="mt-0.5 text-[16px] font-semibold text-ink">{formatPct(t.ter_pct)}</dd></div>
-              <div><dt>Burza</dt><dd className="mt-0.5 text-[16px] font-semibold text-ink">{t.exchange}</dd></div>
-              <div><dt>{t.distribution === 'Acc' ? <Term k="Acc">Dividendy</Term> : 'Dividendy'}</dt><dd className="mt-0.5 text-[16px] font-semibold text-ink">{DIVIDENDS[t.distribution] ?? '–'}</dd></div>
-            </dl>
+            <div className="mt-3 flex gap-6 text-[13px] text-muted">
+              <span><Term k="TER">Poplatek</Term> <b className="num text-[15px] text-ink">{formatPct(t.ter_pct)}</b></span>
+              <span>Burza <b className="text-[15px] text-ink">{t.exchange}</b></span>
+            </div>
 
-            <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-line bg-white py-2 pr-2 pl-3.5">
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-line bg-white py-1.5 pr-1.5 pl-3.5">
               <div className="min-w-0">
-                <span className="block text-[11px] text-muted"><Term k="ISIN" /> – zadejte u brokera</span>
+                <span className="block text-[11px] text-muted"><Term k="ISIN" /> do aplikace brokera</span>
                 <span className="font-mono text-[15px] font-bold tracking-wide text-ink">{t.isin}</span>
               </div>
-              <button type="button" onClick={copy} data-copy-isin className="inline-flex min-h-11 flex-none items-center gap-1.5 rounded-lg bg-teal-900 px-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-teal-700 data-[copied]:bg-ok" data-copied={copied || undefined}>
+              <button type="button" onClick={copy} data-copy-isin className="inline-flex min-h-10 flex-none items-center gap-1.5 rounded-lg bg-teal-900 px-3 text-[13px] font-semibold text-white transition-colors hover:bg-teal-700 data-[copied]:bg-ok" data-copied={copied || undefined}>
                 {copied ? <span className="animate-pop inline-flex items-center gap-1.5"><Check className="h-4 w-4" /> Zkopírováno</span> : <><Copy className="h-4 w-4" /> Kopírovat</>}
               </button>
             </div>
           </div>
-
-          <p className="mt-3 text-[13.5px] leading-relaxed text-text">
-            {p.match === 'exact' ? <><b className="font-semibold">Stejný index</b> {t.index}.</> : <><b className="font-semibold">Podobný index</b> – {p.note}</>}
-            {!compact && p.alts.length > 0 && <span className="hidden sm:inline"> Další možnosti: {p.alts.map((a, i) => <span key={a.ticker}>{i > 0 && ', '}<span className="font-mono font-bold">{a.ticker}</span> ({formatPct(a.ter_pct)})</span>)}.</span>}
-          </p>
-          <p className="mt-1.5 text-[12px] text-muted">
-            Zdroj: <a className="src-link" href={t.source_url} target="_blank" rel="noopener">{host(t.source_url)}</a>, <a className="src-link" href={p.us.source_url} target="_blank" rel="noopener">{host(p.us.source_url)}</a> · {fmtDate(data.as_of)}
-          </p>
-        </div>
         </div>
 
-        <button className="btn btn-primary mt-4 w-full" onClick={() => openSheet('finder')} data-cta="finder">
-          {unlocked ? 'Otevřít celý přehled' : <>Poslat {t.ticker} + {data.pairs.length - 1} dalších</>}
+        <button className="btn btn-primary mt-3 w-full" onClick={() => openSheet('finder')} data-cta="finder">
+          {unlocked ? 'Otevřít celý přehled' : <>Poslat {t.ticker} + {data.pairs.length - 1} dalších<span className="hidden sm:inline">&nbsp;zdarma</span></>}
           <ArrowRight />
         </button>
-        <p className="mt-2 text-center text-[12.5px] text-muted">Přehled + návod na první nákup · zdarma</p>
+        <p className="mt-2 text-center text-[11.5px] text-muted">
+          Zdroj: <a className="src-link" href={t.source_url} target="_blank" rel="noopener">{host(t.source_url)}</a>, <a className="src-link" href={p.us.source_url} target="_blank" rel="noopener">{host(p.us.source_url)}</a>
+        </p>
       </div>
     </div>
   );

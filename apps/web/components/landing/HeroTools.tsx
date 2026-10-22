@@ -28,7 +28,7 @@ export function HeroTools({ variant }: { variant: Variant }) {
 
   return (
     <div>
-      <div role="tablist" aria-label="Nástroj" className="relative mb-3 grid grid-cols-2 rounded-2xl border border-line bg-white p-1 shadow-card">
+      <div role="tablist" aria-label="Nástroj" className="relative mb-2.5 grid grid-cols-2 rounded-2xl border border-line bg-white p-1">
         {/* posuvný „pill“ pod aktivní záložkou */}
         <span
           aria-hidden="true"
@@ -43,7 +43,7 @@ export function HeroTools({ variant }: { variant: Variant }) {
             aria-controls={`tool-${t.id}`}
             onClick={() => pick(t.id)}
             data-tab={t.id}
-            className="relative z-10 min-h-11 rounded-xl text-[14.5px] font-semibold text-ink transition-colors duration-300 aria-selected:text-white"
+            className="relative z-10 min-h-10 rounded-xl text-[14px] font-semibold text-ink transition-colors duration-300 aria-selected:text-white"
           >
             {t.label}
           </button>
