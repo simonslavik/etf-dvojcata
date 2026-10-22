@@ -19,6 +19,8 @@ for (const v of views) {
   page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
   page.on('pageerror', (e) => errors.push(e.message));
   await page.setViewport(v);
+  // statický stav: animace při scrollu by na celostránkovém snímku nechaly mimo viewport prázdná místa
+  await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
   await page.goto(url, { waitUntil: 'networkidle0' });
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: `${out}/${tag}-${v.name}-fold.png` });

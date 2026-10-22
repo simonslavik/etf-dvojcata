@@ -39,10 +39,6 @@ export const FAQ: { q: string; a: ReactNode }[] = [
       <p>Než nakoupíte, ověřte si v aplikaci, že fond u vás má KID a jaký je poplatek za nákup.</p>
     </>,
   },
-  {
-    q: 'Kdo za stránkou stojí a co uděláte s mým e-mailem?',
-    a: <p>Přehled je zdarma. E-mail použijeme k zaslání přehledu a několika tipů k ETF během prvních dvou týdnů – odhlásíte se jedním klikem. Telefon chceme jen tehdy, když sami požádáte o pomoc s nákupem. Nejsme broker a nejde o investiční doporučení.</p>,
-  },
 ];
 
 export const HOW_TO_BUY = [

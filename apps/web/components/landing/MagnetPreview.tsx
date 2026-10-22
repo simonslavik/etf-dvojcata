@@ -8,14 +8,14 @@ import { ReportCover } from './ReportCover';
 import { useLead } from './LeadProvider';
 
 const FREE_ROWS = 3;
-const PREVIEW_ROWS = 6; // 3 čitelné + 3 rozmazané stačí, aby bylo jasné, co návštěvník dostane
+const PREVIEW_ROWS = 5; // 3 čitelné + 2 rozmazané stačí, aby bylo jasné, co návštěvník dostane
 
 /** Náhled lead magnetu: první řádky čitelné, zbytek rozmazaný + formulář přímo na místě */
 export function MagnetPreview() {
   const { unlocked } = useLead();
   return (
-    <section id="report" aria-labelledby="magnet-title" className="bg-paper py-14 sm:py-20">
-      <div className="reveal wrap grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+    <section id="report" aria-labelledby="magnet-title" className="bg-paper py-10 sm:py-16">
+      <div className="reveal wrap grid grid-cols-1 items-center gap-6 sm:gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
         <div>
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -24,13 +24,11 @@ export function MagnetPreview() {
             </div>
             <div className="mt-1 flex-none lg:hidden"><ReportCover size="sm" /></div>
           </div>
-          <ul className="mt-6 space-y-3 text-[16px]">
+          <ul className="mt-4 space-y-2 text-[15.5px] sm:mt-6 sm:space-y-3 sm:text-[16px]">
             {[
-              [`${data.pairs.length} amerických ETF`, 'a jejich evropská dvojčata'],
-              ['ISIN a burza', '– zkopírujete a koupíte u svého brokera'],
-              ['Poplatky vedle sebe', '– US originál, dvojče, fond z banky'],
-              ['Návod na první nákup', '– 3 kroky v aplikaci brokera'],
-              ['Daně v Česku', '– časový test 3 roky a proč volit akumulační fond'],
+              ['ISIN a poplatky', `u všech ${data.pairs.length} dvojčat`],
+              ['Návod na první nákup', '– 3 kroky v aplikaci'],
+              ['Daně v Česku', '– co platí po 3 letech'],
             ].map(([b, t]) => (
               <li key={b} className="flex items-start gap-3">
                 <span className="mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-full bg-ok-50 text-ok"><Check className="h-3.5 w-3.5" /></span>
@@ -60,9 +58,9 @@ export function MagnetPreview() {
                   const locked = !unlocked && i >= FREE_ROWS;
                   return (
                     <tr key={p.us.ticker} className={`border-t border-line ${locked ? 'blur-[5px] select-none' : ''}`} aria-hidden={locked || undefined}>
-                      <td className="px-4 py-2.5 sm:px-6"><span className="font-mono font-bold text-muted line-through decoration-brick/70">{p.us.ticker}</span><span className="block text-[11.5px] text-muted">{formatPct(p.us.ter_pct)}</span></td>
-                      <td className="px-2 py-2.5"><span className="font-mono font-bold text-ink">{p.twin.ticker}</span><span className="block font-mono text-[11.5px] text-muted">{locked ? 'IE00XXXXXXXX' : p.twin.isin}</span></td>
-                      <td className="px-4 py-2.5 text-right font-semibold text-ink sm:px-6">{formatPct(p.twin.ter_pct)}</td>
+                      <td className="px-4 py-2 sm:px-6 sm:py-2.5"><span className="font-mono font-bold text-muted line-through decoration-brick/70">{p.us.ticker}</span><span className="block text-[11.5px] text-muted">{formatPct(p.us.ter_pct)}</span></td>
+                      <td className="px-2 py-2 sm:py-2.5"><span className="font-mono font-bold text-ink">{p.twin.ticker}</span><span className="block font-mono text-[11.5px] text-muted">{locked ? 'IE00XXXXXXXX' : p.twin.isin}</span></td>
+                      <td className="px-4 py-2 text-right font-semibold text-ink sm:px-6 sm:py-2.5">{formatPct(p.twin.ter_pct)}</td>
                     </tr>
                   );
                 })}

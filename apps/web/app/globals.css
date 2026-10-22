@@ -164,7 +164,8 @@
 
 /* Sekce se jemně vynoří při scrollu – čisté CSS (scroll-driven animations). Kde podpora chybí, obsah je prostě vidět. */
 @supports (animation-timeline: view()) {
-  .reveal { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 30%; }
+  /* pevná dráha (ne % výšky): i vysoký blok je plně vidět po ~120 px scrollu, nečte se poloprůhledný */
+  .reveal { animation: rise linear both; animation-timeline: view(); animation-range: entry 0px entry 120px; }
 }
 
 /* Karty: jemné nadzvednutí při najetí */
@@ -175,10 +176,10 @@
 
 /* Postupné vynoření karet: každá má vlastní view timeline, posunutý rozsah = efekt „jedna po druhé“ */
 @supports (animation-timeline: view()) {
-  .stagger > * { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
-  .stagger > :nth-child(2) { animation-range: entry 8% entry 45%; }
-  .stagger > :nth-child(3) { animation-range: entry 16% entry 55%; }
-  .stagger > :nth-child(4) { animation-range: entry 24% entry 65%; }
+  .stagger > * { animation: rise linear both; animation-timeline: view(); animation-range: entry 0px entry 110px; }
+  .stagger > :nth-child(2) { animation-range: entry 25px entry 135px; }
+  .stagger > :nth-child(3) { animation-range: entry 50px entry 160px; }
+  .stagger > :nth-child(4) { animation-range: entry 75px entry 185px; }
 }
 
 /* FAQ se rozbalí plynule (kde prohlížeč umí ::details-content) */

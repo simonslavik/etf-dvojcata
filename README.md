@@ -53,7 +53,9 @@ Väčšina českých stránok o ETF porovnáva americké fondy, ktoré si čitat
 3. **Druhý nástroj** (kalkulačka alebo vyhľadávač podľa varianty) v tmavej sekcii. Kto nereagoval na prvý uhol, dostane druhý.
 4. **Lead magnet ako konkrétna vec:** „Přehled 12 dvojčat + návod na první nákup“ s obálkou dokumentu, čitateľnými aj rozmazanými riadkami a formulárom priamo pod nimi.
 5. **Dôvera** v troch riadkoch: nie sme broker, každé číslo má zdroj, čo sa stane s e-mailom. Referencie by pri novom produkte boli vymyslené, preto ich nepoužívam.
-6. **FAQ:** prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť, čo s e-mailom. Vrátane zdrojov.
+6. **FAQ** (4 otázky): prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť. Vrátane zdrojov.
+
+**Iba nevyhnutné informácie:** na mobile má stránka asi 6 obrazoviek, na desktope 4,7. Pred skrátením to bolo 8. Podrobnosti (výpočet kalkulačky, alternatívne fondy, zdroje) sú schované pod rozbaľovacími prvkami alebo v prehľade za e-mailom.
 7. **Záverečné CTA** a **pätička** s upozornením a všetkými zdrojmi s dátumom.
 
 **Výzvy sú personalizované** podľa toho, čo návštevník práve robí: „Poslat VUAA + 11 dalších“ po výbere ETF, „Chci ušetřit 429 100 Kč“ po výpočte. Výzva je stále dostupná v **lepkavom headeri**. Spodnú lepkavú lištu som zrušil: na prvej obrazovke zakrývala ISIN a s headerom by na mobile boli dve rovnaké výzvy naraz.

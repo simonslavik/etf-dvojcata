@@ -11,6 +11,7 @@ const mobile = { width: 390, height: 844, isMobile: true, hasTouch: true, device
 async function fresh(viewport) {
   const page = await (await browser.createBrowserContext()).newPage();
   await page.setViewport(viewport);
+  await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
   return page;
 }
 

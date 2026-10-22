@@ -94,7 +94,7 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
 
           <p className="mt-3 text-[13.5px] leading-relaxed text-text">
             {p.match === 'exact' ? <><b className="font-semibold">Stejný index</b> {t.index}.</> : <><b className="font-semibold">Podobný index</b> – {p.note}</>}
-            {!compact && p.alts.length > 0 && <> Další možnosti: {p.alts.map((a, i) => <span key={a.ticker}>{i > 0 && ', '}<span className="font-mono font-bold">{a.ticker}</span> ({formatPct(a.ter_pct)})</span>)}.</>}
+            {!compact && p.alts.length > 0 && <span className="hidden sm:inline"> Další možnosti: {p.alts.map((a, i) => <span key={a.ticker}>{i > 0 && ', '}<span className="font-mono font-bold">{a.ticker}</span> ({formatPct(a.ter_pct)})</span>)}.</span>}
           </p>
           <p className="mt-1.5 text-[12px] text-muted">
             Zdroj: <a className="src-link" href={t.source_url} target="_blank" rel="noopener">{host(t.source_url)}</a>, <a className="src-link" href={p.us.source_url} target="_blank" rel="noopener">{host(p.us.source_url)}</a> · {fmtDate(data.as_of)}

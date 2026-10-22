@@ -54,7 +54,7 @@ export function FeeCalculator({ title }: { title?: string }) {
         </div>
 
         {/* Srovnání nákladů – sloupce jako „trychtýř“ v dashboardu */}
-        <div className="mt-5 rounded-2xl border border-line p-4" aria-live="polite">
+        <div className="mt-4 rounded-2xl border border-line p-3.5 sm:mt-5 sm:p-4" aria-live="polite">
           <p className="text-[11px] font-semibold tracking-[0.18em] text-muted uppercase">Na poplatcích zaplatíte</p>
           <div className="mt-3 grid grid-cols-[1fr_auto] items-end gap-x-3 gap-y-1.5">
             <span className="text-[13.5px] leading-tight text-text">{bank.label}<span className="block text-[12px] text-muted">{formatPct(bank.ter_pct)} ročně + {formatPct(bank.entry_fee_pct)} vstupní poplatek</span></span>
@@ -85,9 +85,12 @@ export function FeeCalculator({ title }: { title?: string }) {
           <ArrowRight />
         </button>
         <p className="mt-2 text-center text-[12.5px] text-muted">Levná ETF dvojčata + návod na první nákup · zdarma</p>
-        <p className="mt-4 border-t border-line pt-3 text-[11.5px] leading-relaxed text-muted" id="calc-note">
+        <details className="smooth mt-3 border-t border-line pt-2.5 text-[12px] text-muted">
+          <summary className="cursor-pointer list-none font-medium text-teal-700 [&::-webkit-details-marker]:hidden">Jak počítáme? ›</summary>
+          <p className="mt-2 text-[11.5px] leading-relaxed text-muted" id="calc-note">
           Příklad fondu z banky: {bank.example} (<a className="src-link" href={bank.source_url} target="_blank" rel="noopener">KID</a>). Výnos trhu {formatPct(annualReturn * 100)} ročně před poplatky, srovnáváme jen náklady. Ilustrace, ne předpověď.
         </p>
+        </details>
       </div>
     </div>
   );
