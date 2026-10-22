@@ -46,7 +46,7 @@ Väčšina českých stránok o ETF porovnáva americké fondy, ktoré si čitat
 
 ## 3. Poradie sekcií a prečo
 
-Stránka má **6 krátkych sekcií** a každá sa zmestí na jednu obrazovku (mobil asi 4,8 obrazovky spolu, desktop 3,9). Návštevník z reklamy jej venuje pár sekúnd, preto každá sekcia robí jednu vec.
+Stránka má **6 krátkych sekcií a záverečnú výzvu** a každá sa zmestí na jednu obrazovku (mobil asi 4,8 obrazovky spolu, desktop 3,9). Návštevník z reklamy jej venuje pár sekúnd, preto každá sekcia robí jednu vec.
 
 1. **Hero = sľub reklamy + jeden nástroj, bez prepínača.** Nadpis opakuje reklamu (message match) a hneď pod ním je nástroj, ktorý reklama sľúbila. Návštevník sa nemusí rozhodovať ani hľadať prepínač, čo je pri pár sekundách pozornosti dôležité.
    - `ad=twin` (aj bez parametra): „VOO si v Česku nekoupíte. Jeho dvojče ano.“ + vyhľadávač
@@ -56,8 +56,9 @@ Stránka má **6 krátkych sekcií** a každá sa zmestí na jednu obrazovku (mo
 4. **Jak to funguje (3 kroky):** Najděte dvojče → Zkopírujte ISIN → Kupte v aplikaci. Odpovedá na otázku „a čo s tým urobím?“.
 5. **Lead magnet a formulár:** „Přehled 12 dvojčat + návod na první nákup“ s obálkou dokumentu, piatimi riadkami tabuľky (3 čitateľné, 2 rozmazané) a formulárom priamo pod nimi. Po odomknutí sa tabuľka nerozrastie, zobrazí sa „+ 7 dalších v přehledu“.
 6. **FAQ** (4 zbalené otázky): prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť.
+7. **Kompaktná záverečná výzva:** jedna karta s formulárom. Kto dočítal FAQ, má námietky vyriešené a je najbližšie k rozhodnutiu, preto stránka končí formulárom, nie pätičkou. Po odomknutí sa namiesto formulára zobrazí odkaz na prehľad.
 
-**Čo som vedome vynechal:** prepínač nástrojov v hero (návštevník na pár sekúnd by ho prehliadol), veľké karty dôvery a záverečné CTA. Výzva „Přehled zdarma“ je stále v **lepkavom headeri**. Podrobnosti (výpočet kalkulačky, alternatívne fondy, všetky zdroje) sú v rozbaľovacích prvkoch alebo v prehľade za e-mailom.
+**Čo som vedome vynechal:** prepínač nástrojov v hero (návštevník na pár sekúnd by ho prehliadol), veľké karty dôvery a veľké záverečné CTA (zostala kompaktná verzia). Výzva „Přehled zdarma“ je navyše stále v **lepkavom headeri**. Podrobnosti (výpočet kalkulačky, alternatívne fondy, všetky zdroje) sú v rozbaľovacích prvkoch alebo v prehľade za e-mailom.
 
 **Výzvy sú personalizované:** „Poslat VUAA + 11 dalších“ po výbere ETF, „Chci ušetřit 429 100 Kč“ po výpočte.
 

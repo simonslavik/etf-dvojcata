@@ -3,13 +3,14 @@ import { LeadProvider } from './LeadProvider';
 import { LeadSheet } from './LeadSheet';
 import { MagnetPreview } from './MagnetPreview';
 import { FeeCalculator } from './FeeCalculator';
+import { FinalCta } from './FinalCta';
 import { Faq, Footer, Hero, HowItWorks, ProofStrip, SecondTool } from './Sections';
 import { TwinFinder } from './TwinFinder';
 import { SiteHeader } from './SiteHeader';
 
 /**
  * Pořadí sekcí (zdůvodnění v README): hero = slib reklamy + jeden nástroj → důkaz a důvěra → druhý nástroj
- * → jak to funguje (3 kroky) → magnet + formulář → FAQ. Varianta B (poplatky) jen prohodí nástroje.
+ * → jak to funguje (3 kroky) → magnet + formulář → FAQ → kompaktní závěrečná výzva. Varianta B jen prohodí nástroje.
  */
 export function Landing({ variant }: { variant: Variant }) {
   const [first, second] = variant === 'fees' ? [<FeeCalculator key="c" />, <TwinFinder key="f" />] : [<TwinFinder key="f" />, <FeeCalculator key="c" />];
@@ -24,6 +25,7 @@ export function Landing({ variant }: { variant: Variant }) {
         <HowItWorks />
         <MagnetPreview />
         <Faq />
+        <FinalCta />
       </main>
       <Footer />
       <LeadSheet />

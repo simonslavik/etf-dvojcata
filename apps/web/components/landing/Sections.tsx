@@ -151,7 +151,7 @@ export function HowItWorks() {
 
 export function Faq() {
   return (
-    <section aria-labelledby="faq-title" className="bg-paper py-10 sm:py-16">
+    <section aria-labelledby="faq-title" className="bg-paper pt-10 pb-8 sm:pt-16 sm:pb-10">
       <div className="wrap max-w-[820px]">
         <p className="eyebrow">FAQ</p>
         <h2 id="faq-title" className="h2 mt-3">Časté otázky</h2>
