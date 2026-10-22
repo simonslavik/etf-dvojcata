@@ -10,9 +10,6 @@
   <meta property="og:description" content="Evropské verze populárních amerických ETF – stejný index, ISIN, poplatky. Přehled zdarma.">
   <meta property="og:image" content="/og.png">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
   <link rel="stylesheet" href="/src/styles.css">
 </head>
 <body data-variant="twin">
@@ -20,11 +17,11 @@
 
   <header class="top">
     <div class="wrap top__inner">
-      <a class="logo" href="/" aria-label="ETF dvojčata – úvod">
+      <a class="logo" href="/">
         <svg class="logo__mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="7" width="16" height="16" rx="4"/><rect x="13" y="11" width="16" height="16" rx="4"/></svg>
         <span>ETF<b>dvojčata</b></span>
       </a>
-      <span class="top__meta"><span class="dot" aria-hidden="true"></span><span>Data k&nbsp;<time data-asof></time></span></span>
+      <span class="top__meta"><span class="dot" aria-hidden="true"></span><span>Data k&nbsp;<time data-asof><!--ssr:asof--></time></span></span>
     </div>
   </header>
 
@@ -40,10 +37,10 @@
         <div class="hero__slot" data-hero-slot>
           <div class="finder card" data-track-section="finder">
             <h2 id="finder-title" class="finder__q">Které ETF jste chtěli koupit?</h2>
-            <div class="chips" role="tablist" aria-label="Americká ETF" data-chips></div>
-            <div class="twin" data-twin aria-live="polite"></div>
+            <div class="chips" role="tablist" aria-label="Americká ETF" data-chips><!--ssr:chips--></div>
+            <div class="twin" id="twin" data-twin aria-live="polite"><!--ssr:twin--></div>
             <button class="btn btn--primary btn--block" data-cta="finder">
-              <span>Poslat všech <span data-count>12</span> dvojčat do e-mailu</span>
+              <span>Poslat všech <span data-count><!--ssr:count--></span> dvojčat do e-mailu</span>
               <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-5 5 5-5 5"/></svg>
             </button>
             <p class="microcopy">Zdarma · 1 pole · přehled hned na obrazovce</p>
@@ -60,29 +57,29 @@
           <h2 id="calc-title" class="calc__title">Kolik vás stojí fond z&nbsp;banky oproti ETF?</h2>
           <div class="calc__inputs">
             <label class="range">
-              <span class="range__label">Měsíčně investuji <output data-out="monthly">3 000 Kč</output></span>
+              <span class="range__label">Měsíčně investuji <output data-out="monthly"><!--ssr:calc_monthly--></output></span>
               <input type="range" min="500" max="30000" step="500" value="3000" data-in="monthly" aria-describedby="calc-note">
             </label>
             <label class="range">
-              <span class="range__label">Po dobu <output data-out="years">20 let</output></span>
+              <span class="range__label">Po dobu <output data-out="years"><!--ssr:calc_years--></output></span>
               <input type="range" min="5" max="40" step="1" value="20" data-in="years">
             </label>
           </div>
           <div class="calc__result" aria-live="polite">
             <p class="calc__label">Na poplatcích zaplatíte</p>
             <div class="bar-row">
-              <span class="bar-row__name" data-out="bankName">Akciový fond z banky</span>
-              <span class="bar"><span class="bar__fill bar__fill--bank" data-bar="bank"></span></span>
-              <span class="bar-row__val" data-out="bankFees">–</span>
+              <span class="bar-row__name" data-out="bankName"><!--ssr:calc_bankName--></span>
+              <span class="bar"><span class="bar__fill bar__fill--bank" data-bar="bank" style="width:100%"></span></span>
+              <span class="bar-row__val" data-out="bankFees"><!--ssr:calc_bankFees--></span>
             </div>
             <div class="bar-row">
-              <span class="bar-row__name" data-out="etfName">ETF dvojče S&amp;P 500</span>
-              <span class="bar"><span class="bar__fill bar__fill--etf" data-bar="etf"></span></span>
+              <span class="bar-row__name" data-out="etfName"><!--ssr:calc_etfName--></span>
+              <span class="bar"><span class="bar__fill bar__fill--etf" data-bar="etf" style="<!--ssr:etfBar-->"></span></span>
               <span class="bar-row__val" data-out="etfFees">–</span>
             </div>
-            <p class="calc__big">Na poplatcích ušetříte <strong data-out="saved">–</strong></p>
+            <p class="calc__big">Na poplatcích ušetříte <strong data-out="saved"><!--ssr:calc_saved--></strong></p>
           </div>
-          <p class="calc__note" id="calc-note" data-calc-note></p>
+          <p class="calc__note" id="calc-note" data-calc-note><!--ssr:calcNote--></p>
           <button class="btn btn--primary btn--block" data-cta="calc">
             Poslat výpočet + přehled ETF do e-mailu
             <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m-4-5 5 5-5 5"/></svg>
@@ -119,14 +116,14 @@
           <p class="eyebrow">Zdarma výměnou za e-mail</p>
           <h2 id="magnet-title" class="h2">Celý přehled na jedné stránce</h2>
           <ul class="checks">
-            <li><b><span data-count>12</span> amerických ETF</b> a jejich evropská dvojčata</li>
+            <li><b><span data-count><!--ssr:count--></span> amerických ETF</b> a jejich evropská dvojčata</li>
             <li><b>ISIN a burza</b> – zkopírujete a koupíte u svého brokera</li>
             <li><b>Poplatky vedle sebe</b> – US originál, dvojče, fond z banky</li>
             <li><b>Daně v Česku</b> – časový test 3 roky a proč volit akumulační fond</li>
           </ul>
         </div>
         <div class="preview card" data-preview>
-          <div class="preview__table" data-preview-table></div>
+          <div class="preview__table" data-preview-table><!--ssr:preview--></div>
           <div class="preview__lock" data-lock>
             <form class="lead-form" data-form="inline" novalidate>
               <label class="lead-form__label" for="email-inline">Kam vám přehled pošleme?</label>
@@ -152,7 +149,7 @@
           <li><b>Americké fondy ho nemají.</b> Emitenti VOO, SPY či IVV evropský KID nevydávají, takže je broker drobnému investorovi nesmí prodat.</li>
           <li><b>Řešení je evropské dvojče.</b> Stejný nebo podobný index, často stejný správce, sídlo v&nbsp;Irsku – a KID má. Koupíte ho na burze Xetra nebo v&nbsp;Londýně.</li>
         </ol>
-        <p class="source-note" data-source="priips"></p>
+        <p class="source-note" data-source="priips"><!--ssr:priips--></p>
       </div>
     </section>
 
@@ -160,7 +157,7 @@
     <section class="block block--faq" aria-labelledby="faq-title">
       <div class="wrap wrap--narrow">
         <h2 id="faq-title" class="h2">Časté otázky</h2>
-        <div class="faq" data-faq></div>
+        <div class="faq" data-faq><!--ssr:faq--></div>
       </div>
     </section>
 
@@ -168,7 +165,7 @@
     <section class="block block--final" aria-labelledby="final-title">
       <div class="wrap wrap--narrow final card card--ink">
         <h2 id="final-title" class="final__title">Ušetřete si hodiny hledání na justETF.</h2>
-        <p class="final__lead">Všech <span data-count>12</span> dvojčat, ISIN a poplatky na jedné stránce. Hned po odeslání.</p>
+        <p class="final__lead">Všech <span data-count><!--ssr:count--></span> dvojčat, ISIN a poplatky na jedné stránce. Hned po odeslání.</p>
         <form class="lead-form lead-form--dark" data-form="final" novalidate>
           <label class="sr-only" for="email-final">E-mail</label>
           <div class="lead-form__row">
@@ -188,7 +185,7 @@
       <p><b>Nejde o investiční doporučení.</b> Informace mají vzdělávací charakter. Investice nesou riziko, minulé výnosy nezaručují budoucí. Poplatky a údaje se mohou měnit – u každého údaje uvádíme zdroj a datum.</p>
       <details class="foot__sources">
         <summary>Zdroje dat</summary>
-        <ul data-sources></ul>
+        <ul data-sources><!--ssr:sources--></ul>
       </details>
       <p class="foot__links"><a href="/soukromi.html">Ochrana osobních údajů</a></p>
     </div>
@@ -196,7 +193,7 @@
 
   <!-- Sticky CTA (mobil) -->
   <div class="sticky" data-sticky hidden>
-    <button class="btn btn--primary btn--block" data-cta="sticky"><span>Poslat přehled <span data-count>12</span> dvojčat zdarma</span></button>
+    <button class="btn btn--primary btn--block" data-cta="sticky"><span>Poslat přehled <span data-count><!--ssr:count--></span> dvojčat zdarma</span></button>
   </div>
 
   <!-- Bottom sheet s formulářem -->
@@ -204,7 +201,7 @@
     <div class="sheet__body" data-sheet-step="form">
       <button class="sheet__close" data-close aria-label="Zavřít">×</button>
       <p class="eyebrow">Zdarma · hned na obrazovce</p>
-      <h2 id="sheet-title" class="sheet__title">Kam pošleme přehled <span data-count>12</span> dvojčat?</h2>
+      <h2 id="sheet-title" class="sheet__title">Kam pošleme přehled <span data-count><!--ssr:count--></span> dvojčat?</h2>
       <form class="lead-form" data-form="sheet" novalidate>
         <label class="sr-only" for="email-sheet">E-mail</label>
         <input id="email-sheet" class="input input--lg" type="email" name="email" inputmode="email" autocomplete="email" placeholder="vas@email.cz" required>

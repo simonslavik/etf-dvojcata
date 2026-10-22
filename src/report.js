@@ -3,9 +3,7 @@ import { taxSection, howToBuy } from './content.js';
 import { formatPct } from './calc.js';
 import { track } from './track.js';
 
-const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const host = (u) => new URL(u).hostname.replace(/^www\./, '');
-const fmtDate = (iso) => new Date(iso).toLocaleDateString('cs-CZ');
+import { esc, host, fmtDate } from './render.js';
 const dist = { Acc: 'akumulační', Dist: 'distribuční' };
 
 const card = (p) => `
