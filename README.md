@@ -5,23 +5,23 @@ Landing page pre českého drobného investora, ktorý prichádza z reklamy na m
 - **Stránka:** _doplniť URL po nasadení_ · varianty reklamy: `/?ad=twin`, `/?ad=fees`
 - **Admin (pipeline):** `/admin` (token pošlem zvlášť)
 - **Reklamy:** [ads/README.md](ads/README.md) – 2 verzie, texty, UTM odkazy
-- **Dáta so zdrojom pri každom údaji:** [data/etfs.json](data/etfs.json)
-- **Plán:** [PLAN.md](PLAN.md) (v1 + v2) · **Export konverzácií s Claude Code:** [ai-log/](ai-log/)
+- **Dáta so zdrojom pri každom údaji:** [packages/shared/data/etfs.json](packages/shared/data/etfs.json)
+- **Plán:** [PLAN.md](PLAN.md) (v1 – v3) · **Export konverzácií s Claude Code:** [ai-log/](ai-log/)
 
 ### Spustenie pre review (Docker, bez Node aj bez účtov)
 
 ```bash
-docker compose up --build                           # web: http://localhost:3000  ·  admin: http://localhost:3000/admin (token: review)
+docker compose up --build                           # web: http://localhost:3000  ·  admin: http://localhost:3000/admin (token: review-token)
 docker compose --profile demo run --rm demo-data    # voliteľne: 400 simulovaných návštev, aby dashboard nebol prázdny
 ```
 
-Databáza je PGlite (Postgres vo WASM) v Docker volume, takže dáta prežijú reštart. E-maily sa bez `RESEND_API_KEY` iba označia ako preskočené. Iný port: `PORT=8080 docker compose up --build`. Zmazanie dát: `docker compose down -v`.
+Spustia sa tri služby: **Postgres 17**, **NestJS API** a **Next.js web**. API pri štarte samo spustí migrácie. E-maily sa bez `RESEND_API_KEY` iba označia ako preskočené. Iný port: `PORT=8080 docker compose up --build`. Zmazanie dát: `docker compose down -v`.
 
 | Mobil – varianta A | Mobil – varianta B | Po odoslaní | Admin |
 |---|---|---|---|
 | ![A](screenshots/mobile-a.png) | ![B](screenshots/mobile-b.png) | ![Sheet](screenshots/sheet-call.png) | ![Admin](screenshots/admin.png) |
 
-_Dáta v adminu na screenshote sú simulované (`scripts/simulate.mjs` cez skutočné API, lokálne PGlite)._
+_Dáta v adminu na screenshote sú simulované (`scripts/simulate.mjs` cez skutočné API)._
 
 ---
 
@@ -63,27 +63,33 @@ Navigácia ani odkazy, ktoré by viedli preč, na stránke nie sú. Jediný cie�
 
 ## 4. Stack a architektúra
 
+Monorepo (npm workspaces): **FE Next.js · BE NestJS · DB Postgres**, spustené cez Docker Compose.
+
 | Vrstva | Voľba | Prečo |
 |---|---|---|
-| Front-end | **Next.js 16 (App Router), React 19, TypeScript** | Obe varianty sú staticky predrenderované (rýchle LCP na mobile), interaktívne časti sú klientske „ostrovčeky“ |
-| Štýly | **Tailwind CSS 4**, tokeny v `@theme` | Farby, písma a rádiusy na jednom mieste ([app/globals.css](app/globals.css)) |
+| **FE** – [apps/web](apps/web) | **Next.js 16** (App Router), React 19, TypeScript, **Tailwind CSS 4** | Obe varianty reklamy sú staticky predrenderované (rýchle LCP na mobile), interaktívne časti sú klientske „ostrovčeky“. Tokeny dizajnu sú v [globals.css](apps/web/app/globals.css) |
 | Varianty | **`proxy.ts`** (v Next 16 nahrádza middleware) | `/?ad=fees` → interný rewrite na `/v/fees`, varianta sa drží v cookie |
-| Databáza | **Postgres + Drizzle ORM** – Neon v produkcii, **PGlite** (Postgres vo WASM) lokálne | Lokálne beží bez účtov aj bez nastavovania, v produkcii stačí `DATABASE_URL`. Migrácie generuje `drizzle-kit` |
-| E-maily | **Resend** + **Vercel Cron** (denne) | Okamžitý e-mail + sekvencia, one-click odhlásenie (RFC 8058) |
-| Validácia | **Zod** na všetkých API vstupoch | |
-| Beh | **Docker** (standalone Next.js server + PGlite vo volume) alebo **Vercel** (Neon + Cron) | Reviewer spustí všetko jedným príkazom |
-| Testy | **Vitest** (35 unit testov) + **Puppeteer E2E** | E2E prejde celú cestu v oboch variantoch až po žiadosť o hovor a overí lievik aj export |
+| FE ↔ BE | **rewrite `/api/*` → NestJS** | Prehliadač komunikuje s jednou doménou: bez CORS a admin cookie zostáva first-party. Admin stránky sa renderujú na serveri z JSON-u z API |
+| **BE** – [apps/api](apps/api) | **NestJS 12** (ESM), moduly `Database`, `Tracking`, `Pipeline`, `Email`, `Admin`, `Health` | Každá fáza lievika má svoju službu. Guardy: `OriginGuard` (formuláre), `AdminGuard` (HMAC cookie), `ThrottlerGuard` (limity na IP). Validácia cez Zod (`ZodPipe`), env sa validuje pri štarte (`@nestjs/config`) |
+| Plánovač | **`@nestjs/schedule`** (denne 7:00, Europe/Prague) + chránený `GET /cron/emails` | Kroky sekvencie D2/D5/D9 a opakovanie neúspešných odovzdaní |
+| **DB** | **Postgres 17** + **Drizzle ORM** (`pg` Pool) | Schéma v TypeScripte, migrácie generuje `drizzle-kit` a API ich pri štarte spustí v transakcii ([apps/api/drizzle](apps/api/drizzle)) |
+| Zdieľané – [packages/shared](packages/shared) | čisté TS bez frameworku | Dáta ETF, kalkulačka, pravidlá skóre, sekvencia, súhlasy, udalosti. FE aj BE počítajú rovnako |
+| E-maily | **Resend** (REST) | Okamžitý e-mail + sekvencia, one-click odhlásenie (RFC 8058), atomické „zabratie“ jobu, retry |
+| Beh | **Docker Compose**: `db` + `api` + `web` (+ `demo-data`) | Reviewer spustí všetko jedným príkazom. Image sú multi-stage, bežia pod neprivilegovaným používateľom a majú health checky |
+| Testy | **Vitest** (25 shared + 30 API proti reálnemu Postgresu cez supertest) + **Puppeteer E2E** | E2E prejde celú cestu v oboch variantoch cez celý stack až po žiadosť o hovor |
 
 ```
-Reklama (Meta, ?ad=twin|fees + UTM)
-  └─ proxy.ts ─ rewrite → /v/twin | /v/fees (statické HTML)
-       └─ prehliadač: track() ──sendBeacon──▶ /api/track ──▶ events
-          formulár ─────────────────────────▶ /api/lead  ──▶ leads + email_jobs ──▶ Resend (D0)
-          kvalifikácia ─────────────────────▶ /api/qualify ─▶ rescore
-          telefón + súhlas ─────────────────▶ /api/call ───▶ rescore ──▶ HANDOFF_WEBHOOK_URL (CRM / call centrum)
-Vercel Cron (denne) ──▶ /api/cron/emails ──▶ splatné kroky D2/D5/D9 ──▶ Resend
-Klik v e-maile ──▶ /api/r (meria klik, presmeruje len v rámci webu) ──▶ rescore
-/admin ──▶ lievik, A/B, kampane + CPL, sekvencia, leady, cesta relácie, CSV
+Prehliadač ──▶ web (Next.js :3000)
+  /?ad=twin|fees ─ proxy.ts ─▶ /v/twin | /v/fees (statické HTML)
+  /api/* ─────── rewrite ────▶ api (NestJS :4000) ──▶ db (Postgres)
+      POST /track     → TrackingService          → events
+      POST /lead      → LeadsService.capture     → leads + email_jobs → EmailService (Resend, D0)
+      POST /qualify   → LeadsService.qualify     → ScoringService.rescore
+      POST /call      → LeadsService.requestCall → HandoffService → HANDOFF_WEBHOOK_URL (CRM / call centrum)
+      GET  /r, /unsubscribe → LinksController (klik v e-maile, odhlásenie)
+      /admin/*        → AdminGuard → dashboard, lead, export, útrata, ručné odovzdanie
+  /admin (SSR) ── fetch s cookie ──▶ api /admin/dashboard …
+PipelineScheduler (@nestjs/schedule, denne) → SequenceService.runDue (D2/D5/D9) + HandoffService.retryFailed
 ```
 
 ## 5. Lead pipeline (podľa lievika Clientela)
@@ -94,9 +100,9 @@ Klik v e-maile ──▶ /api/r (meria klik, presmeruje len v rámci webu) ─�
 |---|---|---|
 | **Návštěva** | Udalosti bez cookies (anonymné ID relácie v `sessionStorage`): príchod, interakcia, CTA, formulár… | `events` |
 | **Lead** | E-mail → upsert (opakované odoslanie neprepíše pôvodný zdroj), naplánovanie sekvencie, okamžitý e-mail | `leads`, `email_jobs` |
-| **Kvalifikace** | Skóre z odpovede a zo správania. Hranica pre „kvalifikovaný“ je 35 bodov | [lib/pipeline/score.ts](lib/pipeline/score.ts) |
-| **Předání** | Iba s **telefónom a výslovným súhlasom**: webhook do CRM. Bez webhooku je lead vo fronte a v adminu sa dá odovzdať ručne | [lib/server/pipeline.ts](lib/server/pipeline.ts) |
-| **Péče** | D0 prehľad · D2 ako kúpiť · D5 dane · D9 „už máte prvé ETF?“ + ponuka pomoci (→ späť do odovzdania) | [lib/server/email.ts](lib/server/email.ts) |
+| **Kvalifikace** | Skóre z odpovede a zo správania. Hranica pre „kvalifikovaný“ je 35 bodov | [packages/shared/src/score.ts](packages/shared/src/score.ts) |
+| **Předání** | Iba s **telefónom a výslovným súhlasom**: webhook do CRM. Bez webhooku je lead vo fronte a v adminu sa dá odovzdať ručne | [apps/api/src/pipeline](apps/api/src/pipeline) |
+| **Péče** | D0 prehľad · D2 ako kúpiť · D5 dane · D9 „už máte prvé ETF?“ + ponuka pomoci (→ späť do odovzdania) | [apps/api/src/email](apps/api/src/email) |
 
 **Skóre leadu:** e-mail +10 · investuje do 2 tis. +10 / 2 – 10 tis. +25 / nad 10 tis. +40 · počítal poplatky +5 · skopíroval ISIN +10 · otvoril prehľad +5 · klikol v e-maile +10 · chce hovor +30. Dashboard pri každom leade ukazuje rozpis, takže obchodník vidí, prečo je lead „horúci“.
 
@@ -201,41 +207,61 @@ Review agent dostal kód bez kontextu konverzácie a jediný pokyn: „iba repor
 | Stredná | Admin a cron bez tokenu boli otvorené na preview deployoch aj pri self-hostingu (`VERCEL_ENV` ≠ production) | Fail closed všade okrem `next dev` |
 | Stredná | Opakované odoslanie telefónu = **duplicitný lead v CRM**, neúspešné odovzdanie sa neopakuje | Už odovzdaný lead sa neposiela znovu, webhook má `idempotency_key`, cron opakuje neúspešné odovzdania |
 | Nízka | Login do adminu bez limitu pokusov, porovnanie tokenu `!==` | 10 pokusov / 15 min na IP, porovnanie v konštantnom čase |
-| Nízka | Text súhlasu posielal klient, takže sa dal podvrhnúť | Klient posiela iba ID verzie (`email_v1`, `call_v1`), server ukladá kanonické znenie ([lib/consent.ts](lib/consent.ts)) |
+| Nízka | Text súhlasu posielal klient, takže sa dal podvrhnúť | Klient posiela iba ID verzie (`email_v1`, `call_v1`), server ukladá kanonické znenie ([packages/shared/src/consent.ts](packages/shared/src/consent.ts)) |
 | Nízka | `/api/track` bez limitu, klient mohol posielať aj `qualify` a `call_request` | 600 udalostí / 10 min na IP. Kvalifikáciu a hovor zapisuje iba server |
 | Nízka | Cron a odoslanie formulára mohli poslať ten istý e-mail dvakrát | Job sa pred odoslaním atomicky „zaberie“ (`scheduled → sending`) a odhlásenie sa kontroluje až po zabratí |
 | Nízka | Čítačka obrazovky neoznámila nové dvojča (live region sa pri každej zmene vymenil) | Live region zostáva v DOM, tlačidlá tickerov majú `aria-pressed` |
 
 **Vedome neopravené** (v časti 11): captcha / Turnstile proti botom (potrebuje účet, zatiaľ stačí honeypot + Origin + limity) a skenery odkazov v e-mailoch (Outlook Safe Links), ktoré môžu nafúknuť skóre o +10 za „klik“.
 
+_Pozn.: review z kola 2 sa týka ešte full-stack Next.js verzie. Opravy (Origin guard, retry, atomické zabratie jobu, idempotentné odovzdanie, súhlasy podľa verzie…) som v kole 3 preniesol do NestJS a pokrývajú ich integračné testy API._
+
+### Kolo 3 – oddelený backend (NestJS) a Postgres
+
+Zadanie od používateľa: „FE Next, BE Nest, DB Postgres“, nasadenie zatiaľ iba cez Docker. Claude najprv vysvetlil, aký stack je teraz, navrhol štruktúru monorepa a položil jednu otázku (kde má Nest bežať v produkcii, lebo od toho závisí plánovač). Potom doplnil [plán v3](PLAN.md) a postupoval v commitoch: monorepo + `shared` → NestJS API → prepojenie webu → Docker + testy. Logika pipeline sa nepísala odznova: služby v Neste prebrali kód z kola 2 vrátane opráv z review.
+
+**Overovanie:** `curl` na každý endpoint hneď po prvom spustení API, 30 integračných testov API proti reálnemu Postgresu, E2E cez celý Docker stack, reštart kontajnerov (dáta zostanú) a screenshot dashboardu.
+
+**Kde sa AI pomýlila v kole 3:**
+- **NestJS 12 je čisto ESM.** Claude to zistil až z `package.json` po inštalácii, nie z pamäti. Preto prešiel na ESM aj `shared` balík, aby sa nemiešali CJS a ESM.
+- **Chybný DI token:** prvá verzia `RateLimitService` injektovala `Symbol.for('etfd.db')`, ktorý sa nezhodoval s tokenom `DB`. Claude to zachytil pri čítaní vlastného kódu ešte pred spustením. Token je teraz v samostatnom súbore.
+- **Commit zahŕňal viac, než hovoril jeho popis:** do commitu „Add NestJS API“ sa dostali aj predtým pripravené mazania vo webe. Commit som rozdelil, kým bol iba lokálny.
+- **Build výstup `dist/`** sa omylom dostal do commitu. Odstránený a pridaný do `.gitignore`.
+- **Kolízia Docker volume:** nový Postgres by sa pripojil na volume `pgdata`, v ktorom zostali súbory PGlite z predošlej Docker verzie, a neinicializoval by sa. Volume je premenovaný.
+- **Demo služba** po premenovaní `app` → `web` padala na kontrole hostiteľa v simulačnom skripte.
+- **Test open redirectu** hodnotu zakódoval dvakrát, takže netestoval skutočný útok. Opravené na `'/\t/evil.com'`.
+
 ## 11. Čo v riešení chýba / pred spustením reklamy
 
-- [ ] **Nasadenie na Vercel** a URL do README.
-- [ ] **Env premenné v produkcii:** `DATABASE_URL` (Neon cez Vercel Marketplace), `ADMIN_TOKEN`, `CRON_SECRET`, `SITE_URL`, `RESEND_API_KEY` + `RESEND_FROM` (overená doména), voliteľne `HANDOFF_WEBHOOK_URL`. Bez DB beží produkcia na PGlite v `/tmp`, takže dáta nevydržia reštart.
+- [ ] **Verejný hosting:** zadanie chce bezplatný hosting a URL. Zatiaľ beží všetko cez Docker (rozhodnutie v pláne v3). Na verejné nasadenie stačí ten istý `docker-compose.yml` na VPS (napr. Hetzner) za reverse proxy s HTTPS. Bezplatná alternatíva: web na Verceli + NestJS na Renderi (ten sa však po 15 minútach nečinnosti uspí, čo je pri reklame zlé) + Neon.
+- [ ] **Produkčné env:** silné `ADMIN_TOKEN` a `CRON_SECRET` (v compose sú len demo hodnoty), `SITE_URL` s HTTPS, `RESEND_API_KEY` + `RESEND_FROM` (overená doména), voliteľne `HANDOFF_WEBHOOK_URL`. Zálohy Postgresu.
 - [ ] **Právne:** prevádzkovateľ v `/privacy`, kto volá (vlastný tým alebo partner), posúdenie súhlasov, srovnávacia reklama s konkrétnym fondom (reklama B), Meta „special ad category“.
 - [ ] **Prehľad je „mäkko“ zamknutý:** `/report` je dostupný aj bez e-mailu (noindex). Kto ho hľadá cez URL, by e-mail aj tak nezadal.
 - [ ] **PDF** je zatiaľ „uložiť ako PDF“ cez tlač, nie generovaný súbor.
 - [ ] **Dostupnosť u brokerov** je overená iba pre XTB.
 - [ ] **Aktualizácia dát:** TER a veľkosti fondov sú snímka k 22. 10. 2026. Pre produkciu by bol potrebný mesačný job s výskumným a kontrolným agentom.
-- [ ] **Denný cron** (limit Vercel Hobby): kroky sekvencie odchádzajú raz denne, nie presne na hodinu.
+- [ ] **Limity na IP** (`@nestjs/throttler`) sú v pamäti procesu, čo stačí pre jednu inštanciu API. Pri viacerých inštanciách treba Redis storage. Denné stropy e-mailov sú v Postgrese.
 - [ ] **Turnstile / captcha** pred ostrou kampaňou. Teraz chráni honeypot, kontrola Origin a limity na IP.
 - [ ] **Skenery odkazov** (Outlook Safe Links) môžu zaznamenať „klik v e-maile“. Riešením je počítať klik až z beaconu na cieľovej stránke.
 - [ ] **Double opt-in** e-mailu, ak to bude vyžadovať právny posudok.
 
 ## 12. Spustenie
 
-Najrýchlejšie cez Docker (pozri [úvod](#spustenie-pre-review-docker-bez-node-aj-bez-účtov)). Pre vývoj:
+Najrýchlejšie cez Docker (pozri [úvod](#spustenie-pre-review-docker-bez-node-aj-bez-účtov)). Pre vývoj bez kontajnerov pre API a web:
 
 ```bash
 npm install
-npm run dev                      # http://localhost:3000 (?ad=twin | ?ad=fees), DB = PGlite v .data/, bez účtov
-npm test                         # 35 unit testov (kalkulačka, skóre, sekvencia, telefón, postrehy, bezpečnosť)
-npm run e2e -- http://localhost:3000   # celá cesta v prehliadači, oba varianty, lievik + export
-ADMIN_TOKEN=review npm run e2e -- http://localhost:3000   # to isté proti Docker kontajneru
-node scripts/simulate.mjs http://localhost:3000 400   # simulovaná návštevnosť do lokálneho dashboardu
+cp .env.example .env             # DATABASE_URL na Postgres z docker compose
+npm run db                       # iba Postgres v Dockeri (localhost:5544, + testovacia DB etfd_test)
+npm run dev:api                  # NestJS na :4000 (watch)
+npm run dev:web                  # Next.js na :3000, /api/* → :4000
+npm test                         # 25 testov shared + 30 integračných testov API proti Postgresu
+npm run typecheck                # api + web
+npm run e2e -- http://localhost:3000                              # celá cesta v prehliadači (vývoj: admin otvorený)
+ADMIN_TOKEN=review-token npm run e2e -- http://localhost:3000     # to isté proti Docker stacku
+npm run simulate -- http://localhost:3000 400                     # simulovaná návštevnosť do dashboardu
 npm run ads                      # vyrenderuje reklamy a OG obrázok
-npm run build                    # migrácia Neon (ak je DATABASE_URL) + produkčný build
-node scripts/readme-shots.mjs http://localhost:3000 <ADMIN_TOKEN>   # screenshoty do README
+node scripts/readme-shots.mjs http://localhost:3000 review-token  # screenshoty do README
 ```
 
-**Štruktúra:** `app/` (stránky, `api/` route handlery, `admin/`) · `components/landing`, `components/admin` · `lib/` (`db/` schéma a migrácie, `server/` pipeline, e-maily, štatistiky, `pipeline/` čisté pravidlá skóre a sekvencie) · `proxy.ts` · `data/etfs.json` · `ads/` · `scripts/` · `tests/`
+**Štruktúra:** `apps/web` (Next.js: `app/` stránky + admin UI, `components/`, `lib/api.ts` klient API, `proxy.ts`) · `apps/api` (NestJS: `src/<modul>/`, `drizzle/` migrácie, `test/`) · `packages/shared` (dáta a pravidlá, `test/`) · `ads/` · `scripts/` (E2E, simulácia, screenshoty, reklamy) · `docker-compose.yml`
