@@ -26,4 +26,4 @@ export function compare({ monthly, years, annualReturn, bank, etf }) {
 
 const kc = new Intl.NumberFormat('cs-CZ', { maximumFractionDigits: 0 });
 export const formatKc = (n) => `${kc.format(Math.round(n / 100) * 100)} Kč`;
-export const formatPct = (n) => `${String(n).replace('.', ',')} %`;
+export const formatPct = (n) => `${Number(n).toLocaleString('cs-CZ', { maximumFractionDigits: 4 })}\u00a0%`;
