@@ -1,31 +1,25 @@
 import type { Variant } from '@etfd/shared';
-import { FeeCalculator } from './FeeCalculator';
 import { LeadProvider } from './LeadProvider';
 import { LeadSheet } from './LeadSheet';
 import { MagnetPreview } from './MagnetPreview';
-import { Faq, FinalCta, Footer, Hero, ProofStrip, SecondTool, Trust } from './Sections';
+import { Faq, Footer, Hero, ProofStrip } from './Sections';
+import { HeroTools } from './HeroTools';
 import { SiteHeader } from './SiteHeader';
-import { TwinFinder } from './TwinFinder';
 
 /**
- * Pořadí sekcí (zdůvodnění v README):
- * hero = slib reklamy + funkční nástroj → důkaz (zdroje, čísla) → druhý nástroj → magnet + formulář → důvěra → FAQ → závěrečné CTA
- * Varianta B (poplatky) jen prohodí nástroje: kalkulačka v hero, vyhledávač níž.
+ * Jen 4 sekce (zdůvodnění v README): hero = slib reklamy + oba nástroje v jedné kartě → důkaz a důvěra v jednom pásu
+ * → magnet + formulář → FAQ. Výzva „Přehled zdarma“ je navíc stále v lepkavém headeru.
  */
 export function Landing({ variant }: { variant: Variant }) {
-  const [first, second] = variant === 'fees' ? [<FeeCalculator key="c" title="Kolik vás stojí fond z banky oproti ETF?" />, <TwinFinder key="f" />] : [<TwinFinder key="f" />, <FeeCalculator key="c" />];
   return (
     <LeadProvider variant={variant}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2">Přeskočit na obsah</a>
       <SiteHeader />
       <main id="main" data-variant={variant}>
-        <Hero variant={variant} tool={first} />
+        <Hero variant={variant} tool={<HeroTools variant={variant} />} />
         <ProofStrip />
-        <SecondTool variant={variant} tool={second} />
         <MagnetPreview />
-        <Trust />
         <Faq />
-        <FinalCta />
       </main>
       <Footer />
       <LeadSheet />

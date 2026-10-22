@@ -1,13 +1,9 @@
 /* Serverové sekce landing page. Interaktivní části (nástroje, formuláře) jsou klientské ostrůvky. */
-import { data, exactTickers } from '@etfd/shared';
+import { data, exactTickers, fmtDate, formatPct, host, type Variant } from '@etfd/shared';
 import { FAQ } from '@/lib/content';
-import { fmtDate, formatPct, host } from '@etfd/shared';
-import type { Variant } from '@etfd/shared';
-import { Calculator, Chart, Check, Layers, Link, Mail, Search, ShieldCheck, Target } from '@/components/ui/icons';
+import { Chart, Check, Layers, Link, Mail, ShieldCheck, Target } from '@/components/ui/icons';
 import { Term } from '@/components/ui/Term';
 import { FaqList } from './FaqList';
-import { LeadForm } from './LeadForm';
-import { ReportCover } from './ReportCover';
 import { StatCard } from './StatCard';
 
 export function Logo() {
@@ -81,73 +77,13 @@ export function ProofStrip() {
           <StatCard icon={<Chart />} value={minTer} decimals={2} suffix={'\u00a0%'} label="nejnižší poplatek" />
           <StatCard icon={<Link />} value={data.sources.length} label="ověřených zdrojů" />
         </div>
-        <p className="reveal mt-4 text-[12.5px] text-muted sm:text-[13.5px]">
-          Data přímo od <b className="font-semibold text-ink">Vanguard · iShares · SPDR · justETF · zákony ČR</b> · k {fmtDate(data.as_of)}
-        </p>
-      </div>
-    </section>
-  );
-}
-
-const SECOND: Record<Variant, { eyebrow: string; title: string; lead: string; points: [React.ReactNode, string][] }> = {
-  // varianta A má v hero vyhledávač → druhý nástroj je kalkulačka
-  twin: {
-    eyebrow: 'Kalkulačka poplatků',
-    title: 'Kolik vás stojí fond z banky oproti ETF?',
-    lead: 'Akciový fond z banky a ETF na stejný trh se liší hlavně cenou. Za 20 let z toho jsou statisíce.',
-    points: [[<Calculator key="c" />, 'Vstupní poplatek i roční náklady podle KID'], [<Chart key="ch" />, 'Včetně ušlého zhodnocení, ne jen součet poplatků'], [<ShieldCheck key="s" />, 'Transakční náklady fondu nepočítáme – srovnání nenafukujeme']],
-  },
-  fees: {
-    eyebrow: 'Vyhledávač dvojčat',
-    title: 'Chtěli jste VOO nebo SPY? Tady je jejich evropská verze.',
-    lead: 'Na YouTube radí americká ETF, v aplikaci je nenajdete. Klepněte na ticker a uvidíte dvojče, které si koupíte.',
-    points: [[<Search key="se" />, 'ISIN ke zkopírování do aplikace brokera'], [<Target key="t" />, 'Stejný, nebo nejbližší index – vždy s vysvětlením'], [<Link key="l" />, 'Zdroj u každého čísla']],
-  },
-};
-
-export function SecondTool({ variant, tool }: { variant: Variant; tool: React.ReactNode }) {
-  const s = SECOND[variant];
-  return (
-    <section id="nastroj" aria-labelledby="second-title" className="relative overflow-hidden bg-teal-900 py-10 text-white sm:py-16">
-      <div className="facets" aria-hidden="true" />
-      <div className="reveal wrap relative grid grid-cols-1 items-start gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
-        <div className="lg:sticky lg:top-28 lg:pt-6">
-          <p className="eyebrow eyebrow-light">{s.eyebrow}</p>
-          <h2 id="second-title" className="mt-3 font-display text-[clamp(26px,4.2vw,44px)] leading-[1.08] font-bold text-balance">{s.title}</h2>
-          <p className="mt-4 hidden max-w-[30em] text-[16.5px] leading-relaxed text-white/75 sm:block">{s.lead}</p>
-          <ul className="mt-6 hidden space-y-3 sm:block">
-            {s.points.map(([icon, text]) => (
-              <li key={text} className="flex items-center gap-3 text-[15px] text-white/90">
-                <span className="grid h-10 w-10 flex-none place-items-center rounded-xl bg-white/8 text-[#9fd1cb] [&_svg]:h-5 [&_svg]:w-5">{icon}</span>{text}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="text-text">{tool}</div>
-      </div>
-    </section>
-  );
-}
-
-export function Trust() {
-  const items = [
-    { icon: <ShieldCheck />, t: 'Nejsme broker', d: 'Nic neprodáváme, nebereme provize.' },
-    { icon: <Link />, t: 'Každé číslo má zdroj', d: 'Emitenti, justETF a zákony – s datem.' },
-    { icon: <Mail />, t: 'Žádný spam', d: 'E-mail nikomu nedáme, odhlášení 1 klikem.' },
-  ];
-  return (
-    <section aria-labelledby="trust-title" className="bg-white py-10 sm:py-14">
-      <div className="wrap">
-        <h2 id="trust-title" className="sr-only">Proč nám můžete věřit</h2>
-        <ul className="stagger grid gap-3 sm:gap-4 md:grid-cols-3">
-          {items.map((c) => (
-            <li key={c.t} className="lift card group flex items-center gap-4 p-4 shadow-none sm:p-5">
-              <span className="icon-tile transition-colors duration-300 group-hover:bg-teal-800 group-hover:text-white">{c.icon}</span>
-              <div>
-                <p className="text-[16px] font-bold text-ink">{c.t}</p>
-                <p className="text-[14px] text-muted">{c.d}</p>
-              </div>
-            </li>
+        <ul className="reveal mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[13.5px] text-text sm:text-[14.5px]">
+          {[
+            [<ShieldCheck key="s" />, 'Nejsme broker, nebereme provize'],
+            [<Mail key="m" />, 'Žádný spam, odhlášení 1 klikem'],
+            [<Link key="l" />, `Zdroje: Vanguard, iShares, SPDR, justETF, zákony ČR · k ${fmtDate(data.as_of)}`],
+          ].map(([icon, t]) => (
+            <li key={String(t)} className="flex items-center gap-2 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:flex-none [&_svg]:text-teal-600">{icon}{t}</li>
           ))}
         </ul>
       </div>
@@ -162,25 +98,6 @@ export function Faq() {
         <p className="eyebrow">FAQ</p>
         <h2 id="faq-title" className="h2 mt-3">Časté otázky</h2>
         <FaqList items={FAQ} />
-      </div>
-    </section>
-  );
-}
-
-export function FinalCta() {
-  return (
-    <section aria-labelledby="final-title" className="bg-paper pb-12 sm:pb-20">
-      <div className="wrap">
-        <div className="reveal relative overflow-hidden rounded-[28px] bg-teal-900 px-5 py-8 text-white sm:px-12 sm:py-12">
-          <div className="facets" aria-hidden="true" />
-          <div className="absolute top-1/2 right-14 hidden -translate-y-1/2 lg:block"><div className="animate-float"><ReportCover /></div></div>
-          <div className="relative max-w-[640px]">
-            <p className="eyebrow eyebrow-light">Zdarma · hned na obrazovce</p>
-            <h2 id="final-title" className="mt-3 font-display text-[clamp(28px,4.4vw,44px)] leading-[1.08] font-bold text-balance">Ušetřete si hodiny hledání na justETF.</h2>
-            <p className="mt-3 text-[16.5px] text-white/75">Všech {data.pairs.length} dvojčat s ISIN a poplatky + návod na první nákup. Hned po odeslání.</p>
-            <div className="mt-6"><LeadForm name="final" cta="Chci přehled" tone="dark" /></div>
-          </div>
-        </div>
       </div>
     </section>
   );

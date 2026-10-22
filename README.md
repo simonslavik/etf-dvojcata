@@ -46,21 +46,20 @@ Väčšina českých stránok o ETF porovnáva americké fondy, ktoré si čitat
 
 ## 3. Poradie sekcií a prečo
 
-1. **Hero = sľub reklamy + funkčný nástroj.** Návštevník strávi na stránke pár sekúnd, preto prvá obrazovka nadpisom opakuje reklamu (message match) a **hneď pod ním ukazuje výsledok** (VOO → VUAA). Obe varianty sú staticky predrenderované a `proxy.ts` podľa `?ad=` vyberie správnu, takže stránka nebliká.
+Stránka má iba **4 sekcie** (na mobile asi 3,8 obrazovky). Návštevník z reklamy jej venuje pár sekúnd, preto každá sekcia robí jednu vec a nič sa neopakuje.
+
+1. **Hero = sľub reklamy + oba nástroje v jednej karte.** Nadpis opakuje reklamu (message match) a hneď pod ním je funkčný nástroj s prepínačom **„Najít dvojče | Spočítat poplatky“**. Varianta reklamy určuje predvolenú záložku, takže obe interakcie sú k dispozícii bez ďalšej sekcie.
    - `ad=twin`: „VOO si v Česku nekoupíte. Jeho dvojče ano.“ + vyhľadávač
    - `ad=fees`: „Fond z banky si bere až 2,6 % ročně. ETF jen 0,07 %.“ + kalkulačka
-2. **Pás dôvery hneď pod hero:** odkiaľ sú dáta (Vanguard, iShares, SPDR, justETF, zákony ČR) a tri čísla (12 dvojčiat, 5 s rovnakým indexom, TER od 0,03 %). Rýchly dôkaz, ktorý na mobile zaberie len pár riadkov.
-3. **Druhý nástroj** (kalkulačka alebo vyhľadávač podľa varianty) v tmavej sekcii. Kto nereagoval na prvý uhol, dostane druhý.
-4. **Lead magnet ako konkrétna vec:** „Přehled 12 dvojčat + návod na první nákup“ s obálkou dokumentu, čitateľnými aj rozmazanými riadkami a formulárom priamo pod nimi.
-5. **Dôvera** v troch riadkoch: nie sme broker, každé číslo má zdroj, čo sa stane s e-mailom. Referencie by pri novom produkte boli vymyslené, preto ich nepoužívam.
-6. **FAQ** (4 otázky): prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť. Vrátane zdrojov.
+2. **Dôkaz a dôvera v jednom páse:** štyri čísla (12 dvojčiat, 5 s rovnakým indexom, TER od 0,03 %, 34 zdrojov) a tri záruky (nie sme broker, žiadny spam, odkiaľ sú dáta). Referencie nepoužívam, pri novom produkte by boli vymyslené.
+3. **Lead magnet a formulár:** „Přehled 12 dvojčat + návod na první nákup“ s obálkou dokumentu, čitateľnými aj rozmazanými riadkami a formulárom priamo pod nimi.
+4. **FAQ** (4 zbalené otázky): prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť. Vrátane zdrojov.
 
-**Iba nevyhnutné informácie:** na mobile má stránka asi 6 obrazoviek, na desktope 4,7. Pred skrátením to bolo 8. Podrobnosti (výpočet kalkulačky, alternatívne fondy, zdroje) sú schované pod rozbaľovacími prvkami alebo v prehľade za e-mailom.
-7. **Záverečné CTA** a **pätička** s upozornením a všetkými zdrojmi s dátumom.
+**Čo som vedome vynechal:** samostatnú sekciu s druhým nástrojom (je v prepínači), veľké karty dôvery (sú v jednom páse) a záverečné CTA. Výzva „Přehled zdarma“ je stále v **lepkavom headeri**, takže na konci stránky netreba ďalší formulár. Podrobnosti (výpočet kalkulačky, alternatívne fondy, všetky zdroje) sú v rozbaľovacích prvkoch alebo v prehľade za e-mailom.
 
-**Výzvy sú personalizované** podľa toho, čo návštevník práve robí: „Poslat VUAA + 11 dalších“ po výbere ETF, „Chci ušetřit 429 100 Kč“ po výpočte. Výzva je stále dostupná v **lepkavom headeri**. Spodnú lepkavú lištu som zrušil: na prvej obrazovke zakrývala ISIN a s headerom by na mobile boli dve rovnaké výzvy naraz.
+**Výzvy sú personalizované:** „Poslat VUAA + 11 dalších“ po výbere ETF, „Chci ušetřit 429 100 Kč“ po výpočte.
 
-**Animácie sú jemné a vysvetľujú:** americký ticker sa prečiarkne a dvojča sa vysunie (presne to, čo stránka tvrdí), suma úspory sa plynulo dopočíta, sekcie sa pri scrollovaní vynoria (čisté CSS scroll-driven animations, nič sa neskryje, ak ich prehliadač nepodporuje), FAQ sa rozbalí plynule a po odoslaní sa vykreslí fajka s krátkou oslavou vo farbách značky. Všetko rešpektuje nastavenie systému „obmedziť pohyb“.
+**Animácie sú jemné a vysvetľujú:** americký ticker sa prečiarkne a dvojča sa vysunie, suma úspory sa plynulo dopočíta, čísla sa pri zobrazení dopočítajú od nuly, prepínač nástrojov má posuvnú výplň, po odoslaní sa vykreslí fajka s krátkou oslavou vo farbách značky. Všetko rešpektuje nastavenie „obmedziť pohyb“.
 
 Navigácia ani odkazy, ktoré by viedli preč, na stránke nie sú. Jediný cieľ je kontakt.
 
