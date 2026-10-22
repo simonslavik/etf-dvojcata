@@ -148,3 +148,26 @@ Pipeline s počtami, KPI (leady, náklad na lead z vloženého spendu, kvalifiko
 ## Dizajn
 
 Vizuálny jazyk Clientela, značka zostáva „ETF dvojčata“: serifové nadpisy (Lora) + Lexend, tmavá petrolejová a tehlová, eyebrow nadpisy s prestrihom, karty s ikonou v tónovanom štvorci, „okno aplikácie“ pre nástroje, slovníček pojmov s otáznikom (UCITS, TER, ISIN, KID). Žiadne vymyslené referencie – namiesto nich karty dôvery postavené na faktoch.
+
+---
+
+# Plán v3 – oddelený backend: Next.js + NestJS + Postgres (22. 10. 2026)
+
+Rozhodnutie: FE **Next.js**, BE **NestJS**, DB **Postgres**. Nasadenie zatiaľ **iba Docker** (`docker compose up`), Vercel/Neon odkladáme.
+
+## Štruktúra (npm workspaces)
+
+```
+apps/web        Next.js 16 – landing, prehľad, UI adminu. /api/* → rewrite na Nest (jedna doména, bez CORS)
+apps/api        NestJS 12 – moduly: Database, Tracking, Leads, Pipeline (skóre, odovzdanie), Email (Resend + @nestjs/schedule),
+                Links (klik v e-maile, odhlásenie), Admin (guard + dashboard, export, útrata), Health
+packages/shared čisté TS: dáta ETF, kalkulačka, formátovanie, udalosti, pravidlá skóre, sekvencia, súhlasy, telefón
+```
+
+## Rozhodnutia
+
+- **DB:** reálny Postgres 17 všade (docker), Drizzle ORM + `pg` Pool, migrácie pri štarte API (jeden proces, v transakcii). PGlite a Neon HTTP driver odstránené.
+- **Admin:** cookie vydáva Nest (`POST /admin/login`), Next stránky adminu ju pri SSR preposielajú do API. Formuláre adminu sú obyčajné POST formuláre cez rewrite (SameSite=Lax + kontrola Origin).
+- **Cron:** `@nestjs/schedule` (denne 7:00) + chránený endpoint na ručné spustenie.
+- **Validácia:** Zod schémy cez vlastný `ZodValidationPipe`, konfigurácia cez `@nestjs/config` so Zod validáciou env.
+- **Testy:** shared (Vitest), API (Vitest + SWC + supertest proti reálnemu Postgresu), E2E (Puppeteer) cez celý docker stack.
