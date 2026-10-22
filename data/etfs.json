@@ -526,7 +526,7 @@
   "priips_broker": {
    "label": "Lynx – Key Information Document",
    "url": "https://www.lynxbroker.com/service/products-and-regulations/regulations/key-information-document/",
-   "cs": "Retailový klient nemůže koupit ETF, k jehož emitent nevydává KID – typicky americká ETF. Držené pozice lze prodat, ale ne navýšit.",
+   "cs": "Retailový klient nemůže koupit ETF, ke kterému emitent nevydává KID – typicky americká ETF. Držené pozice lze prodat, ale ne navýšit.",
    "accessed": "2026-10-22"
   },
   "elective_pro": {
