@@ -34,7 +34,7 @@
 }
 
 @layer base {
-  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 88px; }
   body {
     background: var(--color-paper);
     color: var(--color-text);
@@ -165,6 +165,20 @@
 /* Sekce se jemně vynoří při scrollu – čisté CSS (scroll-driven animations). Kde podpora chybí, obsah je prostě vidět. */
 @supports (animation-timeline: view()) {
   .reveal { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 30%; }
+}
+
+/* Karty: jemné nadzvednutí při najetí */
+.lift { transition: transform .3s var(--ease-out-soft), box-shadow .3s var(--ease-out-soft), border-color .3s; }
+@media (hover: hover) {
+  .lift:hover { transform: translateY(-4px); box-shadow: 0 24px 44px -26px rgb(22 59 59 / .45); border-color: var(--color-teal-200); }
+}
+
+/* Postupné vynoření karet: každá má vlastní view timeline, posunutý rozsah = efekt „jedna po druhé“ */
+@supports (animation-timeline: view()) {
+  .stagger > * { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+  .stagger > :nth-child(2) { animation-range: entry 8% entry 45%; }
+  .stagger > :nth-child(3) { animation-range: entry 16% entry 55%; }
+  .stagger > :nth-child(4) { animation-range: entry 24% entry 65%; }
 }
 
 /* FAQ se rozbalí plynule (kde prohlížeč umí ::details-content) */

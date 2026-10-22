@@ -3,11 +3,12 @@ import { data, exactTickers } from '@etfd/shared';
 import { FAQ } from '@/lib/content';
 import { fmtDate, formatPct, host } from '@etfd/shared';
 import type { Variant } from '@etfd/shared';
-import { Calculator, Chart, Check, Link, Mail, Search, ShieldCheck, Target } from '@/components/ui/icons';
+import { Calculator, Chart, Check, Layers, Link, Mail, Search, ShieldCheck, Target } from '@/components/ui/icons';
 import { Term } from '@/components/ui/Term';
 import { FaqList } from './FaqList';
 import { LeadForm } from './LeadForm';
 import { ReportCover } from './ReportCover';
+import { StatCard } from './StatCard';
 
 export function Logo() {
   return (
@@ -65,32 +66,31 @@ export function Hero({ variant, tool }: { variant: Variant; tool: React.ReactNod
   );
 }
 
-/** Rychlý důkaz pod hero: odkud data jsou + tři čísla. Nahrazuje 4 velké karty (na mobilu zabíraly celou obrazovku). */
+/** Důkaz hned pod hero: čtyři velká čísla (dopočítají se při zobrazení) + odkud data jsou */
 export function ProofStrip() {
   const minTer = Math.min(...data.pairs.map((p) => p.twin.ter_pct));
-  const facts = [
-    [String(data.pairs.length), 'ETF dvojčat'],
-    [String(exactTickers.length), 'se stejným indexem'],
-    [`od ${formatPct(minTer)}`, 'roční poplatek'],
-  ];
   return (
-    <section aria-label="Proč nám věřit" className="border-y border-line/70 bg-white">
-      <div className="reveal wrap flex flex-col gap-4 py-5 sm:py-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-muted">
-          <span className="font-medium text-text">Data přímo od</span>
+    <section aria-labelledby="proof-title" className="bg-paper py-12 sm:py-16">
+      <div className="wrap">
+        <div className="reveal flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="eyebrow">Ověřená data</p>
+            <h2 id="proof-title" className="mt-2 font-display text-[26px] leading-tight font-bold text-ink sm:text-[32px]">Žádné odhady. Každé číslo má zdroj.</h2>
+          </div>
+          <p className="text-[14px] text-muted">Data k {fmtDate(data.as_of)}</p>
+        </div>
+        <div className="stagger mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4 lg:grid-cols-4">
+          <StatCard icon={<Layers />} value={data.pairs.length} label="amerických ETF z NYSE s evropským dvojčetem" />
+          <StatCard icon={<Target />} value={exactTickers.length} label="dvojčat sleduje přesně stejný index" />
+          <StatCard icon={<Chart />} value={minTer} decimals={2} suffix={'\u00a0%'} label="nejnižší roční poplatek dvojčete" />
+          <StatCard icon={<Link />} value={data.sources.length} label="ověřených zdrojů s odkazem a datem" />
+        </div>
+        <div className="reveal mt-6 flex flex-wrap items-center gap-x-2.5 gap-y-2 text-[13px] text-muted sm:mt-8">
+          <span className="mr-1 font-medium text-text">Data přímo od</span>
           {['Vanguard', 'iShares', 'SPDR', 'justETF', 'zákony ČR'].map((x) => (
-            <span key={x} className="rounded-full border border-line bg-paper px-2.5 py-1 font-semibold text-ink">{x}</span>
+            <span key={x} className="rounded-full border border-line bg-white px-3 py-1.5 font-semibold text-ink transition-colors hover:border-teal-500">{x}</span>
           ))}
         </div>
-        <dl className="grid grid-cols-3 gap-3 lg:flex lg:gap-8">
-          {facts.map(([v, l]) => (
-            <div key={l}>
-              <dt className="sr-only">{l}</dt>
-              <dd className="num text-[20px] leading-none font-bold text-ink sm:text-[24px]">{v}</dd>
-              <dd className="mt-1 text-[12px] leading-tight text-muted sm:text-[13px]">{l}</dd>
-            </div>
-          ))}
-        </dl>
       </div>
     </section>
   );
@@ -117,8 +117,8 @@ export function SecondTool({ variant, tool }: { variant: Variant; tool: React.Re
   return (
     <section id="nastroj" aria-labelledby="second-title" className="relative overflow-hidden bg-teal-900 py-14 text-white sm:py-20">
       <div className="facets" aria-hidden="true" />
-      <div className="reveal wrap relative grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
-        <div>
+      <div className="reveal wrap relative grid grid-cols-1 items-start gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+        <div className="lg:sticky lg:top-28 lg:pt-6">
           <p className="eyebrow eyebrow-light">{s.eyebrow}</p>
           <h2 id="second-title" className="mt-3 font-display text-[clamp(28px,4.2vw,44px)] leading-[1.08] font-bold text-balance">{s.title}</h2>
           <p className="mt-4 max-w-[30em] text-[16.5px] leading-relaxed text-white/75">{s.lead}</p>
@@ -138,25 +138,31 @@ export function SecondTool({ variant, tool }: { variant: Variant; tool: React.Re
 
 export function Trust() {
   const items = [
-    { icon: <ShieldCheck />, t: 'Nejsme broker ani poradce', d: 'Nic neprodáváme a od brokerů ani správců fondů nebereme provize.' },
-    { icon: <Link />, t: 'Každé číslo má zdroj', d: `Emitenti, justETF a zákony – u každého údaje odkaz a datum (${fmtDate(data.as_of)}).` },
-    { icon: <Mail />, t: 'E-mail jen na přehled a tipy', d: 'Nikomu ho neprodáváme. Odhlášení jedním klikem, měření bez reklamních cookies.' },
+    { icon: <ShieldCheck />, t: 'Nejsme broker ani poradce', d: 'Nic neprodáváme a od brokerů ani správců fondů nebereme provize. Ukazujeme, co si můžete koupit a kolik to stojí – rozhodnutí je vaše.' },
+    { icon: <Link />, t: 'Každé číslo má zdroj', d: `Poplatky a ISIN od emitentů a z justETF, daňová pravidla ze zákona. U každého údaje je odkaz a datum (${fmtDate(data.as_of)}).` },
+    { icon: <Mail />, t: 'E-mail jen na přehled a tipy', d: 'Pošleme přehled a pár tipů během dvou týdnů. E-mail nikomu neprodáváme, odhlásíte se jedním klikem. Bez reklamních cookies.' },
   ];
   return (
-    <section aria-labelledby="trust-title" className="bg-white py-12 sm:py-16">
+    <section aria-labelledby="trust-title" className="bg-white py-14 sm:py-20">
       <div className="wrap">
-        <h2 id="trust-title" className="sr-only">Kdo za tím stojí</h2>
-        <ul className="reveal grid gap-6 md:grid-cols-3 md:gap-8">
-          {items.map((c) => (
-            <li key={c.t} className="flex gap-4">
-              <span className="icon-tile">{c.icon}</span>
-              <div>
-                <p className="text-[16.5px] font-bold text-ink">{c.t}</p>
-                <p className="mt-1 text-[14.5px] leading-relaxed text-muted">{c.d}</p>
+        <div className="reveal">
+          <p className="eyebrow">Férově</p>
+          <h2 id="trust-title" className="h2 mt-3 max-w-[16em]">Proč nám můžete věřit</h2>
+        </div>
+        <ul className="stagger mt-8 grid gap-4 md:grid-cols-3 md:gap-5">
+          {items.map((c, i) => (
+            <li key={c.t} className="lift card group relative overflow-hidden p-6 shadow-none sm:p-8">
+              <div className="flex items-center justify-between">
+                <span className="icon-tile transition-colors duration-300 group-hover:bg-teal-800 group-hover:text-white">{c.icon}</span>
+                <span className="font-display text-[34px] leading-none font-bold text-teal-100 transition-colors duration-300 group-hover:text-teal-200">0{i + 1}</span>
               </div>
+              <h3 className="mt-6 text-[19px] font-bold text-ink sm:text-[21px]">{c.t}</h3>
+              <p className="mt-2 text-[15px] leading-relaxed text-muted sm:text-[16px]">{c.d}</p>
+              <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[3px] origin-left scale-x-0 bg-gradient-to-r from-teal-700 to-brick transition-transform duration-500 group-hover:scale-x-100" />
             </li>
           ))}
         </ul>
+        <p className="reveal mt-6 text-[13.5px] text-muted"><b className="text-ink">Nejde o investiční doporučení.</b> Investice nesou riziko, minulé výnosy nezaručují budoucí.</p>
       </div>
     </section>
   );
