@@ -3,12 +3,22 @@ const LABELS = {
   form_view: 'Viděl formulář', form_start: 'Začal psát e-mail', form_submit: 'Odeslal formulář', lead_ok: 'Lead uložen', qualify: 'Odpověděl na kvalifikaci',
 };
 const el = document.getElementById('stats');
-const token = new URLSearchParams(location.search).get('token') || '';
+// Token se zadá jednou a drží se v sessionStorage – nejde do URL, logů ani Refereru
+let token = '';
+try { token = sessionStorage.getItem('etfd_stats') || ''; } catch { /* bez storage */ }
 
-fetch(`/api/stats?token=${encodeURIComponent(token)}`)
+fetch('/api/stats', { headers: { 'x-stats-token': token } })
   .then((r) => r.json())
   .then((s) => {
-    if (s.error) { el.innerHTML = `<p class="warn">Chyba: ${s.error}</p>`; return; }
+    if (s.error) {
+      el.innerHTML = `<p class="warn">Chyba: ${s.error}</p><form><input class="input" name="t" type="password" placeholder="STATS_TOKEN" style="max-width:320px"> <button class="btn btn--primary">Otevřít</button></form>`;
+      el.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        try { sessionStorage.setItem('etfd_stats', e.target.t.value); } catch { /* bez storage */ }
+        location.reload();
+      });
+      return;
+    }
     const pct = (a, b) => (b ? `${((a / b) * 100).toFixed(1)} %` : '–');
     const rows = s.funnel.map((e) => {
       const all = s.counts.all[e] || 0;

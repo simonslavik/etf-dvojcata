@@ -3,7 +3,7 @@ import { countEvent } from './_lib/store.js';
 
 export const EVENTS = new Set([
   'page_view', 'scroll', 'finder_select', 'isin_copy', 'calc_change', 'cta_click',
-  'form_view', 'form_start', 'form_error', 'form_submit', 'lead_ok', 'qualify', 'report_open', 'faq_open', 'sticky_view',
+  'form_view', 'form_start', 'form_error', 'form_submit', 'lead_ok', 'qualify', 'report_open', 'report_view', 'faq_open', 'sticky_view',
 ]);
 const VARIANTS = new Set(['twin', 'fees']);
 
@@ -16,10 +16,13 @@ export default async function handler(req, res) {
     const sid = clip(b.sid, 64) || 'anon';
     await countEvent(variant, b.event, sid);
     // Surový log do Vercel Logs (bez osobních údajů) – lze dohledat celou cestu jedné relace
-    console.log(JSON.stringify({ k: 'ev', e: b.event, v: variant, sid, src: clip(b.utm_source, 40), ct: clip(b.utm_content, 40), d: clip(b.device, 10), t: b.t, p: b.props }));
+    const props = clip(JSON.stringify(b.props ?? {}), 300);
+    const t = Number.isFinite(b.t) ? Math.round(b.t) : null;
+    console.log(JSON.stringify({ k: 'ev', e: b.event, v: variant, sid, src: clip(b.utm_source, 40), ct: clip(b.utm_content, 40), d: clip(b.device, 10), t, p: props }));
     return send(res, 200, { ok: true });
   } catch (e) {
-    console.error('track error', e.message);
-    return send(res, e.status || 500, { error: 'server' });
+    const status = e.status || e.statusCode || 500;
+    if (status >= 500) console.error('track error', e.message);
+    return send(res, status, { error: 'server' });
   }
 }

@@ -93,6 +93,11 @@
       (function () {
         var p = new URLSearchParams(location.search);
         var v = (p.get('ad') || p.get('utm_content') || '').toLowerCase();
+        // Varianta se drží po dobu relace (reload bez parametrů ji nezmění)
+        try {
+          if (v) sessionStorage.setItem('etfd_variant', v === 'b' || v === 'fees' ? 'fees' : 'twin');
+          else v = sessionStorage.getItem('etfd_variant') || '';
+        } catch (e) {}
         if (v !== 'b' && v !== 'fees') return;
         document.body.dataset.variant = 'fees';
         var slot = document.querySelector('[data-hero-slot]');
@@ -131,7 +136,7 @@
                 <input id="email-inline" class="input" type="email" name="email" inputmode="email" autocomplete="email" placeholder="vas@email.cz" required>
                 <button class="btn btn--primary" type="submit">Odemknout</button>
               </div>
-              <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <input class="hp" type="text" name="hp_f7" tabindex="-1" autocomplete="off" aria-hidden="true">
               <p class="lead-form__error" role="alert" hidden></p>
               <p class="lead-form__legal">Občas pošleme tip k investování do ETF. Odhlásíte se jedním klikem. <a href="/soukromi.html">Ochrana údajů</a></p>
             </form>
@@ -172,7 +177,7 @@
             <input id="email-final" class="input" type="email" name="email" inputmode="email" autocomplete="email" placeholder="vas@email.cz" required>
             <button class="btn btn--primary" type="submit">Chci přehled</button>
           </div>
-          <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <input class="hp" type="text" name="hp_f7" tabindex="-1" autocomplete="off" aria-hidden="true">
           <p class="lead-form__error" role="alert" hidden></p>
           <p class="lead-form__legal">Žádný spam. Odhlásíte se jedním klikem. <a href="/soukromi.html">Ochrana údajů</a></p>
         </form>
@@ -205,7 +210,7 @@
       <form class="lead-form" data-form="sheet" novalidate>
         <label class="sr-only" for="email-sheet">E-mail</label>
         <input id="email-sheet" class="input input--lg" type="email" name="email" inputmode="email" autocomplete="email" placeholder="vas@email.cz" required>
-        <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input class="hp" type="text" name="hp_f7" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="lead-form__error" role="alert" hidden></p>
         <button class="btn btn--primary btn--block btn--lg" type="submit">Odemknout přehled</button>
         <p class="lead-form__legal">Občas pošleme tip k ETF. Odhlásíte se jedním klikem. <a href="/soukromi.html">Ochrana údajů</a></p>

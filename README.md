@@ -119,12 +119,29 @@ Pracoval som v Claude Code. Postup: **najprv plán** ([PLAN.md](PLAN.md), schvá
 
 ### Výsledok review
 
-_Doplní sa po dokončení review agenta._
+Review agent dostal kód bez kontextu a jediný pokyn: „iba reportuj, nič neupravuj“. Našiel 14 problémov. Opravil som 13 a každú opravu som overil (E2E + `curl` na API):
+
+| Závažnosť | Problém | Oprava |
+|---|---|---|
+| **Vysoká** | Honeypot s názvom `company` by vyplnil autofill prehliadača a **reálne leady by potichu zmizli** | Pole sa volá `hp_f7` a každý zásah sa loguje |
+| Vysoká | `/api/lead` bez limitu = otvorený relay na posielanie e-mailov | Limit 20 leadov na IP za 10 min (pri CGNAT u mobilných operátorov by prísnejší limit blokoval reálnych ľudí), denný strop e-mailov, kontrola `Origin` |
+| Vysoká | `/api/stats` bez `STATS_TOKEN` je verejné | V produkcii bez tokenu zatvorené, token sa posiela v hlavičke, nie v URL |
+| Stredná | V Redis režime sa leady počítali pri každom odoslaní | `SADD`/`SCARD`, `created` sa neprepisuje |
+| Stredná | Návšteva `/prehled.html` sa počítala ako `page_view` varianty A | Variant sa drží v `sessionStorage`, prehľad má vlastnú udalosť `report_view` |
+| Stredná | `sendBeacon` s `application/json` môže vyhodiť výnimku a záložný `fetch` sa nespustí | `text/plain` + `fetch` v `catch` |
+| Stredná | Bez podpory `<dialog>` (iOS < 15.4) by CTA nefungovalo | Fallback: posun na formulár na stránke |
+| Stredná | Kvalifikácia sa dala zapísať k cudziemu e-mailu | Zapíše sa len k existujúcemu leadu |
+| Stredná | Odkazy v e-maile sa skladali z hlavičky `Host` | Premenná prostredia `SITE_URL` |
+| Nízka | Klávesnica na iOS prekryje tlačidlo v sheete | Posun podľa `visualViewport` + `dvh` |
+| Nízka | Skryté lepkavé CTA bolo dosiahnuteľné klávesnicou | `inert` + `visibility` |
+| Nízka | Poškodený JSON → 500 | → 400 |
+
+Neopravené: „brána sa dá obísť“ (`/prehled.html` a ISIN v JS bundli). Je to vedomé rozhodnutie, zdôvodnené v časti 9.
 
 ## 9. Čo v riešení chýba / pred spustením reklamy
 
 - [ ] **Nasadenie na Vercel** a URL do README (`vercel` CLI, alebo import repozitára na vercel.com).
-- [ ] **Upstash Redis + Resend** (env premenné v `.env.example`). Bez nich sa leady a udalosti držia iba v pamäti funkcie a e-mail neodchádza. Stránka funguje aj tak (prehľad sa odomkne na stránke), ale dáta sa strácajú.
+- [ ] **Upstash Redis + Resend + `SITE_URL` + `STATS_TOKEN`** (env premenné v `.env.example`). Bez nich sa leady a udalosti držia iba v pamäti funkcie a e-mail neodchádza. Stránka funguje aj tak (prehľad sa odomkne na stránke), ale dáta sa strácajú.
 - [ ] **Právne:** doplniť prevádzkovateľa do `soukromi.html`, posúdiť text súhlasu (marketing vs. doručenie prehľadu), double opt-in, srovnávaciu reklamu s konkrétnym fondom (reklama B) a Meta „special ad category“.
 - [ ] **Prehľad je „mäkko“ zamknutý:** `/prehled.html` je dostupný aj bez e-mailu (noindex). Pre lead magnet je to podľa mňa v poriadku, lebo kto ho hľadá cez URL, by e-mail aj tak nezadal.
 - [ ] **PDF** je zatiaľ „uložiť ako PDF“ cez tlač, nie generovaný súbor.

@@ -39,11 +39,13 @@ export function track(event, props = {}, { once = false } = {}) {
   }
   const payload = { event, ...context, props, t: Math.round(performance.now() - t0), ts: Date.now() };
   const body = JSON.stringify(payload);
+  // text/plain = „simple request“: sendBeacon ho nikdy neodmítne kvůli CORS a server ho stejně parsuje jako JSON
+  const viaFetch = () => fetch(ENDPOINT, { method: 'POST', body, headers: { 'content-type': 'text/plain' }, keepalive: true }).catch(() => {});
   try {
-    if (!navigator.sendBeacon?.(ENDPOINT, new Blob([body], { type: 'application/json' }))) {
-      fetch(ENDPOINT, { method: 'POST', body, headers: { 'content-type': 'application/json' }, keepalive: true }).catch(() => {});
-    }
-  } catch { /* měření nikdy nesmí rozbít stránku */ }
+    if (!navigator.sendBeacon?.(ENDPOINT, new Blob([body], { type: 'text/plain' }))) viaFetch();
+  } catch {
+    viaFetch(); // měření nikdy nesmí rozbít stránku
+  }
   window.posthog?.capture?.(event, { ...props, variant: context.variant });
   if (import.meta.env.DEV) console.debug('[track]', event, props);
 }

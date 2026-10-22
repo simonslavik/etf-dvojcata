@@ -11,6 +11,7 @@ const UNLOCK_KEY = 'etfd_unlocked';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const state = { selected: data.pairs[0].us.ticker, calc: { monthly: 3000, years: 20 }, calcTouched: false, email: null };
 const sheet = $('[data-sheet]');
+const hasDialog = typeof sheet.showModal === 'function'; // iOS Safari < 15.4 <dialog> nemá
 
 /* ---------- Vyhledávač dvojčat ---------- */
 function selectTwin(ticker) {
@@ -89,11 +90,26 @@ function openSheet(source) {
     location.href = '/prehled.html';
     return;
   }
+  if (!hasDialog) {
+    // Fallback: místo sheetu sjedeme k formuláři pod náhledem přehledu
+    $('#prehled').scrollIntoView({ behavior: 'smooth' });
+    $('#email-inline').focus({ preventScroll: true });
+    return;
+  }
   sheet.dataset.source = source;
   setSheetStep('form');
   if (!sheet.open) sheet.showModal();
   track('form_view', { form: 'sheet', source });
   $('#email-sheet').focus(); // v rámci gesta → na iOS se otevře klávesnice
+}
+
+/* Klávesnice na iOS zmenší jen visual viewport – sheet posuneme nad ni, ať je tlačítko vidět */
+function wireKeyboardOffset() {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const update = () => sheet.style.setProperty('--kb', `${Math.max(0, innerHeight - vv.height - vv.offsetTop)}px`);
+  vv.addEventListener('resize', update);
+  vv.addEventListener('scroll', update);
 }
 
 function wireForms() {
@@ -137,7 +153,7 @@ function wireForms() {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
-            email, company: form.company.value, source, ...context,
+            email, hp_f7: form.hp_f7.value, source, ...context,
             interest: state.selected,
             calc_monthly: state.calcTouched ? state.calc.monthly : null,
             consent_text: form.querySelector('.lead-form__legal')?.textContent.trim(),
@@ -150,9 +166,10 @@ function wireForms() {
         $('[data-done-lead]').textContent = res.emailSent
           ? 'Přehled je odemčený níže na stránce a poslali jsme ho i na váš e-mail.'
           : 'Přehled je odemčený níže na stránce – můžete ho rovnou otevřít.';
+        form.reset();
+        if (!hasDialog) return $('#prehled').scrollIntoView({ behavior: 'smooth' });
         setSheetStep('done');
         if (!sheet.open) sheet.showModal();
-        form.reset();
       } catch {
         showError('Nepodařilo se připojit. Zkontrolujte internet a zkuste to znovu.', 'network');
       } finally {
@@ -185,13 +202,19 @@ function wireSticky() {
   // Schová se, když je na očích jiné CTA nebo formulář – nikdy dvě výzvy naráz
   const blockers = [$('.hero [data-cta]'), $('[data-form="inline"]'), $('[data-form="final"]')].filter(Boolean);
   const visible = new Set();
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) e.isIntersecting ? visible.add(e.target) : visible.delete(e.target);
+  const update = () => {
     const show = visible.size === 0 && !sheet.open;
     sticky.classList.toggle('is-visible', show);
+    sticky.inert = !show; // skrytý pruh nesmí být dosažitelný klávesnicí ani čtečkou
     if (show) track('sticky_view', {}, { once: true });
+  };
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) e.isIntersecting ? visible.add(e.target) : visible.delete(e.target);
+    update();
   });
   blockers.forEach((el) => io.observe(el));
+  sheet.addEventListener('close', update);
+  $$('[data-cta]').forEach((b) => b.addEventListener('click', () => requestAnimationFrame(update)));
 }
 
 /* ---------- Start ---------- */
@@ -199,6 +222,7 @@ wireFinder();
 wireCalc();
 wireForms();
 wireSticky();
+wireKeyboardOffset();
 if (isUnlocked()) unlock({ persist: false });
 
 track('page_view', { path: location.pathname, ref: document.referrer ? new URL(document.referrer).hostname : null });

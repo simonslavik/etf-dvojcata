@@ -299,14 +299,14 @@ input[type="range"]::-moz-range-thumb { width: 28px; height: 28px; border-radius
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
   padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
   background: linear-gradient(180deg, rgba(245, 242, 235, 0), var(--paper) 30%);
-  transform: translateY(110%); transition: transform .25s ease;
+  transform: translateY(110%); visibility: hidden; transition: transform .25s ease, visibility 0s .25s;
 }
-.sticky.is-visible { transform: none; }
+.sticky.is-visible { transform: none; visibility: visible; transition: transform .25s ease; }
 .sticky[hidden] { display: block; }
 
 /* ---------- Bottom sheet ---------- */
 .sheet {
-  width: 100%; max-width: 520px; max-height: 92vh; margin: auto auto 0; padding: 0;
+  width: 100%; max-width: 520px; max-height: 92vh; max-height: calc(92dvh - var(--kb, 0px)); margin: auto auto var(--kb, 0px); padding: 0; overflow-y: auto;
   border: 0; border-radius: 24px 24px 0 0; background: var(--card); color: var(--text);
   box-shadow: 0 -20px 60px rgba(0, 0, 0, .25);
 }

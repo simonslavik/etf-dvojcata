@@ -38,4 +38,4 @@ document.getElementById('report').innerHTML = `
   <h2>Co v přehledu není</h2>
   <p class="muted">${data.excluded.map((e) => `<b>${esc(e.ticker)}</b>`).join(', ')} – obchodují se na burze Nasdaq, ne na NYSE. Údaje jsou orientační, před nákupem si je ověřte v dokumentu KID u svého brokera. Nejde o investiční doporučení.</p>
 `;
-track('page_view', { path: location.pathname });
+track('report_view', { from: new URLSearchParams(location.search).get('utm_source') || 'page' });
