@@ -1,0 +1,126 @@
+@import 'tailwindcss';
+
+/* Tokeny – vizuální jazyk blízký clientelo.cz: tmavá petrolejová, cihlová, serifové nadpisy + Lexend */
+@theme {
+  --font-display: var(--font-lora), 'Iowan Old Style', Georgia, serif;
+  --font-sans: var(--font-lexend), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --color-ink: #163b3b;
+  --color-teal-950: #0f2c2c;
+  --color-teal-900: #163b3b;
+  --color-teal-800: #1d4a4a;
+  --color-teal-700: #275e5d;
+  --color-teal-600: #33716e;
+  --color-teal-500: #4a8a86;
+  --color-teal-200: #c9dbd8;
+  --color-teal-100: #e2ecea;
+  --color-teal-50: #eef4f2;
+  --color-paper: #f5f8f7;
+  --color-line: #dbe5e2;
+  --color-text: #24302f;
+  --color-muted: #5d6f6e;
+  --color-brick: #a63d36;
+  --color-brick-700: #8a302a;
+  --color-brick-100: #f6dfdc;
+  --color-brick-50: #fbefed;
+  --color-ok: #2e7a4f;
+  --color-ok-50: #e6f3eb;
+
+  --radius-card: 22px;
+  --shadow-card: 0 1px 0 rgb(22 59 59 / 0.04), 0 18px 40px -22px rgb(22 59 59 / 0.28);
+  --shadow-float: 0 30px 60px -30px rgb(15 44 44 / 0.45);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    background: var(--color-paper);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--color-brick-100); }
+  :focus-visible { outline: 3px solid color-mix(in srgb, var(--color-brick) 55%, transparent); outline-offset: 2px; border-radius: 6px; }
+  button { cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+}
+
+@layer components {
+  .wrap { width: 100%; max-width: 1180px; margin-inline: auto; padding-inline: 16px; }
+  @media (min-width: 640px) { .wrap { padding-inline: 28px; } }
+
+  /* „LEADGENERACE · MARTECH“ – cihlový prostrkaný nadpis nad sekcí */
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-brick); }
+  .eyebrow-light { color: #e9a9a2; }
+
+  /* tabular-nums jen u čísel – Lora v tnum nahrazuje i mezeru širokou „číselnou“ mezerou */
+  .num { font-variant-numeric: tabular-nums; }
+  .h2 { font-family: var(--font-display); font-weight: 700; color: var(--color-ink); font-size: clamp(28px, 4.2vw, 44px); line-height: 1.08; letter-spacing: -0.01em; text-wrap: balance; }
+
+  .card { background: #fff; border: 1px solid var(--color-line); border-radius: var(--radius-card); box-shadow: var(--shadow-card); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 52px; padding: 0 24px; border-radius: 14px; font-weight: 600; font-size: 16px; line-height: 1.2;
+    transition: transform .15s var(--ease-out-soft), background-color .15s, box-shadow .15s; text-align: center;
+  }
+  .btn:active { transform: translateY(1px) scale(.99); }
+  .btn-primary { background: var(--color-brick); color: #fff; box-shadow: 0 10px 24px -12px rgb(166 61 54 / .7), inset 0 -2px 0 rgb(0 0 0 / .14); }
+  .btn-primary:hover { background: var(--color-brick-700); }
+  .btn-primary:disabled { opacity: .7; cursor: progress; }
+  .btn-ghost { background: #fff; color: var(--color-ink); border: 1.5px solid var(--color-line); }
+  .btn-ghost:hover { border-color: var(--color-teal-500); }
+  .btn svg { width: 18px; height: 18px; flex: none; }
+
+  .chip {
+    min-height: 42px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--color-line); background: #fff;
+    font-family: var(--font-mono); font-weight: 700; font-size: 14px; color: var(--color-ink);
+    transition: background-color .15s, border-color .15s, color .15s, transform .15s var(--ease-out-soft);
+  }
+  .chip:hover { border-color: var(--color-teal-500); }
+  .chip[aria-selected='true'], .chip[aria-pressed='true'] { background: var(--color-teal-800); border-color: var(--color-teal-800); color: #fff; }
+
+  /* Ikona v tónovaném čtverci (jako karty na clientelo.cz) */
+  .icon-tile { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--color-teal-50); color: var(--color-teal-700); flex: none; }
+  .icon-tile svg { width: 22px; height: 22px; }
+
+  /* Okno aplikace – rámeček nástrojů (tečky + adresní řádek) */
+  .window { background: #fff; border-radius: var(--radius-card); border: 1px solid var(--color-line); box-shadow: var(--shadow-float); overflow: hidden; }
+  .window-bar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #f3f6f5; border-bottom: 1px solid var(--color-line); }
+  .window-dots { display: flex; gap: 6px; }
+  .window-dots i { width: 10px; height: 10px; border-radius: 50%; background: #d3dcda; }
+  .window-url { font-size: 12.5px; color: var(--color-muted); background: #fff; border: 1px solid var(--color-line); border-radius: 8px; padding: 5px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .input {
+    width: 100%; min-height: 52px; padding: 0 16px; border-radius: 14px; border: 1.5px solid var(--color-line); background: #fff;
+    font-size: 16px; color: var(--color-text); transition: border-color .15s, box-shadow .15s;
+  }
+  .input:focus { outline: none; border-color: var(--color-teal-600); box-shadow: 0 0 0 4px rgb(51 113 110 / .14); }
+  .input[aria-invalid='true'] { border-color: var(--color-brick); }
+
+  .src-link { color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 2px; }
+  .src-link:hover { text-decoration-color: currentColor; }
+
+  .range { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; --p: 50%; }
+  .range::-webkit-slider-runnable-track { height: 6px; border-radius: 99px; background: linear-gradient(to right, var(--color-brick) var(--p), var(--color-teal-100) var(--p)); }
+  .range::-moz-range-track { height: 6px; border-radius: 99px; background: linear-gradient(to right, var(--color-brick) var(--p), var(--color-teal-100) var(--p)); }
+  .range::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -11px; border-radius: 50%; background: #fff; border: 2px solid var(--color-brick); box-shadow: 0 4px 10px rgb(0 0 0 / .18); }
+  .range::-moz-range-thumb { width: 24px; height: 24px; border-radius: 50%; background: #fff; border: 2px solid var(--color-brick); box-shadow: 0 4px 10px rgb(0 0 0 / .18); }
+
+  /* Velké šikmé plochy v tmavých sekcích (motiv z clientelo.cz) */
+  .facets { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .facets::before, .facets::after { content: ''; position: absolute; background: rgb(255 255 255 / .035); }
+  .facets::before { width: 70%; height: 140%; right: -20%; top: -10%; transform: skewX(-28deg); }
+  .facets::after { width: 40%; height: 120%; right: -8%; top: 20%; transform: skewX(-28deg); background: rgb(255 255 255 / .03); }
+}
+
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.animate-rise { animation: rise .45s var(--ease-out-soft) both; }

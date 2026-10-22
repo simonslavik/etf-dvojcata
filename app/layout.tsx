@@ -1,0 +1,34 @@
+import type { Metadata, Viewport } from 'next';
+import { JetBrains_Mono, Lexend, Lora } from 'next/font/google';
+import './globals.css';
+
+// next/font písma self-hostuje při buildu (žádný render-blocking požadavek na Google); latin-ext kvůli češtině
+const lora = Lora({ subsets: ['latin', 'latin-ext'], weight: ['600', '700'], variable: '--font-lora', display: 'swap' });
+const lexend = Lexend({ subsets: ['latin', 'latin-ext'], weight: ['400', '500', '600', '700'], variable: '--font-lexend', display: 'swap' });
+const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['500', '700'], variable: '--font-jetbrains', display: 'swap' });
+
+const site = process.env.SITE_URL || 'http://localhost:3000';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(site),
+  title: 'ETF dvojčata – evropské verze amerických ETF, které v Česku koupíte',
+  description: 'VOO, SPY nebo VTI vám evropský broker neprodá. Najděte jejich evropská dvojčata se stejným indexem, ISIN a poplatky. Zdarma, za pár vteřin.',
+  openGraph: {
+    title: 'VOO si v Česku nekoupíte. Jeho dvojče ano.',
+    description: 'Evropské verze populárních amerických ETF – stejný index, ISIN, poplatky. Přehled zdarma.',
+    images: ['/og.png'],
+    locale: 'cs_CZ',
+    type: 'website',
+  },
+  icons: { icon: '/favicon.svg' },
+};
+
+export const viewport: Viewport = { themeColor: '#163b3b', width: 'device-width', initialScale: 1, viewportFit: 'cover' };
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="cs" className={`${lora.variable} ${lexend.variable} ${mono.variable}`}>
+      <body>{children}</body>
+    </html>
+  );
+}
