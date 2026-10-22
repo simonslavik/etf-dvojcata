@@ -59,7 +59,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       <main className="wrap space-y-5 py-6 sm:py-8">
         {(dbMode === 'pglite' || !emailEnabled) && (
           <p className="rounded-xl border border-brick-100 bg-brick-50 px-4 py-3 text-[14px] text-brick-700">
-            {dbMode === 'pglite' && <>Databáze běží lokálně v PGlite – v produkci nastavte <code>DATABASE_URL</code> (Neon). </>}
+            {dbMode === 'pglite' && <>Databáze běží v PGlite (lokálně / Docker) – pro nasazení na Vercel nastavte <code>DATABASE_URL</code> (Neon). </>}
             {!emailEnabled && <>E-maily jsou vypnuté (chybí <code>RESEND_API_KEY</code> / <code>RESEND_FROM</code>) – kroky sekvence se označují jako přeskočené.</>}
           </p>
         )}

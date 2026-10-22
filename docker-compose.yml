@@ -1,0 +1,32 @@
+# docker compose up --build        → web na http://localhost:3000, admin http://localhost:3000/admin (token: review)
+# jiný port: PORT=8080 docker compose up --build
+# docker compose --profile demo run --rm demo-data   → nasimuluje 400 návštěv do dashboardu
+services:
+  app:
+    build: .
+    ports: ["${PORT:-3000}:3000"]
+    environment:
+      SITE_URL: http://localhost:${PORT:-3000}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-review}
+      CRON_SECRET: ${CRON_SECRET:-review}
+      # Volitelné – bez nich se e-maily jen označí jako přeskočené a předání čeká ve frontě
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM: ${RESEND_FROM:-}
+      HANDOFF_WEBHOOK_URL: ${HANDOFF_WEBHOOK_URL:-}
+    volumes: ["pgdata:/data"]
+    restart: unless-stopped
+
+  # Simulovaná návštěvnost přes skutečné API (e-maily @example.com) – jen pro ukázku dashboardu
+  demo-data:
+    profiles: [demo]
+    image: node:22-alpine
+    working_dir: /scripts
+    volumes: ["./scripts/simulate.mjs:/scripts/simulate.mjs:ro"]
+    command: ["node", "simulate.mjs", "http://app:3000", "400"]
+    # Formulář přijímá jen Origin webu (ochrana proti zneužití) – simulace se tváří jako prohlížeč na localhostu
+    environment: { SIM_ORIGIN: "http://localhost:${PORT:-3000}" }
+    depends_on:
+      app: { condition: service_healthy }
+
+volumes:
+  pgdata:

@@ -1,0 +1,10 @@
+node_modules
+.next
+.data
+.git
+.env*
+!.env.example
+screenshots
+ai-log
+*.log
+.DS_Store

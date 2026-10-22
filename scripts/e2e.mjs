@@ -1,13 +1,16 @@
 // E2E: projde celou cestu návštěvníka v obou variantách (mobil) a ověří, že ji změřil lievik i pipeline.
-// node scripts/e2e.mjs [baseUrl]   (lokálně bez ADMIN_TOKEN je admin API otevřené)
+// node scripts/e2e.mjs [baseUrl]   (v `next dev` je admin API otevřené; jinak ADMIN_TOKEN=… node scripts/e2e.mjs)
 import puppeteer from 'puppeteer-core';
 import assert from 'node:assert/strict';
+import { createHmac } from 'node:crypto';
 
 const base = process.argv[2] || 'http://localhost:3100';
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true });
-const stats = async () => (await fetch(`${base}/api/admin/funnel?d=1`)).json();
-const csv = async () => (await fetch(`${base}/api/admin/export`)).text();
+// Stejná admin cookie, jakou nastaví přihlášení (lib/server/auth.ts)
+const admin = process.env.ADMIN_TOKEN ? { cookie: `etfd_admin=${createHmac('sha256', process.env.ADMIN_TOKEN).update('etfd-admin-v1').digest('base64url')}` } : {};
+const stats = async () => (await fetch(`${base}/api/admin/funnel?d=1`, { headers: admin })).json();
+const csv = async () => (await fetch(`${base}/api/admin/export`, { headers: admin })).text();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const before = await stats();
 

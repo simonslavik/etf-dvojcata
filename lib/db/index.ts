@@ -26,7 +26,7 @@ async function connect(): Promise<Db> {
   const { PGlite } = await import('@electric-sql/pglite');
   const { drizzle } = await import('drizzle-orm/pglite');
   const { migrate } = await import('drizzle-orm/pglite/migrator');
-  const dir = process.env.VERCEL ? '/tmp/pglite' : path.join(process.cwd(), '.data/pglite');
+  const dir = process.env.PGLITE_DIR || (process.env.VERCEL ? '/tmp/pglite' : path.join(process.cwd(), '.data/pglite'));
   (await import('node:fs')).mkdirSync(path.dirname(dir), { recursive: true }); // PGlite vytvoří jen poslední úroveň
   const db = drizzle(new PGlite(dir), { schema });
   await migrate(db, { migrationsFolder });

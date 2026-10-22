@@ -8,6 +8,15 @@ Landing page pre českého drobného investora, ktorý prichádza z reklamy na m
 - **Dáta so zdrojom pri každom údaji:** [data/etfs.json](data/etfs.json)
 - **Plán:** [PLAN.md](PLAN.md) (v1 + v2) · **Export konverzácií s Claude Code:** [ai-log/](ai-log/)
 
+### Spustenie pre review (Docker, bez Node aj bez účtov)
+
+```bash
+docker compose up --build                           # web: http://localhost:3000  ·  admin: http://localhost:3000/admin (token: review)
+docker compose --profile demo run --rm demo-data    # voliteľne: 400 simulovaných návštev, aby dashboard nebol prázdny
+```
+
+Databáza je PGlite (Postgres vo WASM) v Docker volume, takže dáta prežijú reštart. E-maily sa bez `RESEND_API_KEY` iba označia ako preskočené. Iný port: `PORT=8080 docker compose up --build`. Zmazanie dát: `docker compose down -v`.
+
 | Mobil – varianta A | Mobil – varianta B | Po odoslaní | Admin |
 |---|---|---|---|
 | ![A](screenshots/mobile-a.png) | ![B](screenshots/mobile-b.png) | ![Sheet](screenshots/sheet-call.png) | ![Admin](screenshots/admin.png) |
@@ -62,6 +71,7 @@ Navigácia ani odkazy, ktoré by viedli preč, na stránke nie sú. Jediný cie�
 | Databáza | **Postgres + Drizzle ORM** – Neon v produkcii, **PGlite** (Postgres vo WASM) lokálne | Lokálne beží bez účtov aj bez nastavovania, v produkcii stačí `DATABASE_URL`. Migrácie generuje `drizzle-kit` |
 | E-maily | **Resend** + **Vercel Cron** (denne) | Okamžitý e-mail + sekvencia, one-click odhlásenie (RFC 8058) |
 | Validácia | **Zod** na všetkých API vstupoch | |
+| Beh | **Docker** (standalone Next.js server + PGlite vo volume) alebo **Vercel** (Neon + Cron) | Reviewer spustí všetko jedným príkazom |
 | Testy | **Vitest** (35 unit testov) + **Puppeteer E2E** | E2E prejde celú cestu v oboch variantoch až po žiadosť o hovor a overí lievik aj export |
 
 ```
@@ -214,11 +224,14 @@ Review agent dostal kód bez kontextu konverzácie a jediný pokyn: „iba repor
 
 ## 12. Spustenie
 
+Najrýchlejšie cez Docker (pozri [úvod](#spustenie-pre-review-docker-bez-node-aj-bez-účtov)). Pre vývoj:
+
 ```bash
 npm install
 npm run dev                      # http://localhost:3000 (?ad=twin | ?ad=fees), DB = PGlite v .data/, bez účtov
 npm test                         # 35 unit testov (kalkulačka, skóre, sekvencia, telefón, postrehy, bezpečnosť)
 npm run e2e -- http://localhost:3000   # celá cesta v prehliadači, oba varianty, lievik + export
+ADMIN_TOKEN=review npm run e2e -- http://localhost:3000   # to isté proti Docker kontajneru
 node scripts/simulate.mjs http://localhost:3000 400   # simulovaná návštevnosť do lokálneho dashboardu
 npm run ads                      # vyrenderuje reklamy a OG obrázok
 npm run build                    # migrácia Neon (ak je DATABASE_URL) + produkčný build
