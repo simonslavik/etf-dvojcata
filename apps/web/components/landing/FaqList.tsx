@@ -5,11 +5,11 @@ import { track } from '@/lib/track';
 
 export function FaqList({ items }: { items: { q: string; a: ReactNode }[] }) {
   return (
-    <div className="mt-8 space-y-3">
+    <div className="reveal mt-8 space-y-3">
       {items.map((f, i) => (
         <details
           key={f.q}
-          className="group rounded-2xl border border-line bg-white open:border-teal-200 open:bg-teal-50/40"
+          className="smooth group rounded-2xl border border-line bg-white transition-colors open:border-teal-200 open:bg-teal-50/40"
           onToggle={(e) => (e.currentTarget as HTMLDetailsElement).open && track('faq_open', { q: i }, { once: true })}
         >
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-[16px] font-semibold text-ink sm:px-6 sm:py-5 sm:text-[17px] [&::-webkit-details-marker]:hidden">

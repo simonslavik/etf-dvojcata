@@ -48,6 +48,7 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition: none !important; }
+    .draw-check path { stroke-dashoffset: 0 !important; }
   }
 }
 
@@ -123,4 +124,50 @@
 @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes strike { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes nudge { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(4px); } 70% { transform: translateY(-1px); } }
+@keyframes pop { 0% { transform: scale(.92); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(-1deg); } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes burst { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.4) rotate(var(--r)); } }
+@keyframes shine { from { transform: translateX(-120%) skewX(-20deg); } to { transform: translateX(220%) skewX(-20deg); } }
+
 .animate-rise { animation: rise .45s var(--ease-out-soft) both; }
+.animate-rise-late { animation: rise .5s var(--ease-out-soft) .12s both; }
+.animate-nudge { animation: nudge .9s var(--ease-out-soft) .35s both; }
+.animate-pop { animation: pop .35s var(--ease-out-soft) both; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+
+/* Přeškrtnutí amerického tickeru se „nakreslí“ (místo statického line-through) */
+.strike { position: relative; display: inline-block; }
+.strike::after {
+  content: ''; position: absolute; left: -2px; right: -2px; top: 52%; height: 2.5px; border-radius: 2px;
+  background: var(--color-brick); transform-origin: left; animation: strike .45s var(--ease-out-soft) .15s both;
+}
+
+/* Fajka po odeslání se vykreslí tahem */
+.draw-check path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw .45s var(--ease-out-soft) .1s forwards; }
+
+/* Tlačítko: jemné nadzvednutí a jeden „lesk“ při najetí */
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after {
+  content: ''; position: absolute; inset: 0; width: 40%; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .22), transparent); transform: translateX(-120%) skewX(-20deg);
+}
+@media (hover: hover) {
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 28px -14px rgb(166 61 54 / .8), inset 0 -2px 0 rgb(0 0 0 / .14); }
+  .btn-primary:hover::after { animation: shine .8s ease-out; }
+  .btn-primary:hover svg { transform: translateX(2px); }
+}
+.btn svg { transition: transform .2s var(--ease-out-soft); }
+.chip[aria-pressed='true'] { animation: pop .3s var(--ease-out-soft); }
+
+/* Sekce se jemně vynoří při scrollu – čisté CSS (scroll-driven animations). Kde podpora chybí, obsah je prostě vidět. */
+@supports (animation-timeline: view()) {
+  .reveal { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% entry 30%; }
+}
+
+/* FAQ se rozbalí plynule (kde prohlížeč umí ::details-content) */
+:root { interpolate-size: allow-keywords; }
+details.smooth::details-content { height: 0; overflow: clip; transition: height .3s var(--ease-out-soft), content-visibility .3s allow-discrete; }
+details.smooth[open]::details-content { height: auto; }

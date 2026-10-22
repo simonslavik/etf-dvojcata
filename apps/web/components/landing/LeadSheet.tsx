@@ -9,6 +9,7 @@ import { CallRequest } from './CallRequest';
 import { LeadForm } from './LeadForm';
 import { useLead } from './LeadProvider';
 import { ReportCover } from './ReportCover';
+import { SuccessCheck } from '@/components/ui/SuccessCheck';
 
 /** Bottom sheet: e-mail → hotovo + kvalifikace (1 klepnutí) → nabídka hovoru (předání) */
 export function LeadSheet() {
@@ -60,7 +61,7 @@ export function LeadSheet() {
         {sheet.step === 'form' ? (
           <div data-sheet-step="form">
             <div className="flex items-start gap-4 pr-8">
-              <div className="flex-none pt-1"><ReportCover size="sm" /></div>
+              <div className="animate-pop flex-none pt-1"><ReportCover size="sm" /></div>
               <div>
                 <p className="eyebrow">Zdarma · hned</p>
                 <h2 id="sheet-title" className="mt-2 font-display text-[24px] leading-tight font-bold text-ink">Kam pošleme přehled {data.pairs.length} dvojčat?</h2>
@@ -75,8 +76,8 @@ export function LeadSheet() {
           </div>
         ) : (
           <div data-sheet-step="done" className="animate-rise">
-            <span className="grid h-14 w-14 place-items-center rounded-full bg-ok-50 text-ok"><Check className="h-7 w-7" /></span>
-            <h2 id="sheet-title" className="mt-4 font-display text-[26px] leading-tight font-bold text-ink">Hotovo, přehled je odemčený.</h2>
+            <SuccessCheck />
+            <h2 id="sheet-title" className="mt-4 font-display text-[26px] leading-tight font-bold text-ink">Hotovo, přehled je váš.</h2>
             <p className="mt-1.5 text-[15px] text-muted">
               {emailSent ? 'Najdete ho níže na stránce a poslali jsme ho i na váš e-mail.' : 'Najdete ho níže na stránce – můžete ho rovnou otevřít.'}
             </p>

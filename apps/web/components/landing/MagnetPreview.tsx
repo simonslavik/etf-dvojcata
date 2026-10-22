@@ -15,7 +15,7 @@ export function MagnetPreview() {
   const { unlocked } = useLead();
   return (
     <section id="report" aria-labelledby="magnet-title" className="bg-paper py-14 sm:py-20">
-      <div className="wrap grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+      <div className="reveal wrap grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
         <div>
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -38,7 +38,7 @@ export function MagnetPreview() {
               </li>
             ))}
           </ul>
-          <div className="mt-10 hidden pl-4 lg:block"><ReportCover /></div>
+          <div className="animate-float mt-10 hidden pl-4 lg:block"><ReportCover /></div>
         </div>
 
         <div className="window">

@@ -5,6 +5,7 @@ import { data } from '@etfd/shared';
 import { formatInt, formatKc, formatPct, yearsLabel } from '@etfd/shared';
 import { ArrowRight } from '@/components/ui/icons';
 import { Term } from '@/components/ui/Term';
+import { useCountUp } from '@/lib/useCountUp';
 import { useLead } from './LeadProvider';
 
 const { bank, etf, annual_return: annualReturn } = data.calc;
@@ -35,6 +36,9 @@ function Slider({ label, value, min, max, step, display, onChange, name }: {
 export function FeeCalculator({ title }: { title?: string }) {
   const { calc, setCalc, openSheet, unlocked } = useLead();
   const v = feeView(calc.monthly, calc.years);
+  const saved = useCountUp(v.saved);
+  const bankCost = useCountUp(v.bankCost);
+  const etfCost = useCountUp(v.etfCost);
 
   return (
     <div className="window" data-module="calc">
@@ -54,10 +58,10 @@ export function FeeCalculator({ title }: { title?: string }) {
           <p className="text-[11px] font-semibold tracking-[0.18em] text-muted uppercase">Na poplatcích zaplatíte</p>
           <div className="mt-3 grid grid-cols-[1fr_auto] items-end gap-x-3 gap-y-1.5">
             <span className="text-[13.5px] leading-tight text-text">{bank.label}<span className="block text-[12px] text-muted">{formatPct(bank.ter_pct)} ročně + {formatPct(bank.entry_fee_pct)} vstupní poplatek</span></span>
-            <span className="num text-right text-[15px] font-semibold text-brick" data-out="bankFees">{formatKc(v.bankCost)}</span>
+            <span className="num text-right text-[15px] font-semibold text-brick" data-out="bankFees">{formatKc(bankCost)}</span>
             <span className="col-span-2 mb-2.5 h-3 rounded-full bg-gradient-to-r from-brick-700 to-brick" />
             <span className="text-[13.5px] leading-tight text-text">{etf.label}<span className="block text-[12px] text-muted"><Term k="TER" /> {formatPct(etf.ter_pct)} ročně, bez vstupního poplatku</span></span>
-            <span className="num text-right text-[15px] font-semibold text-teal-700" data-out="etfFees">{formatKc(v.etfCost)}</span>
+            <span className="num text-right text-[15px] font-semibold text-teal-700" data-out="etfFees">{formatKc(etfCost)}</span>
             <span className="col-span-2 h-3 rounded-full bg-teal-100">
               <span className="block h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-500 transition-[width] duration-300" style={{ width: `${v.etfBarPct}%` }} />
             </span>
@@ -66,7 +70,7 @@ export function FeeCalculator({ title }: { title?: string }) {
 
         <div className="mt-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
           <p className="text-[14px] text-muted">S ETF dvojčetem ušetříte</p>
-          <p className="num font-display text-[clamp(36px,8vw,48px)] leading-none font-bold text-brick" data-out="saved">{formatKc(v.saved)}</p>
+          <p className="num font-display text-[clamp(36px,8vw,48px)] leading-none font-bold text-brick" data-out="saved">{formatKc(saved)}</p>
         </div>
 
         {/* Poznámka ve stylu „AI“ řádku z dashboardu Clientela */}

@@ -3,8 +3,8 @@ import { FeeCalculator } from './FeeCalculator';
 import { LeadProvider } from './LeadProvider';
 import { LeadSheet } from './LeadSheet';
 import { MagnetPreview } from './MagnetPreview';
-import { Faq, FinalCta, Footer, Header, Hero, ProofStrip, SecondTool, Trust } from './Sections';
-import { StickyCta } from './StickyCta';
+import { Faq, FinalCta, Footer, Hero, ProofStrip, SecondTool, Trust } from './Sections';
+import { SiteHeader } from './SiteHeader';
 import { TwinFinder } from './TwinFinder';
 
 /**
@@ -17,7 +17,7 @@ export function Landing({ variant }: { variant: Variant }) {
   return (
     <LeadProvider variant={variant}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2">Přeskočit na obsah</a>
-      <Header />
+      <SiteHeader />
       <main id="main" data-variant={variant}>
         <Hero variant={variant} tool={first} />
         <ProofStrip />
@@ -28,7 +28,6 @@ export function Landing({ variant }: { variant: Variant }) {
         <FinalCta />
       </main>
       <Footer />
-      <StickyCta />
       <LeadSheet />
     </LeadProvider>
   );

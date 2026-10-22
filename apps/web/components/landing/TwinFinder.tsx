@@ -52,18 +52,18 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
           {/* Americký originál – přeškrtnutý */}
           <div className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-line bg-paper px-4 py-3">
             <div className="min-w-0">
-              <span className="font-mono text-[19px] font-bold text-muted line-through decoration-brick decoration-2">{p.us.ticker}</span>
+              <span className="strike font-mono text-[19px] font-bold text-muted">{p.us.ticker}</span>
               <p className="truncate text-[13px] text-muted">{p.us.name} · {p.us.exchange}</p>
             </div>
             <span className="flex-none rounded-full bg-brick-50 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-brick uppercase">V EU nekoupíte</span>
           </div>
 
           <div className="flex items-center gap-2 py-2 pl-4 text-[13px] font-medium text-teal-700">
-            <ArrowDown className="h-4 w-4" /> evropské dvojče
+            <ArrowDown className="animate-nudge h-4 w-4" /> evropské dvojče
           </div>
 
           {/* Evropské dvojče */}
-          <div className="rounded-2xl border border-teal-200 bg-teal-50 p-4">
+          <div className="animate-rise-late rounded-2xl border border-teal-200 bg-teal-50 p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <span className="font-mono text-[26px] leading-none font-bold text-ink" data-twin-ticker>{t.ticker}</span>
@@ -87,7 +87,7 @@ export function TwinFinder({ compact = false }: { compact?: boolean }) {
                 <span className="font-mono text-[15px] font-bold tracking-wide text-ink">{t.isin}</span>
               </div>
               <button type="button" onClick={copy} data-copy-isin className="inline-flex min-h-11 flex-none items-center gap-1.5 rounded-lg bg-teal-900 px-3.5 text-[13px] font-semibold text-white transition-colors hover:bg-teal-700 data-[copied]:bg-ok" data-copied={copied || undefined}>
-                {copied ? <><Check className="h-4 w-4" /> Zkopírováno</> : <><Copy className="h-4 w-4" /> Kopírovat</>}
+                {copied ? <span className="animate-pop inline-flex items-center gap-1.5"><Check className="h-4 w-4" /> Zkopírováno</span> : <><Copy className="h-4 w-4" /> Kopírovat</>}
               </button>
             </div>
           </div>

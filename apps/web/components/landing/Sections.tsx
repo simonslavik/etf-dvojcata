@@ -6,7 +6,6 @@ import type { Variant } from '@etfd/shared';
 import { Calculator, Chart, Check, Link, Mail, Search, ShieldCheck, Target } from '@/components/ui/icons';
 import { Term } from '@/components/ui/Term';
 import { FaqList } from './FaqList';
-import { HeaderCta } from './HeaderCta';
 import { LeadForm } from './LeadForm';
 import { ReportCover } from './ReportCover';
 
@@ -19,23 +18,6 @@ export function Logo() {
       </svg>
       <span>ETF <span className="text-teal-600">dvojčata</span></span>
     </a>
-  );
-}
-
-export function Header() {
-  return (
-    <header className="border-b border-line/70 bg-white">
-      <div className="wrap flex h-16 items-center justify-between gap-4 sm:h-20">
-        <Logo />
-        <div className="flex items-center gap-4">
-          <span className="hidden items-center gap-2 rounded-full bg-paper px-3 py-1.5 text-[13px] text-muted sm:inline-flex">
-            <span className="h-2 w-2 rounded-full bg-ok shadow-[0_0_0_3px_var(--color-ok-50)]" aria-hidden="true" />
-            Data k {fmtDate(data.as_of)}
-          </span>
-          <HeaderCta />
-        </div>
-      </div>
-    </header>
   );
 }
 
@@ -77,7 +59,7 @@ export function Hero({ variant, tool }: { variant: Variant; tool: React.ReactNod
             ))}
           </ul>
         </div>
-        <div className="relative">{tool}</div>
+        <div className="animate-rise-late relative">{tool}</div>
       </div>
     </section>
   );
@@ -93,7 +75,7 @@ export function ProofStrip() {
   ];
   return (
     <section aria-label="Proč nám věřit" className="border-y border-line/70 bg-white">
-      <div className="wrap flex flex-col gap-4 py-5 sm:py-6 lg:flex-row lg:items-center lg:justify-between">
+      <div className="reveal wrap flex flex-col gap-4 py-5 sm:py-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[13px] text-muted">
           <span className="font-medium text-text">Data přímo od</span>
           {['Vanguard', 'iShares', 'SPDR', 'justETF', 'zákony ČR'].map((x) => (
@@ -135,7 +117,7 @@ export function SecondTool({ variant, tool }: { variant: Variant; tool: React.Re
   return (
     <section id="nastroj" aria-labelledby="second-title" className="relative overflow-hidden bg-teal-900 py-14 text-white sm:py-20">
       <div className="facets" aria-hidden="true" />
-      <div className="wrap relative grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+      <div className="reveal wrap relative grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
         <div>
           <p className="eyebrow eyebrow-light">{s.eyebrow}</p>
           <h2 id="second-title" className="mt-3 font-display text-[clamp(28px,4.2vw,44px)] leading-[1.08] font-bold text-balance">{s.title}</h2>
@@ -164,7 +146,7 @@ export function Trust() {
     <section aria-labelledby="trust-title" className="bg-white py-12 sm:py-16">
       <div className="wrap">
         <h2 id="trust-title" className="sr-only">Kdo za tím stojí</h2>
-        <ul className="grid gap-6 md:grid-cols-3 md:gap-8">
+        <ul className="reveal grid gap-6 md:grid-cols-3 md:gap-8">
           {items.map((c) => (
             <li key={c.t} className="flex gap-4">
               <span className="icon-tile">{c.icon}</span>
@@ -196,9 +178,9 @@ export function FinalCta() {
   return (
     <section aria-labelledby="final-title" className="bg-paper pb-16 sm:pb-24">
       <div className="wrap">
-        <div className="relative overflow-hidden rounded-[28px] bg-teal-900 px-5 py-10 text-white sm:px-12 sm:py-14">
+        <div className="reveal relative overflow-hidden rounded-[28px] bg-teal-900 px-5 py-10 text-white sm:px-12 sm:py-14">
           <div className="facets" aria-hidden="true" />
-          <div className="absolute top-1/2 right-14 hidden -translate-y-1/2 lg:block"><ReportCover /></div>
+          <div className="absolute top-1/2 right-14 hidden -translate-y-1/2 lg:block"><div className="animate-float"><ReportCover /></div></div>
           <div className="relative max-w-[640px]">
             <p className="eyebrow eyebrow-light">Zdarma · hned na obrazovce</p>
             <h2 id="final-title" className="mt-3 font-display text-[clamp(28px,4.4vw,44px)] leading-[1.08] font-bold text-balance">Ušetřete si hodiny hledání na justETF.</h2>
@@ -213,7 +195,7 @@ export function FinalCta() {
 
 export function Footer() {
   return (
-    <footer className="border-t border-line bg-paper py-10 pb-28 text-[13.5px] text-muted sm:pb-10">
+    <footer className="border-t border-line bg-paper py-10 text-[13.5px] text-muted">
       <div className="wrap space-y-4">
         <Logo />
         <p className="max-w-[60em]"><b className="text-ink">Nejde o investiční doporučení.</b> Informace mají vzdělávací charakter. Investice nesou riziko, minulé výnosy nezaručují budoucí. Poplatky a údaje se mohou měnit – u každého údaje uvádíme zdroj a datum.</p>
