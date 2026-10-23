@@ -2,7 +2,7 @@
 
 Landing page pre českého drobného investora, ktorý prichádza z reklamy na mobile. Ukáže mu **európske (UCITS) „dvojčatá“ 12 ETF z NYSE Arca**, ktoré si v ČR naozaj kúpi, a spočíta, koľko ho stojí fond z banky. Výmenou za e-mail odomkne celý prehľad. Po odoslaní nasleduje kvalifikácia, voliteľné odovzdanie na telefonát a e-mailová starostlivosť. Celý lievik je viditeľný v admin dashboarde.
 
-- **Stránka:** _doplniť URL po nasadení_ · varianty reklamy: `/?ad=twin`, `/?ad=fees`
+- **Stránka:** **https://etfdvojcata.vercel.app** · varianty reklamy: [`/?ad=twin`](https://etfdvojcata.vercel.app/?ad=twin), [`/?ad=fees`](https://etfdvojcata.vercel.app/?ad=fees)
 - **Admin (pipeline):** `/admin` – v Dockeri token `review-token`, token pre nasadenú verziu pošlem zvlášť
 - **Reklamy:** [ads/README.md](ads/README.md) – 2 verzie, texty, UTM odkazy
 - **Dáta so zdrojom pri každom údaji:** [packages/shared/data/etfs.json](packages/shared/data/etfs.json)
@@ -90,7 +90,8 @@ Monorepo (npm workspaces): **FE Next.js · BE NestJS · DB Postgres**, spustené
 | **DB** | **Postgres 17** + **Drizzle ORM** (`pg` Pool) | Schéma v TypeScripte, migrácie generuje `drizzle-kit` a API ich pri štarte spustí v transakcii ([apps/api/drizzle](apps/api/drizzle)) |
 | Zdieľané – [packages/shared](packages/shared) | čisté TS bez frameworku | Dáta ETF, kalkulačka, pravidlá skóre, sekvencia, súhlasy, udalosti. FE aj BE počítajú rovnako |
 | E-maily | **Resend** (REST) | Okamžitý e-mail + sekvencia, one-click odhlásenie (RFC 8058), atomické „zabratie“ jobu, retry |
-| Beh | **Docker Compose**: `db` + `api` + `web` (+ `demo-data`) | Reviewer spustí všetko jedným príkazom. Image sú multi-stage, bežia pod neprivilegovaným používateľom a majú health checky |
+| Beh lokálne | **Docker Compose**: `db` + `api` + `web` (+ `demo-data`) | Reviewer spustí všetko jedným príkazom. Image sú multi-stage, bežia pod neprivilegovaným používateľom a majú health checky |
+| Produkcia | **Vercel** (2 projekty, región Frankfurt) + **Neon Postgres** | Web je Next.js projekt, API beží ako Vercel Function: tsc výstup zabalený cez esbuild do jedného ESM súboru ([bundle.mjs](apps/api/bundle.mjs)). Migrácie bežia raz pri builde, denný beh spúšťa Vercel Cron s `CRON_SECRET`. Kód je rovnaký ako v Dockeri, líši sa len vstupný bod ([serverless.ts](apps/api/src/serverless.ts) vs. [main.ts](apps/api/src/main.ts)) |
 | Testy | **Vitest** (25 shared + 31 API proti reálnemu Postgresu cez supertest) + **Puppeteer E2E** | E2E prejde celú cestu v oboch variantoch cez celý stack až po žiadosť o hovor, vrátane navigácie v prehľade |
 | Kvalita kódu | **ESLint** (Next core-web-vitals + typescript-eslint), **Prettier** (+ triedenie Tailwind tried), **knip** (mŕtvy kód a závislosti), striktný TypeScript | `npm run check` spustí typecheck, lint, formát, knip aj testy jedným príkazom |
 
@@ -267,14 +268,14 @@ Na záver som Clauda požiadal o revíziu redundancie a idiomatickosti. Výsledo
 
 ## 11. Čo v riešení chýba / pred spustením reklamy
 
-- [ ] **Verejný hosting:** zadanie chce bezplatný hosting a URL. Zatiaľ beží všetko cez Docker (rozhodnutie v pláne v3). Na verejné nasadenie stačí ten istý `docker-compose.yml` na VPS (napr. Hetzner) za reverse proxy s HTTPS. Bezplatná alternatíva: web na Verceli + NestJS na Renderi (ten sa však po 15 minútach nečinnosti uspí, čo je pri reklame zlé) + Neon.
+- [x] **Verejný hosting:** Vercel (Hobby) + Neon (free), E2E prechádza proti produkcii. Bez Resend kľúča sa e-maily iba logujú. Pred kampaňou doplniť `RESEND_API_KEY` + overenú doménu a vlastnú doménu namiesto `*.vercel.app`. Vercel Cron na pláne Hobby beží raz denne s presnosťou ±1 h, čo pre sekvenciu D2/D5/D9 stačí.
 - [ ] **Produkčné env:** silné `ADMIN_TOKEN` a `CRON_SECRET` (v compose sú len demo hodnoty), `SITE_URL` s HTTPS, `RESEND_API_KEY` + `RESEND_FROM` (overená doména), voliteľne `HANDOFF_WEBHOOK_URL`. Zálohy Postgresu.
 - [ ] **Právne:** prevádzkovateľ v `/privacy`, kto volá (vlastný tým alebo partner), posúdenie súhlasov, srovnávacia reklama s konkrétnym fondom (reklama B), Meta „special ad category“.
 - [ ] **Prehľad je „mäkko“ zamknutý:** `/report` je dostupný aj bez e-mailu (noindex). Kto ho hľadá cez URL, by e-mail aj tak nezadal.
 - [ ] **PDF** je zatiaľ „uložiť ako PDF“ cez tlač, nie generovaný súbor.
 - [ ] **Dostupnosť u brokerov** je overená iba pre XTB.
 - [ ] **Aktualizácia dát:** TER a veľkosti fondov sú snímka k 22. 10. 2026. Pre produkciu by bol potrebný mesačný job s výskumným a kontrolným agentom.
-- [ ] **Limity na IP** (`@nestjs/throttler`) sú v pamäti procesu, čo stačí pre jednu inštanciu API. Pri viacerých inštanciách treba Redis storage. Denné stropy e-mailov sú v Postgrese.
+- [ ] **Limity na IP** (`@nestjs/throttler`) sú v pamäti procesu. Na Verceli má každá inštancia funkcie vlastné počítadlo, takže limit je len približný. Pred kampaňou s väčším rozpočtom treba Redis storage (napr. Upstash). Denné stropy e-mailov sú v Postgrese.
 - [ ] **Turnstile / captcha** pred ostrou kampaňou. Teraz chráni honeypot, kontrola Origin a limity na IP.
 - [ ] **Skenery odkazov** (Outlook Safe Links) môžu zaznamenať „klik v e-maile“. Riešením je počítať klik až z beaconu na cieľovej stránke.
 - [ ] **Double opt-in** e-mailu, ak to bude vyžadovať právny posudok.
