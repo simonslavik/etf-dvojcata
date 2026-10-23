@@ -62,7 +62,7 @@ Výber mojich promptov z oboch konverzácií a všetkých zadaní, ktoré Claude
 | 23.&nbsp;10.&nbsp;14:58 | „okej tak ešte tuto čast vymakaj prosim *(admin dashboard)*“ | Dashboard podľa krokov pipeline s konverziou medzi krokmi, čitateľný na mobile | [`feat(admin)`](https://github.com/simonslavik/etf-dvojcata/commit/8b6e9cc) |
 ## Zadania pre agentov
 
-Paralelné úlohy (výskum dát, nezávislé kontroly) Claude delegoval subagentom. **Zadania napísal Claude**. Ja som rozhodol, čo sa má zistiť a overiť (napríklad „skontroluj kód, či niečo nie je redundantné“ alebo „daj pozor na security, aby nám AI recenzenta nemala čo vytknúť“) a výsledky som posúdil. Každé zadanie má zúžený rozsah, požadovaný formát výstupu a pravidlo proti halucináciám. Texty sú doslovné.
+Paralelné úlohy (výskum dát, nezávislé kontroly) Claude delegoval subagentom. **Zadania napísal Claude**. Ja som rozhodol, čo sa má zistiť a overiť (napríklad „skontroluj kod či niečo nieje redundant“ alebo „daj este pozor na security veci v repository“) a výsledky som posúdil. Každé zadanie má zúžený rozsah, požadovaný formát výstupu a pravidlo proti halucináciám. Texty sú doslovné.
 
 <details><summary><b>22. 10. 12:52 · Research US NYSE ETF data</b> – Každé číslo musí mať zdroj, inak `null`</summary>
 
