@@ -3,10 +3,26 @@
 | Súbor | Čo v ňom je |
 |---|---|
 | [prompts.md](prompts.md) | **Začnite tu.** Kde som AI opravil, prompty, ktoré niečo rozhodli, a zadania pre agentov |
-| `01-kolo-1.md` | Export prvej konverzácie: plán, výskum dát, prvá verzia stránky a reklamy |
-| `02-kolo-2-3.md` | Export druhej konverzácie: stack, lead pipeline, dizajn, úpravy podľa spätnej väzby, nasadenie |
+| [01-kolo-1.txt](01-kolo-1.txt) | Prvá konverzácia: plán, výskum dát, prvá verzia stránky a reklamy |
+| [02-kolo-2-3.txt](02-kolo-2-3.txt) | Druhá konverzácia do 23. 10. 11:54: stack, lead pipeline, dizajn, úpravy podľa spätnej väzby |
+| [03-dokoncenie.txt](03-dokoncenie.txt) | Druhá konverzácia od 23. 10. 11:54: kontrola kódu, nasadenie, bezpečnosť, finálne úpravy |
 
-Exporty sú z príkazu `/export` a nie sú upravené. Začiernené sú iba tokeny a e-mailové adresy.
+Súbory 01 – 03 sú výber z konverzácií s Claude Code: obsahujú výmeny, ktoré tvorili riešenie. Začiernené sú tokeny, e-maily a IP adresa.
+
+## Najlepšie miesta v exportoch
+
+Kto nemá čas čítať všetko, nech klikne sem:
+
+- [Výskum dát tromi agentmi naraz, každé číslo so zdrojom](01-kolo-1.txt#L185)
+- [Nezávislá kontrola dát: 130 zo 130 údajov sedí](01-kolo-1.txt#L1611)
+- [„malo by to mat aj nejaky stack“ – AI sa najprv spýtala, čo tým myslím](02-kolo-2-3.txt#L201)
+- [„FE chcem next a BE nest a DB postgres“ – prechod na samostatný backend](02-kolo-2-3.txt#L2867)
+- [„header moze byt fixed … cielom je ziskat leada“](02-kolo-2-3.txt#L4352)
+- [Námietka proti návrhu AI: prepínač nástrojov by návštevník prehliadol](02-kolo-2-3.txt#L4725)
+- [„Otevrit prehlad je potom prespamovane“ – test to potvrdil](02-kolo-2-3.txt#L4916)
+- [Bug z ručného testu a oprava overená automatickým testom](02-kolo-2-3.txt#L5217)
+- [Kontrola riešenia voči zadaniu bod po bode](02-kolo-2-3.txt#L5302)
+- [Bezpečnostná kontrola celého repozitára pred zverejnením](03-dokoncenie.txt#L625)
 
 ## Ako to šlo
 
