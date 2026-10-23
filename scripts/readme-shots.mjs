@@ -45,11 +45,12 @@ await d.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' 
 await d.$eval('#dvojcata', (el) => window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 90, behavior: 'instant' }));
 await sleep(500);
 await d.screenshot({ path: 'screenshots/report.png' });
+// s tokenem přes přihlášení, bez tokenu (next dev + API v developmentu) je admin otevřený
 if (token) {
   await d.goto(`${base}/admin/login`, { waitUntil: 'networkidle0' });
   await d.type('#token', token);
   await Promise.all([d.waitForNavigation({ waitUntil: 'networkidle0' }), d.click('button')]);
-  await d.screenshot({ path: 'screenshots/admin.png' });
-}
+} else await d.goto(`${base}/admin`, { waitUntil: 'networkidle0' });
+await d.screenshot({ path: 'screenshots/admin.png' });
 await browser.close();
 console.log('✓ screenshots/');
