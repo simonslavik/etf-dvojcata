@@ -15,7 +15,7 @@ Každá verze vede na jinou variantu první obrazovky, takže hero stránky pře
 | URL | `/?ad=twin&utm_source=meta&utm_medium=paid_social&utm_campaign=etf_twins&utm_content=ad_a` | `/?ad=fees&utm_source=meta&utm_medium=paid_social&utm_campaign=etf_twins&utm_content=ad_b` |
 | Hero na stránce | „VOO si v Česku nekoupíte. Jeho dvojče ano.“ + vyhledávač dvojčat | „Fond z banky si bere až 2,6 % ročně. ETF jen 0,07 %.“ + kalkulačka |
 
-**Čísla ve verzi B** počítá stejná funkce jako kalkulačka na stránce (`lib/calc.ts`, test v `tests/calc.test.ts`): 3 000 Kč/měsíc, 20 let, výnos trhu 7 % p. a.
+**Čísla ve verzi B** počítá stejná funkce jako kalkulačka na stránce ([packages/shared/src/calc.ts](../packages/shared/src/calc.ts), test v [packages/shared/test/calc.test.ts](../packages/shared/test/calc.test.ts)): 3 000 Kč/měsíc, 20 let, výnos trhu 7 % p. a.
 Jako fond z banky slouží ČSOB Akciový (vstupní poplatek 3 %, průběžné náklady 2,59 % podle KID k 1. 6. 2026) a jako ETF VUAA (TER 0,07 %).
 Poznámka pod čarou je přímo v kreativě, protože finanční reklama bez předpokladů by byla zavádějící.
 
