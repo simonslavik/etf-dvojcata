@@ -6,7 +6,7 @@ Tento priečinok obsahuje **neupravené exporty konverzácií s Claude Code** (p
 |---|---|
 | `01-kolo-1.md` | Kolo 1: plán, výskum dát agentmi, statická stránka (Vite), reklamy, review |
 | `02-kolo-2-3.md` | Kolá 2 a 3: Next.js a lead pipeline, dizajn podľa Clientela, review, Docker, NestJS + Postgres, UX iterácie, code review |
-| [prompts.md](prompts.md) | **Výber kľúčových promptov** (doslovne) s rozhodnutím a commitom, ktorý z nich vznikol, a všetkých 7 zadaní pre agentov |
+| [prompts.md](prompts.md) | **Začnite tu.** Ako pracujem s AI v piatich bodoch, kde som AI opravil, 20 kľúčových promptov doslovne s odkazom na commit a všetkých 7 zadaní pre agentov |
 
 Prvé kolo bežalo v samostatnej konverzácii. Druhá konverzácia začína tým, že Claude najprv zistil stav projektu z repozitára (git log, README, PLAN.md) a až potom pokračoval.
 
@@ -25,6 +25,8 @@ Prvé kolo bežalo v samostatnej konverzácii. Druhá konverzácia začína tým
 | 14:56 – 17:10 | UX | Screenshoty so spätnou väzbou: *„príliš overwhelming“*, *„header môže byť fixed“*, *„Otevřít přehled je prespamované“* | Mobil z 8 na asi 4,8 obrazovky, lepkavý header s CTA, jeden nástroj v hero, záverečné CTA, prehľad ako lead magnet | `feat(landing)` … `feat(report)` |
 | 23. 10. 09:54 – 11:14 | UX | Bug report z ručného testu navigácie, *„spĺňa to zadanie?“* | Oprava navigácie overená testom klikov, Lighthouse 99/100/100/100, nové screenshoty | `fix(report)` … `docs` |
 | 23. 10. 11:35 – 11:55 | Review | *„chcem, aby ma ten kód vedel naozaj predať“* | Review agent + knip, refaktor API a webu, ESLint, Prettier, `npm run check` | `chore` … `docs` |
+| 23. 10. 13:40 – 14:30 | Nasadenie | *„teraz to deployni na vercel“*, *„daj ešte pozor na security … aby ich AI nemali čo vytknúť“* | Vercel + Neon, chyba runtime zachytená v produkcii a opravená. Nezávislý bezpečnostný review, 10 opráv s testami, [SECURITY.md](../SECURITY.md) | `build(vercel)` … `docs` |
+| 23. 10. 14:58 – 15:30 | UX | Screenshoty adminu a kariet v prehľade | Dashboard podľa krokov pipeline, karty dvojčiat s faktami a alternatívami | `feat(admin)`, `feat(report)` |
 
 ## Ako som s AI pracoval
 

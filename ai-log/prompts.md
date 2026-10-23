@@ -1,29 +1,65 @@
-# Kľúčové prompty
+# Ako pracujem s AI – kľúčové prompty
 
-Výber mojich promptov a všetkých zadaní pre agentov z oboch konverzácií. Prompty sú **doslovné** (aj s preklepmi), skrátené sú len vložené texty a obrázky. Úplný kontext je v surových exportoch. Časy sú miestne (SELČ).
+Výber mojich promptov a všetkých zadaní pre agentov z oboch konverzácií. Prompty sú **doslovné** (aj s preklepmi), skrátené sú len vložené texty a obrázky. Úplný kontext je v [surových exportoch](README.md). Každý riadok vedie na commit, ktorý z promptu vznikol. Časy sú miestne (SELČ).
 
-## Moje prompty → rozhodnutie → commit
+## V skratke
 
-| Čas | Prompt | Čo som chcel | Čo z toho vzniklo | Commit |
-|---|---|---|---|---|
-| 22. 10. 12:06 | „*(zadanie z e-mailu vložené celé)*“ | Nechať AI navrhnúť plán ešte pred kódom | Výber zadania B, [PLAN.md](../PLAN.md) v1, výskum dát tromi agentmi | `docs(plan): outline…` |
-| 22. 10. 12:51 | „rob commity ale ich este nepushuj prosim ale cele to implementuj a potom to pretestujem, čo najlepší dizajn a UX, takto vyzera ich stranka …“ | Implementácia po krokoch s commitmi, push až po mojom teste | Statická stránka, reklamy, nezávislá kontrola dát a review kódu | `feat(data)` … `fix(landing)` |
-| 22. 10. 13:26 | „ešte ten dizajn viacej vymakaj a malo by to mat aj nejaky stack ked tomu zadaniu rozumiem *(+ screenshoty clientelo.cz)*“ | Dizajn podľa Clientela a reálny backend s lead pipeline | Claude sa spýtal, čo je „stack“. Odpoveď: tech stack **aj** pipeline | `docs(plan): v2…`, `refactor!: migrate to Next.js 16…` |
-| 22. 10. 14:07 | „este mozno to dockerizovat aby si to vedel kazdy spustit kto bude robit review“ | Reviewer spustí riešenie bez účtov a bez Node | `docker compose up` | `build(docker): run the full stack…` |
-| 22. 10. 14:10 | „aky je teraz stack implementovany? FE chcem next a BE nest a DB postgres“ | Oddelený backend v NestJS | Monorepo `apps/web` + `apps/api` + `packages/shared`, integračné testy proti Postgresu | `docs(plan): v3…` … `docs: document…` |
-| 22. 10. 14:51 | „predtym nez to deployneme a pushneme chcem ten dizajn naozaj vymakat aj tu funkcionalitu aby to potencialne mohlo nabrat leadov …“ | Optimalizovať na konverziu, nie na množstvo funkcií | Kratšia stránka, jasnejšie CTA | `feat(landing): tighten the page for conversion on mobile` |
-| 22. 10. 14:59 | „… ten header moze byt fixed aby bola ta moznost prihlasit sa stale na ociach uzivatelovi … lebo cielom je ziskat leada predsa“ | Výzva k akcii vždy na očiach | Lepkavý header s CTA, jemné animácie | `feat(landing): sticky header CTA…` |
-| 22. 10. 15:22 | „ešte niektore segmenty su priliš velké musi uživatel scrollovať veľa … len nevyhnutne informacie“ | Menej textu, menej scrollovania | Claude zmeral výšku sekcií v obrazovkách: mobil z 8 na 5,8 | `feat(landing): cut page length…` |
-| 22. 10. 15:59 | „*(citácia zo zadania)* … čiže asi defaultne by to malo byt na najit dvojče to to preklikavanie neviem či si uživatel všimne zvažujem či ich nerozdelit na dve segmenty...“ | Námietka proti návrhu AI (prepínač nástrojov v hero) | Claude uznal chybu: jeden nástroj v hero, druhý vo vlastnej sekcii | `feat(landing): one tool per hero…` |
-| 22. 10. 16:18 | „ale aj ta page by mala koncit niecim cim toho lead by sme mohli ziskat či ?“ | Každý koniec stránky má viesť ku kontaktu | Záverečné CTA | `feat(landing): end the page with a compact final CTA` |
-| 22. 10. 16:31 | „nakoniec myslim že to je Otevrit prehlad je potom prespamovane v tom landing page“ | Kontrola po odomknutí prehľadu | E2E potvrdilo 6× opakované CTA a duplicitné `id` | `fix(landing): stop repeating…` |
-| 22. 10. 16:46 | „tu nepochopi uzivatel co to mesicne znamena: musi byt všetko jasne pre tych potencialnych leadov“ | Texty pre začiatočníka, nie pre analytika | Prepísané popisy kalkulačky a vyhľadávača | `fix(landing): plain-language…` |
-| 23. 10. 09:52 | „ešte keď som scrollnuty dole a kliknem na dvojčata … tak to klikne Jak Koupit a nie dvojcata“ | Bug report z ručného testu | Prvá „oprava“ bez overenia nefungovala. Automatický test klikov ju odhalil a zostal v E2E | `fix(report): highlight the section…` |
-| 23. 10. 10:42 | „splaňa to teda to zadanie? *(zadanie)* alebo by si ešte niečo zlepšíl?“ | Kontrola voči zadaniu bod po bode | Lighthouse 99/100/100/100, aktualizované screenshoty a README | `perf(web)…`, `docs: refresh screenshots…` |
-| 23. 10. 11:34 | „ano ale predtym skontroluj kod či niečo nieje redundant, chcem aby ma ten kod vedel naozaj predať aj ten technologický stack“ | Kód, ktorý obstojí pred technickým reviewerom | Review agent + knip, refaktor API a webu, ESLint, Prettier, `npm run check` | `chore: remove dead code…` … `docs: describe code-quality…` |
+- **Plán pred kódom.** Každé kolo začalo zápisom do [PLAN.md](../PLAN.md) (v1 → v3), až potom implementácia.
+- **Stránku testujem ako návštevník.** Väčšinu iterácií riadili moje screenshoty s krátkou spätnou väzbou („overwhelming“, „nepochopí“, „prespamované“). Claude najprv zmeral problém a až potom upravoval.
+- **AI nepreberám bez kontroly.** Keď návrh nesedel na cieľ (lead z mobilu za pár sekúnd), zamietol som ho. Prehľad je nižšie.
+- **Úzke zadania pre agentov.** Výskum dát, kontrola dát a review kódu robili samostatní agenti s pravidlom „zdroj pri každej hodnote, radšej null než odhad“ a „iba reportuj, nič neupravuj“.
+- **Hotovo = overené.** Testy (25 + 39), E2E cez celý stack, screenshoty mobilu aj desktopu, Lighthouse a nezávislý review pred každým zverejnením.
 
-**Vzorec:** väčšinu iterácií riadila spätná väzba zo screenshotov z pohľadu návštevníka („overwhelming“, „nepochopí“, „prespamované“). Claude najprv zmeral problém (výška v obrazovkách, počet CTA, test klikov) a až potom upravoval. Pri rozhodnutiach s dôsledkami (stack, hosting, štruktúra sekcií) sa spýtal a ponúkol možnosti.
+## Kde som AI opravil
 
+| Moja námietka | Čo bolo zle | Výsledok |
+|---|---|---|
+| „to preklikavanie neviem či si uživatel všimne“ | Claude navrhol prepínač dvoch nástrojov v hero. Návštevník z reklamy ho za pár sekúnd prehliadne | Jeden nástroj v hero, druhý vo vlastnej sekcii · [`f9a0577`](https://github.com/simonslavik/etf-dvojcata/commit/f9a0577) |
+| „Otevrit prehlad je potom prespamovane“ | Po odomknutí sa CTA opakovalo 6× a na stránke boli dva formuláre s rovnakým `id` | Jedno CTA, opravené id · [`97b7b90`](https://github.com/simonslavik/etf-dvojcata/commit/97b7b90) |
+| „klikne Jak Koupit a nie dvojcata“ | Claude chybu „opravil“ bez overenia. Pravidlo scrollspy bolo zlé a odstup sa počítal dvakrát | Overené automatickým testom, ktorý zostal v E2E · [`39b55da`](https://github.com/simonslavik/etf-dvojcata/commit/39b55da) |
+| „nepochopi uzivatel co to mesicne znamena“ | Texty kalkulačky písané pre analytika, nie pre začiatočníka | Popisy prepísané pre laika · [`1db3f1b`](https://github.com/simonslavik/etf-dvojcata/commit/1db3f1b) |
+| „aby … ich AI nemali co vytknut“ | Review našiel open redirect cez `//`, otvorený admin pri chýbajúcom `NODE_ENV` a ďalšie | 10 opráv s testami, overené v produkcii · [`fc4fcf3`](https://github.com/simonslavik/etf-dvojcata/commit/fc4fcf3) |
+
+## Prompty po fázach
+
+### Kolo 1 – plán a prvá verzia
+
+| Kedy | Prompt | Výsledok | Commit |
+|---|---|---|---|
+| 22.&nbsp;10.&nbsp;12:06 | „*(zadanie z e-mailu vložené celé)*“ | Plán do [PLAN.md](../PLAN.md) pred kódom, výber zadania B, výskum dát tromi paralelnými agentmi | [`docs(plan)`](https://github.com/simonslavik/etf-dvojcata/commit/203c3be) [`feat(data)`](https://github.com/simonslavik/etf-dvojcata/commit/c7377f5) |
+| 22.&nbsp;10.&nbsp;12:51 | „rob commity ale ich este nepushuj prosim ale cele to implementuj a potom to pretestujem, čo najlepší dizajn a UX, takto vyzera ich stranka …“ | Implementácia po krokoch s commitmi, push až po mojom teste. Nezávislá kontrola dát a review kódu | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/c974286) [`fix(api)`](https://github.com/simonslavik/etf-dvojcata/commit/87b75e4) |
+
+### Kolo 2 a 3 – stack a lead pipeline
+
+| Kedy | Prompt | Výsledok | Commit |
+|---|---|---|---|
+| 22.&nbsp;10.&nbsp;13:26 | „ešte ten dizajn viacej vymakaj a malo by to mat aj nejaky stack ked tomu zadaniu rozumiem *(+ screenshoty clientelo.cz)*“ | Claude sa spýtal, čo myslím „stackom“. Rozhodol som: tech stack **aj** lead pipeline podľa lievika Clientela | [`docs(plan): v2`](https://github.com/simonslavik/etf-dvojcata/commit/0ce489b) [`refactor!`](https://github.com/simonslavik/etf-dvojcata/commit/09c5505) |
+| 22.&nbsp;10.&nbsp;14:07 | „este mozno to dockerizovat aby si to vedel kazdy spustit kto bude robit review“ | Reviewer spustí celé riešenie jedným príkazom, bez účtov a bez Node | [`build(docker)`](https://github.com/simonslavik/etf-dvojcata/commit/c8f112e) |
+| 22.&nbsp;10.&nbsp;14:10 | „aky je teraz stack implementovany? FE chcem next a BE nest a DB postgres“ | Oddelený backend v NestJS, monorepo, integračné testy proti Postgresu | [`docs(plan): v3`](https://github.com/simonslavik/etf-dvojcata/commit/19cc7f8) [`feat(api)`](https://github.com/simonslavik/etf-dvojcata/commit/c996a39) |
+
+### Konverzia – stránka z pohľadu návštevníka
+
+| Kedy | Prompt | Výsledok | Commit |
+|---|---|---|---|
+| 22.&nbsp;10.&nbsp;14:51 | „predtym nez to deployneme a pushneme chcem ten dizajn naozaj vymakat aj tu funkcionalitu aby to potencialne mohlo nabrat leadov …“ | Cieľ je kontakt, nie funkcie: kratšia stránka, jasnejšie CTA | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/d8f10e2) |
+| 22.&nbsp;10.&nbsp;14:59 | „… ten header moze byt fixed aby bola ta moznost prihlasit sa stale na ociach uzivatelovi … lebo cielom je ziskat leada predsa“ | Výzva k akcii vždy na očiach: lepkavý header s CTA | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/44621c6) |
+| 22.&nbsp;10.&nbsp;15:22 | „ešte niektore segmenty su priliš velké musi uživatel scrollovať veľa … len nevyhnutne informacie“ | Claude výšku sekcií najprv zmeral v obrazovkách. Mobil z 8 na 5,8, potom 4 sekcie | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/e366dad) [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/756aa10) |
+| 22.&nbsp;10.&nbsp;15:59 | „*(citácia zo zadania)* … čiže asi defaultne by to malo byt na najit dvojče to to preklikavanie neviem či si uživatel všimne zvažujem či ich nerozdelit na dve segmenty...“ | Námietka proti návrhu AI. Jeden nástroj v hero, druhý vo vlastnej sekcii | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/f9a0577) |
+| 22.&nbsp;10.&nbsp;16:18 | „ale aj ta page by mala koncit niecim cim toho lead by sme mohli ziskat či ?“ | Každý koniec stránky vedie ku kontaktu | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/1ca6591) |
+| 22.&nbsp;10.&nbsp;16:31 | „nakoniec myslim že to je Otevrit prehlad je potom prespamovane v tom landing page“ | E2E potvrdilo 6× opakované CTA a duplicitné `id` | [`fix(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/97b7b90) |
+| 22.&nbsp;10.&nbsp;16:46 | „tu nepochopi uzivatel co to mesicne znamena: musi byt všetko jasne pre tych potencialnych leadov“ | Texty pre začiatočníka, nie pre analytika | [`fix(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/1db3f1b) |
+| 23.&nbsp;10.&nbsp;09:52 | „ešte keď som scrollnuty dole a kliknem na dvojčata … tak to klikne Jak Koupit a nie dvojcata“ | Bug z ručného testu. Prvá oprava bez overenia nefungovala, automatický test ju odhalil a zostal v E2E | [`fix(report)`](https://github.com/simonslavik/etf-dvojcata/commit/39b55da) |
+| 23.&nbsp;10.&nbsp;15:26 | „ešte tieto karty by som vymakal: UI/UX“ | Kopírovanie ISIN už nerozbaľuje kartu, fakty o fonde a alternatívy s vlastným kopírovaním | [`feat(report)`](https://github.com/simonslavik/etf-dvojcata/commit/868040c) |
+
+### Kvalita, bezpečnosť a nasadenie
+
+| Kedy | Prompt | Výsledok | Commit |
+|---|---|---|---|
+| 23.&nbsp;10.&nbsp;10:42 | „splaňa to teda to zadanie? *(zadanie)* alebo by si ešte niečo zlepšíl?“ | Kontrola voči zadaniu bod po bode, Lighthouse 99/100/100/100 | [`perf(web)`](https://github.com/simonslavik/etf-dvojcata/commit/0078add) |
+| 23.&nbsp;10.&nbsp;11:34 | „ano ale predtym skontroluj kod či niečo nieje redundant, chcem aby ma ten kod vedel naozaj predať aj ten technologický stack“ | Review agent + knip, refaktor API a webu, ESLint, Prettier, `npm run check` | [`chore`](https://github.com/simonslavik/etf-dvojcata/commit/bfd8631) [`refactor(api)`](https://github.com/simonslavik/etf-dvojcata/commit/35afee7) |
+| 23.&nbsp;10.&nbsp;13:40 | „okej cize teraz to deployni na vercel“ | Dva projekty na Verceli + Neon. Chyba runtime (ESM) zachytená až v produkcii a opravená bundlom | [`build(vercel)`](https://github.com/simonslavik/etf-dvojcata/commit/63bcd60) |
+| 23.&nbsp;10.&nbsp;14:08 | „daj este pozor na security veci v repository celkovo aby ked to bude niekto prechadzat s AI cely codebase aby on alebo ich AI nemali co vytknut“ | Nezávislý bezpečnostný review, meranie IP na Verceli, 10 opráv s testami, [SECURITY.md](../SECURITY.md) | [`fix(security)`](https://github.com/simonslavik/etf-dvojcata/commit/fc4fcf3) |
+| 23.&nbsp;10.&nbsp;14:58 | „okej tak ešte tuto čast vymakaj prosim *(admin dashboard)*“ | Dashboard podľa krokov pipeline s konverziou medzi krokmi, čitateľný na mobile | [`feat(admin)`](https://github.com/simonslavik/etf-dvojcata/commit/8b6e9cc) |
 ## Zadania pre agentov
 
 Paralelné úlohy (výskum dát, nezávislé kontroly) Claude delegoval subagentom. Každé zadanie má zúžený rozsah, požadovaný formát výstupu a pravidlo proti halucináciám. Texty sú doslovné.
