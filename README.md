@@ -85,13 +85,14 @@ Monorepo (npm workspaces): **FE Next.js · BE NestJS · DB Postgres**, spustené
 | **FE** – [apps/web](apps/web) | **Next.js 16** (App Router), React 19, TypeScript, **Tailwind CSS 4** | Obe varianty reklamy sú staticky predrenderované (rýchle LCP na mobile), interaktívne časti sú klientske „ostrovčeky“. Tokeny dizajnu sú v [globals.css](apps/web/app/globals.css) |
 | Varianty | **`proxy.ts`** (v Next 16 nahrádza middleware) | `/?ad=fees` → interný rewrite na `/v/fees`, varianta sa drží v cookie |
 | FE ↔ BE | **rewrite `/api/*` → NestJS** | Prehliadač komunikuje s jednou doménou: bez CORS a admin cookie zostáva first-party. Admin stránky sa renderujú na serveri z JSON-u z API |
-| **BE** – [apps/api](apps/api) | **NestJS 12** (ESM), moduly `Database`, `Tracking`, `Pipeline`, `Email`, `Admin`, `Health` | Každá fáza lievika má svoju službu. Guardy: `OriginGuard` (formuláre), `AdminGuard` (HMAC cookie), `ThrottlerGuard` (limity na IP). Validácia cez Zod (`ZodPipe`), env sa validuje pri štarte (`@nestjs/config`) |
+| **BE** – [apps/api](apps/api) | **NestJS 12** (ESM), moduly `Database`, `Tracking`, `Pipeline`, `Email`, `Admin`, `Health` | Každá fáza lievika má svoju službu. Guardy: `OriginGuard` (formuláre), `AdminGuard` (HMAC cookie), `CronGuard` (Bearer secret), `ThrottlerGuard` (limity na IP per route). Tajomstvá sa porovnávajú v konštantnom čase. Validácia cez Zod (`ZodPipe`), env sa validuje pri štarte (`@nestjs/config`). Dotazy pre dashboard sú v injektovateľnej `StatsService` |
 | Plánovač | **`@nestjs/schedule`** (denne 7:00, Europe/Prague) + chránený `GET /cron/emails` | Kroky sekvencie D2/D5/D9 a opakovanie neúspešných odovzdaní |
 | **DB** | **Postgres 17** + **Drizzle ORM** (`pg` Pool) | Schéma v TypeScripte, migrácie generuje `drizzle-kit` a API ich pri štarte spustí v transakcii ([apps/api/drizzle](apps/api/drizzle)) |
 | Zdieľané – [packages/shared](packages/shared) | čisté TS bez frameworku | Dáta ETF, kalkulačka, pravidlá skóre, sekvencia, súhlasy, udalosti. FE aj BE počítajú rovnako |
 | E-maily | **Resend** (REST) | Okamžitý e-mail + sekvencia, one-click odhlásenie (RFC 8058), atomické „zabratie“ jobu, retry |
 | Beh | **Docker Compose**: `db` + `api` + `web` (+ `demo-data`) | Reviewer spustí všetko jedným príkazom. Image sú multi-stage, bežia pod neprivilegovaným používateľom a majú health checky |
-| Testy | **Vitest** (25 shared + 30 API proti reálnemu Postgresu cez supertest) + **Puppeteer E2E** | E2E prejde celú cestu v oboch variantoch cez celý stack až po žiadosť o hovor |
+| Testy | **Vitest** (25 shared + 31 API proti reálnemu Postgresu cez supertest) + **Puppeteer E2E** | E2E prejde celú cestu v oboch variantoch cez celý stack až po žiadosť o hovor, vrátane navigácie v prehľade |
+| Kvalita kódu | **ESLint** (Next core-web-vitals + typescript-eslint), **Prettier** (+ triedenie Tailwind tried), **knip** (mŕtvy kód a závislosti), striktný TypeScript | `npm run check` spustí typecheck, lint, formát, knip aj testy jedným príkazom |
 
 ```
 Prehliadač ──▶ web (Next.js :3000)
@@ -258,6 +259,10 @@ Stránku som potom prechádzal ako návštevník a posielal Claudovi screenshoty
 - **Navigácia v prehľade** zvýrazňovala zlú sekciu. Pravidlo „najvyššia viditeľná sekcia“ bolo zlé a odstup pri skoku na kotvu sa počítal dvakrát. Claude to najprv „opravil“ bez overenia. Až automatický test kliknutí zo spodku stránky ukázal, že chyba pretrváva. Test je teraz súčasťou E2E.
 - **Drobnosti zo screenshotov:** medzera pred „zdarma“ v tlačidle (flex gap), `\u2011` v JSX texte, ktorý by sa zobrazil doslova, a výška sekcie s prehľadom, ktorá po odomknutí narástla na 12 riadkov.
 
+### Code review pred odovzdaním
+
+Na záver som Clauda požiadal o revíziu redundancie a idiomatickosti. Výsledok: zdieľané konštanty (cookies, regex e-mailu, obdobia dashboardu) presunuté do `packages/shared`, dashboardové dotazy ako injektovateľná `StatsService`, cron za vlastným `CronGuard`, validácia celých tiel cez Zod namiesto ručného orezávania, porovnanie tajomstiev v konštantnom čase. Na FE stav z `localStorage` a `matchMedia` cez `useSyncExternalStore` (žiadny `setState` v efekte), duplicitné tlačidlá kopírovania ISIN zlúčené do jedného komponentu, animácie ako tokeny v `@theme`. Pribudli ESLint, Prettier a knip a `npm run check`, ktorý ich spustí spolu s testmi. Každý krok som overil testami a E2E.
+
 ## 11. Čo v riešení chýba / pred spustením reklamy
 
 - [ ] **Verejný hosting:** zadanie chce bezplatný hosting a URL. Zatiaľ beží všetko cez Docker (rozhodnutie v pláne v3). Na verejné nasadenie stačí ten istý `docker-compose.yml` na VPS (napr. Hetzner) za reverse proxy s HTTPS. Bezplatná alternatíva: web na Verceli + NestJS na Renderi (ten sa však po 15 minútach nečinnosti uspí, čo je pri reklame zlé) + Neon.
@@ -282,8 +287,9 @@ cp .env.example .env             # DATABASE_URL na Postgres z docker compose
 npm run db                       # iba Postgres v Dockeri (localhost:5544, + testovacia DB etfd_test)
 npm run dev:api                  # NestJS na :4000 (watch)
 npm run dev:web                  # Next.js na :3000, /api/* → :4000
-npm test                         # 25 testov shared + 30 integračných testov API proti Postgresu
-npm run typecheck                # api + web
+npm test                         # 25 testov shared + 31 integračných testov API proti Postgresu
+npm run check                    # typecheck + lint + prettier + knip + testy
+npm run format                   # Prettier na celý repozitár
 npm run e2e -- http://localhost:3000                              # celá cesta v prehliadači (vývoj: admin otvorený)
 ADMIN_TOKEN=review-token npm run e2e -- http://localhost:3000     # to isté proti Docker stacku
 npm run simulate -- http://localhost:3000 400                     # simulovaná návštevnosť do dashboardu
@@ -291,4 +297,4 @@ npm run ads                      # vyrenderuje reklamy a OG obrázok
 npm run shots -- http://localhost:3000 review-token   # screenshoty do README
 ```
 
-**Štruktúra:** `apps/web` (Next.js: `app/` stránky + admin UI, `components/`, `lib/api.ts` klient API, `proxy.ts`) · `apps/api` (NestJS: `src/<modul>/`, `drizzle/` migrácie, `test/`) · `packages/shared` (dáta a pravidlá, `test/`) · `ads/` · `scripts/` (E2E, simulácia, screenshoty, reklamy) · `docker-compose.yml`
+**Štruktúra:** `apps/web` (Next.js: `app/` stránky + admin UI, `components/` po oblastiach `landing/`, `report/`, `lead/`, `admin/`, `ui/`, `hooks/` (stav prehliadača cez `useSyncExternalStore`, animované čísla), `lib/` (klient API, tracking, úložisko), `proxy.ts`) · `apps/api` (NestJS: `src/<modul>/`, `drizzle/` migrácie, `test/`) · `packages/shared` (dáta a pravidlá, `test/`) · `ads/` · `scripts/` (E2E, simulácia, screenshoty, reklamy) · `docker-compose.yml`
