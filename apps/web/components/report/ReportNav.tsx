@@ -24,23 +24,23 @@ export function ReportNav() {
     const stickIo = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { threshold: 0 });
     if (sentinel.current) stickIo.observe(sentinel.current);
 
-    // aktivní sekce: ta, jejíž horní hrana je nejblíž pod navigací
-    const spy = new IntersectionObserver((entries) => {
-      const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-      if (visible[0]) setActive(visible[0].target.id);
-    }, { rootMargin: '-90px 0px -55% 0px' });
-    ITEMS.forEach(({ id }) => { const el = document.getElementById(id); if (el) spy.observe(el); });
-
+    // aktivní sekce = poslední, jejíž horní hrana už je v horní třetině okna (po skoku přes kotvu je nadpis ~90 px pod vrchem)
     const onScroll = () => {
+      const ACTIVATE_AT = innerHeight * 0.35;
       const h = document.documentElement;
       const pr = Math.min(1, h.scrollTop / Math.max(1, h.scrollHeight - innerHeight));
       setProgress(pr);
+      let current = ITEMS[0].id;
+      for (const { id } of ITEMS) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= ACTIVATE_AT) current = id;
+      }
       // na konci stránky se poslední (krátká) sekce nedostane nahoru – zvýraznit ji ručně
-      if (pr > 0.98) setActive(ITEMS[ITEMS.length - 1].id);
+      setActive(pr > 0.98 ? ITEMS[ITEMS.length - 1].id : current);
     };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
-    return () => { stickIo.disconnect(); spy.disconnect(); removeEventListener('scroll', onScroll); };
+    return () => { stickIo.disconnect(); removeEventListener('scroll', onScroll); };
   }, []);
 
   const idx = ITEMS.findIndex((i) => i.id === active);
@@ -70,6 +70,7 @@ export function ReportNav() {
                 <a
                   href={`#${it.id}`}
                   aria-current={active === it.id ? 'true' : undefined}
+                  onClick={() => setActive(it.id)}
                   className="flex min-h-10 items-center justify-center rounded-xl px-3 text-[14px] font-semibold text-ink transition-colors duration-300 aria-[current]:text-white"
                 >
                   {it.label}

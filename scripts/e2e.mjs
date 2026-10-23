@@ -81,6 +81,21 @@ const emails = [
 ];
 await sleep(500);
 
+// Přehled: navigace zvýrazní sekci, na kterou se kliklo – i při kliknutí ze spodku stránky
+{
+  const page = await (await browser.createBrowserContext()).newPage();
+  await page.setViewport({ width: 1440, height: 830 });
+  await page.goto(`${base}/report`, { waitUntil: 'networkidle0' });
+  for (const label of ['Dvojčata', 'Jak koupit', 'Daně']) {
+    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+    await sleep(250);
+    await page.evaluate((l) => [...document.querySelectorAll('nav[aria-label="Obsah přehledu"] a')].find((a) => a.textContent === l).click(), label);
+    await sleep(1300);
+    assert.equal(await page.$eval('nav[aria-label="Obsah přehledu"] [aria-current]', (a) => a.textContent), label, `navigace přehledu: ${label}`);
+  }
+  await page.close();
+}
+
 const after = await stats();
 for (const v of ['twin', 'fees']) {
   for (const step of ['visit', 'interact', 'cta', 'form_view', 'form_start', 'lead', 'qualify']) {

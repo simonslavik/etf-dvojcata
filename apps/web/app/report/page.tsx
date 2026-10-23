@@ -48,7 +48,7 @@ export default function Report() {
       <ReportNav />
 
       {/* Jak koupit */}
-      <section id="navod" aria-labelledby="navod-title" className="mt-10 scroll-mt-24">
+      <section id="navod" aria-labelledby="navod-title" className="mt-10">
         <h2 id="navod-title" className="font-display text-[26px] font-bold text-ink sm:text-[30px]">Jak dvojče koupit</h2>
         <ol className="mt-4 grid gap-3 sm:grid-cols-3">
           {HOW_TO_BUY.map((s, i) => (
@@ -67,14 +67,14 @@ export default function Report() {
       </section>
 
       {/* Dvojčata */}
-      <section id="dvojcata" aria-labelledby="dvojcata-title" className="mt-12 scroll-mt-24">
+      <section id="dvojcata" aria-labelledby="dvojcata-title" className="mt-12">
         <h2 id="dvojcata-title" className="font-display text-[26px] font-bold text-ink sm:text-[30px]">Všechna dvojčata</h2>
         <p className="mt-1 mb-4 text-[14.5px] text-muted">Najděte své americké ETF a zkopírujte ISIN jeho evropské verze.</p>
         <TwinList />
       </section>
 
       {/* Daně */}
-      <section id="dane" aria-labelledby="dane-title" className="mt-12 scroll-mt-24">
+      <section id="dane" aria-labelledby="dane-title" className="mt-12">
         <h2 id="dane-title" className="font-display text-[26px] font-bold text-ink sm:text-[30px]">Daně v Česku stručně</h2>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {TAX.map((x) => (
