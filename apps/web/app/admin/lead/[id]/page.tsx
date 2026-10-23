@@ -1,15 +1,12 @@
 import type { ReactNode } from 'react';
-import Link from 'next/link';
 import { apiGet, type LeadDetailDto } from '@/lib/api';
-import { isMonthlyBand, MONTHLY_BANDS, VARIANT_LABEL } from '@etfd/shared';
-import { Panel, StageChip } from '@/components/admin/ui';
-import { Logo } from '@/components/ui/Logo';
+import { isMonthlyBand, MONTHLY_BANDS, SEQUENCE, VARIANT_LABEL } from '@etfd/shared';
+import { AdminHeader, fmtDateTime, handoffLabel, isTestEmail, JOB_LABEL, Panel, StageChip } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false } };
 
-const fmt = (d: string | Date) =>
-  new Date(d).toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+const fmt = (d: string | Date) => fmtDateTime(d, true);
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -29,24 +26,18 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
     ['Telefon', lead.phone ?? '–'],
     ['Souhlas (e-mail)', lead.consentText ?? '–'],
     ['Souhlas (hovor)', lead.callConsentText ?? '–'],
-    ['Předání', `${lead.handoffStatus ?? '–'}${lead.handedOverAt ? ` · ${fmt(lead.handedOverAt)}` : ''}`],
+    ['Předání', `${handoffLabel(lead.handoffStatus).text}${lead.handedOverAt ? ` · ${fmt(lead.handedOverAt)}` : ''}`],
     ['Odhlášen', lead.unsubscribedAt ? fmt(lead.unsubscribedAt) : '–'],
   ];
 
   return (
     <div className="min-h-dvh bg-paper">
-      <header className="border-b border-line bg-white">
-        <div className="wrap flex h-16 items-center gap-4">
-          <Logo />
-          <Link href="/admin" className="text-[14px] text-teal-700 hover:underline">
-            ← Pipeline
-          </Link>
-        </div>
-      </header>
+      <AdminHeader back />
       <main className="wrap space-y-5 py-6">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-[24px] font-bold text-ink">{lead.email}</h1>
+          <h1 className="text-[22px] font-bold break-all text-ink sm:text-[24px]">{lead.email}</h1>
           <StageChip stage={lead.stage} />
+          {isTestEmail(lead.email) && <span className="rounded border border-line px-1.5 text-[11px] font-semibold text-muted">TEST</span>}
           {!lead.handedOverAt && lead.wantsCall && (
             <form action={`/api/admin/leads/${lead.id}/handoff`} method="post">
               <button className="btn btn-primary !min-h-10 !px-4 !text-[14px]">Označit jako předaný</button>
@@ -57,6 +48,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           <div className="space-y-5">
             <Panel title={`Skóre ${lead.score}`}>
               <ul className="space-y-1.5 text-[14px]">
+                {!(lead.scoreReasons ?? []).length && <li className="text-muted">Zatím žádné body.</li>}
                 {(lead.scoreReasons ?? []).map((r) => (
                   <li key={r.label} className="flex justify-between">
                     <span className="text-text">{r.label}</span>
@@ -68,7 +60,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             <Panel title="Údaje">
               <dl className="space-y-2 text-[14px]">
                 {facts.map(([k, v]) => (
-                  <div key={k} className="grid grid-cols-[150px_1fr] gap-2">
+                  <div key={k} className="grid gap-0.5 sm:grid-cols-[150px_1fr] sm:gap-2">
                     <dt className="text-muted">{k}</dt>
                     <dd className="text-ink">{v}</dd>
                   </div>
@@ -79,10 +71,15 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
               <ul className="space-y-1.5 text-[14px]">
                 {jobs.map((j) => (
                   <li key={j.id} className="flex justify-between gap-3">
-                    <span className="text-text">{j.step}</span>
-                    <span className="text-muted">
-                      {j.status} · {fmt(j.sentAt ?? j.sendAt)}
-                      {j.error ? ` · ${j.error}` : ''}
+                    <span className="min-w-0 truncate text-text">
+                      <span className="mr-1.5 rounded-md bg-teal-50 px-1.5 py-0.5 text-[11.5px] font-bold text-teal-700">
+                        D{SEQUENCE.find((s) => s.step === j.step)?.day}
+                      </span>
+                      {SEQUENCE.find((s) => s.step === j.step)?.subject ?? j.step}
+                    </span>
+                    <span className="flex-none text-right text-muted">
+                      {JOB_LABEL[j.status] ?? j.status} · {fmt(j.sentAt ?? j.sendAt)}
+                      {j.error ? ` · ${j.error === 'disabled' ? 'e-maily vypnuté' : j.error}` : ''}
                     </span>
                   </li>
                 ))}
