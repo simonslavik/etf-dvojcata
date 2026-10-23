@@ -71,7 +71,7 @@ export class SequenceService {
       .orderBy(emailJobs.sendAt).limit(limit);
     let sent = 0;
     for (const j of due) {
-      if (await this.sendJob(j.leadId, j.step as SequenceStep)) sent++;
+      if (await this.sendJob(j.leadId, j.step)) sent++;
       if (this.email.enabled) await sleep(gapMs);
     }
     this.log.log(JSON.stringify({ k: 'sequence', due: due.length, sent }));

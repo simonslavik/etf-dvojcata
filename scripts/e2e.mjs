@@ -1,4 +1,4 @@
-// E2E: projde celou cestu návštěvníka v obou variantách (mobil) a ověří, že ji změřil lievik i pipeline.
+// E2E: projde celou cestu návštěvníka v obou variantách (mobil) a ověří, že ji změřil trychtýř i pipeline.
 // node scripts/e2e.mjs [baseUrl]   (v `next dev` je admin API otevřené; jinak ADMIN_TOKEN=… node scripts/e2e.mjs)
 import puppeteer from 'puppeteer-core';
 import assert from 'node:assert/strict';
@@ -109,6 +109,6 @@ for (const e of emails) {
   assert.match(row, /"qualified"|"handed_over"/, 'lead je kvalifikovaný');
   assert.match(row, /"\+420777123456"/, 'telefon uložen normalizovaný');
 }
-console.log('✓ E2E OK – obě varianty, celý lievik a pipeline (lead → kvalifikace → žádost o hovor)');
+console.log('✓ E2E OK – obě varianty, celý trychtýř a pipeline (lead → kvalifikace → žádost o hovor)');
 console.table(Object.fromEntries(Object.keys(after.funnel.all).map((k) => [k, { twin: after.funnel.twin[k], fees: after.funnel.fees[k] }])));
 await browser.close();

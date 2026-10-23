@@ -1,11 +1,14 @@
+import type { SequenceStep, Stage, Variant } from '@etfd/shared';
 import { pgTable, text, integer, boolean, timestamp, jsonb, uuid, bigserial, serial, index, uniqueIndex } from 'drizzle-orm/pg-core';
 
-/** Každá událost z prohlížeče i serveru – z nich se skládá lievik a cesta jedné relace */
+export type JobStatus = 'scheduled' | 'sending' | 'sent' | 'failed' | 'skipped' | 'cancelled';
+
+/** Každá událost z prohlížeče i serveru – z nich se skládá trychtýř a cesta jedné relace */
 export const events = pgTable('events', {
   id: bigserial('id', { mode: 'number' }).primaryKey(),
   sid: text('sid').notNull(),
   event: text('event').notNull(),
-  variant: text('variant').notNull(),
+  variant: text('variant').$type<Variant>().notNull(),
   utmSource: text('utm_source'),
   utmCampaign: text('utm_campaign'),
   utmContent: text('utm_content'),
@@ -23,7 +26,7 @@ export const leads = pgTable('leads', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   sid: text('sid'),
-  variant: text('variant').notNull(),
+  variant: text('variant').$type<Variant>().notNull(),
   source: text('source'),
   utmSource: text('utm_source'),
   utmCampaign: text('utm_campaign'),
@@ -38,7 +41,7 @@ export const leads = pgTable('leads', {
   callConsentText: text('call_consent_text'),
   score: integer('score').notNull().default(0),
   scoreReasons: jsonb('score_reasons').$type<{ label: string; points: number }[]>(),
-  stage: text('stage').notNull().default('lead'),
+  stage: text('stage').$type<Stage>().notNull().default('lead'),
   handedOverAt: timestamp('handed_over_at', { withTimezone: true }),
   handoffStatus: text('handoff_status'),
   unsubscribedAt: timestamp('unsubscribed_at', { withTimezone: true }),
@@ -47,11 +50,10 @@ export const leads = pgTable('leads', {
 export const emailJobs = pgTable('email_jobs', {
   id: serial('id').primaryKey(),
   leadId: uuid('lead_id').notNull().references(() => leads.id, { onDelete: 'cascade' }),
-  step: text('step').notNull(),
+  step: text('step').$type<SequenceStep>().notNull(),
   sendAt: timestamp('send_at', { withTimezone: true }).notNull(),
   sentAt: timestamp('sent_at', { withTimezone: true }),
-  /** scheduled | sending | sent | failed | skipped | cancelled */
-  status: text('status').notNull().default('scheduled'),
+  status: text('status').$type<JobStatus>().notNull().default('scheduled'),
   attempts: integer('attempts').notNull().default(0),
   error: text('error'),
 }, (t) => [uniqueIndex('email_jobs_lead_step_uq').on(t.leadId, t.step), index('email_jobs_due_idx').on(t.status, t.sendAt)]);

@@ -8,7 +8,7 @@ import { ReportCover } from './ReportCover';
 
 /**
  * Konec stránky = poslední příležitost: kdo dočetl FAQ, má námitky vyřešené a je nejblíž rozhodnutí.
- * Před odemčením formulář; po odemčení místo dalšího „Otevřít přehled“ další krok lievika – nabídka hovoru.
+ * Před odemčením formulář; po odemčení místo dalšího „Otevřít přehled“ další krok trychtýře – nabídka hovoru.
  */
 export function FinalCta() {
   const { unlocked, token, called, markCalled } = useLead();

@@ -16,7 +16,6 @@ export const EnvSchema = z.object({
   DAILY_NURTURE_CAP: z.coerce.number().int().positive().default(300),
   HANDOFF_WEBHOOK_URL: z.string().url().optional(),
   HANDOFF_WEBHOOK_SECRET: z.string().optional(),
-  LEADS_PER_IP_10MIN: z.coerce.number().int().positive().default(20),
 });
 export type Env = z.infer<typeof EnvSchema>;
 

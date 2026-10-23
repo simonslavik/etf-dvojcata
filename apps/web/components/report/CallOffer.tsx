@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CallRequest } from '@/components/landing/CallRequest';
 
-/** Pokračování lievika na konci přehledu: kdo zadal e-mail, dostane nabídku pomoci s prvním nákupem (předání) */
+/** Pokračování trychtýře na konci přehledu: kdo zadal e-mail, dostane nabídku pomoci s prvním nákupem (předání) */
 export function CallOffer() {
   const [token, setToken] = useState<string | null>(null);
   useEffect(() => {

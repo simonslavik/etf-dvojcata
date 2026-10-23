@@ -1,14 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { Variant } from '@etfd/shared';
 import { and, eq, isNull, sql } from 'drizzle-orm';
+import { maskEmail } from '../common/http.js';
 import type { Env } from '../config/env.js';
 import { InjectDb, type Db } from '../db/db.js';
 import { leads, type Lead } from '../db/schema.js';
 import { TrackingService } from '../tracking/tracking.service.js';
 import { leadSid, ScoringService } from './scoring.service.js';
-
-export const mask = (e: string) => e.replace(/^(.).*(@.*)$/, '$1***$2');
 
 /**
  * Předání: lead s telefonem a výslovným souhlasem odejde webhookem do CRM / call centra (HANDOFF_WEBHOOK_URL).
@@ -56,8 +54,8 @@ export class HandoffService {
     }
     const delivered = status === 'sent' || status === 'manual';
     await this.db.update(leads).set({ handoffStatus: status, ...(delivered ? { handedOverAt: new Date() } : {}) }).where(eq(leads.id, lead.id));
-    if (delivered) await this.tracking.record({ sid: leadSid(lead), event: 'handoff', variant: lead.variant as Variant, props: { status } });
-    this.log.log(JSON.stringify({ k: 'handoff', lead: mask(lead.email), status }));
+    if (delivered) await this.tracking.record({ sid: leadSid(lead), event: 'handoff', variant: lead.variant, props: { status } });
+    this.log.log(JSON.stringify({ k: 'handoff', lead: maskEmail(lead.email), status }));
     return this.scoring.rescore(lead.id);
   }
 

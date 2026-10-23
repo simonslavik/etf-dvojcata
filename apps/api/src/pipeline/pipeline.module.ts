@@ -5,7 +5,8 @@ import { HandoffService } from './handoff.service.js';
 import { LeadsController } from './leads.controller.js';
 import { LeadsService } from './leads.service.js';
 import { LinksController } from './links.controller.js';
-import { CronController, PipelineScheduler } from './scheduler.js';
+import { CronController } from './cron.controller.js';
+import { PipelineScheduler } from './scheduler.js';
 import { ScoringService } from './scoring.service.js';
 
 @Module({

@@ -2,7 +2,8 @@ import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { EVENTS, isVariant } from '@etfd/shared';
 import { z } from 'zod';
-import { clip } from '../common/http.js';
+import { LIMITS } from '../common/throttle.js';
+import { clipped } from '../common/zod.js';
 import { ZodPipe } from '../common/zod.pipe.js';
 import { TrackingService } from './tracking.service.js';
 
@@ -10,10 +11,11 @@ import { TrackingService } from './tracking.service.js';
 const TrackBody = z.object({
   event: z.enum(EVENTS),
   sid: z.string().min(1).max(64),
-  variant: z.string().optional(),
-  utm_source: z.string().nullish(), utm_campaign: z.string().nullish(), utm_content: z.string().nullish(), device: z.string().nullish(),
-  props: z.record(z.string(), z.unknown()).nullish(),
-  t: z.number().nullish(),
+  variant: z.string().nullish().transform((v) => (isVariant(v) ? v : 'twin')),
+  utm_source: clipped(60), utm_campaign: clipped(60), utm_content: clipped(60), device: clipped(10),
+  // malé props (ticker, zdroj CTA…) – větší objekt se zahodí, aby tabulka nebobtnala
+  props: z.record(z.string(), z.unknown()).nullish().transform((p) => (p && JSON.stringify(p).length <= 400 ? p : null)),
+  t: z.number().nullish().transform((t) => (t != null ? Math.round(t) : null)),
 });
 
 @Controller('track')
@@ -23,13 +25,12 @@ export class TrackingController {
   /** Prohlížeč posílá text/plain (sendBeacon = „simple request“) – ZodPipe ho rozparsuje */
   @Post()
   @HttpCode(200)
-  @Throttle({ default: { limit: 600, ttl: 600_000 } }) // běžná relace pošle desítky událostí, ne stovky
+  @Throttle({ default: LIMITS.track }) // běžná relace pošle desítky událostí, ne stovky
   async track(@Body(new ZodPipe(TrackBody)) b: z.infer<typeof TrackBody>) {
-    const props = b.props && JSON.stringify(b.props).length <= 400 ? b.props : null;
     await this.tracking.record({
-      sid: b.sid, event: b.event, variant: isVariant(b.variant) ? b.variant : 'twin',
-      utmSource: clip(b.utm_source, 60), utmCampaign: clip(b.utm_campaign, 60), utmContent: clip(b.utm_content, 60), device: clip(b.device, 10),
-      props, tMs: b.t != null ? Math.round(b.t) : null,
+      sid: b.sid, event: b.event, variant: b.variant,
+      utmSource: b.utm_source, utmCampaign: b.utm_campaign, utmContent: b.utm_content, device: b.device,
+      props: b.props, tMs: b.t,
     });
     return { ok: true };
   }

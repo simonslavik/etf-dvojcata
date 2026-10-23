@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { consentRecord, CONSENTS } from '@etfd/shared';
-import { csvCell, sameOriginUrl, timingSafeEqual } from '../src/common/http.js';
+import { csvCell, maskEmail, safeEqual, sameOriginUrl } from '../src/common/http.js';
 
 const O = 'https://etf-dvojcata.cz';
 
@@ -13,10 +13,14 @@ describe('přesměrování z e-mailu zůstane na webu', () => {
   });
 });
 
-test('porovnání tokenu', () => {
-  expect(timingSafeEqual('abc', 'abc')).toBe(true);
-  expect(timingSafeEqual('abc', 'abd')).toBe(false);
-  expect(timingSafeEqual('abc', 'abcd')).toBe(false);
+test('porovnání tajemství v konstantním čase', () => {
+  expect(safeEqual('abc', 'abc')).toBe(true);
+  expect(safeEqual('abc', 'abd')).toBe(false);
+  expect(safeEqual('abc', 'abcd')).toBe(false);
+});
+
+test('e-mail do logů je zamaskovaný', () => {
+  expect(maskEmail('jana.novakova@example.com')).toBe('j***@example.com');
 });
 
 test('CSV: vzorce neutralizované, telefon zůstane číslem', () => {

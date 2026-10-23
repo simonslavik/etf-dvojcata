@@ -1,9 +1,9 @@
 /* Postřehy pro dashboard – jednoduchá pravidla, žádné LLM. Čisté funkce (testované). */
-import { FUNNEL } from './events.js';
+import { FUNNEL, VARIANT_LABEL } from './events.js';
+import { formatShare as pct } from './format.js';
 
 type Counts = Record<string, number>;
 const MIN_VISITS = 30;
-const pct = (x: number) => `${(x * 100).toLocaleString('cs-CZ', { maximumFractionDigits: 1 })} %`;
 
 /** Dvouvýběrový z-test podílů (konverze A vs. B) */
 export function zTest(convA: number, nA: number, convB: number, nB: number) {
@@ -33,7 +33,7 @@ export function insights(all: Counts, a: Counts, b: Counts): string[] {
   if (a.visit >= MIN_VISITS && b.visit >= MIN_VISITS) {
     const rA = a.lead / a.visit, rB = b.lead / b.visit;
     const z = zTest(a.lead, a.visit, b.lead, b.visit);
-    const better = rA >= rB ? 'A · Dvojče' : 'B · Poplatky';
+    const better = rA >= rB ? VARIANT_LABEL.twin : VARIANT_LABEL.fees;
     out.push(`Konverze na lead: A ${pct(rA)} vs. B ${pct(rB)} – ${Math.abs(z) >= 1.96 ? `${better} vede statisticky významně (|z| = ${Math.abs(z).toFixed(1)})` : 'rozdíl zatím není statisticky významný'}.`);
   } else {
     out.push(`Srovnání variant A/B čeká na ${MIN_VISITS} návštěv v každé variantě.`);

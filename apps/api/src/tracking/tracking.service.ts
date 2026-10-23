@@ -9,7 +9,7 @@ interface EventInput {
   props?: Record<string, unknown> | null; tMs?: number | null;
 }
 
-/** Každá událost z prohlížeče i serveru – z nich se skládá lievik a cesta jedné relace */
+/** Každá událost z prohlížeče i serveru – z nich se skládá trychtýř a cesta jedné relace */
 @Injectable()
 export class TrackingService {
   constructor(@InjectDb() private readonly db: Db) {}

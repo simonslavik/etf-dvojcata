@@ -10,8 +10,8 @@ export interface UsEtf {
 
 export interface Twin {
   ticker: string; aka: string | null; name: string; issuer: string; isin: string; index: string;
-  ter_pct: number; distribution: 'Acc' | 'Dist' | string; size_eur_m: number | null;
-  form: 'UCITS' | 'ETC' | string; exchange: string; domicile: string; source_url: string; accessed: string;
+  ter_pct: number; distribution: 'Acc' | 'Dist' | '–'; size_eur_m: number | null;
+  form: 'UCITS' | 'ETC'; exchange: string; domicile: string; source_url: string; accessed: string;
 }
 
 export interface Alt { ticker: string; isin: string; ter_pct: number; name: string }

@@ -1,9 +1,8 @@
-import { Controller, Get, Headers, Injectable, Logger, UnauthorizedException, type OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, type OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import type { Env } from '../config/env.js';
-import { timingSafeEqual } from '../common/http.js';
 import { SequenceService } from '../email/sequence.service.js';
 import { HandoffService } from './handoff.service.js';
 
@@ -32,19 +31,5 @@ export class PipelineScheduler implements OnModuleInit {
     const emails = await this.sequence.runDue();
     const handoffRetries = await this.handoffs.retryFailed();
     return { ...emails, handoffRetries };
-  }
-}
-
-/** Ruční / externí spuštění (např. systémový cron): Authorization: Bearer $CRON_SECRET */
-@Controller('cron')
-export class CronController {
-  constructor(private readonly scheduler: PipelineScheduler, private readonly config: ConfigService<Env, true>) {}
-
-  @Get('emails')
-  run(@Headers('authorization') auth: string | undefined) {
-    const secret = this.config.get('CRON_SECRET', { infer: true });
-    const dev = this.config.get('NODE_ENV', { infer: true }) === 'development';
-    if (!(secret ? timingSafeEqual(auth ?? '', `Bearer ${secret}`) : dev)) throw new UnauthorizedException({ error: 'unauthorized' });
-    return this.scheduler.run();
   }
 }

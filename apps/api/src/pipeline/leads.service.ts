@@ -6,10 +6,11 @@ import { InjectDb, type Db } from '../db/db.js';
 import { emailJobs, leads } from '../db/schema.js';
 import { SequenceService } from '../email/sequence.service.js';
 import { TrackingService } from '../tracking/tracking.service.js';
-import { HandoffService, mask } from './handoff.service.js';
+import { maskEmail } from '../common/http.js';
+import { HandoffService } from './handoff.service.js';
 import { leadSid, ScoringService } from './scoring.service.js';
 
-interface LeadInput {
+export interface LeadInput {
   email: string; sid: string | null; variant: Variant; source: string | null;
   utmSource: string | null; utmCampaign: string | null; utmContent: string | null; device: string | null;
   interest: string | null; calcMonthly: number | null; consentText: string | null;
@@ -36,7 +37,7 @@ export class LeadsService {
       .returning({ id: leads.id, token: leads.token, inserted: sql<boolean>`(xmax = 0)` });
     const isNew = Boolean(row.inserted);
 
-    await this.tracking.record({ sid: input.sid || `lead:${row.id}`, event: 'lead_ok', variant: input.variant, utmSource: input.utmSource, utmCampaign: input.utmCampaign, utmContent: input.utmContent, device: input.device, props: { source: input.source, isNew } });
+    await this.tracking.record({ sid: leadSid({ id: row.id, sid: input.sid }), event: 'lead_ok', variant: input.variant, utmSource: input.utmSource, utmCampaign: input.utmCampaign, utmContent: input.utmContent, device: input.device, props: { source: input.source, isNew } });
 
     let emailSent = false;
     if (isNew) {
@@ -44,7 +45,7 @@ export class LeadsService {
       emailSent = await this.sequence.sendJob(row.id, 'd0_report');
     }
     await this.scoring.rescore(row.id);
-    this.log.log(JSON.stringify({ k: 'lead', email: mask(input.email), variant: input.variant, source: input.source, isNew, mail: emailSent }));
+    this.log.log(JSON.stringify({ k: 'lead', email: maskEmail(input.email), variant: input.variant, source: input.source, isNew, mail: emailSent }));
     // Token (kvalifikace, telefon, odhlášení) dostane jen ten, kdo lead právě založil – ne kdokoli, kdo zná cizí e-mail
     return { emailSent, token: isNew ? row.token : null };
   }
@@ -55,7 +56,7 @@ export class LeadsService {
     const lead = await this.byToken(token);
     if (!lead) return false;
     await this.db.update(leads).set({ monthlyBand: band }).where(eq(leads.id, lead.id));
-    await this.tracking.record({ sid: leadSid(lead), event: 'qualify', variant: lead.variant as Variant, props: { band } });
+    await this.tracking.record({ sid: leadSid(lead), event: 'qualify', variant: lead.variant, props: { band } });
     await this.scoring.rescore(lead.id);
     return true;
   }
@@ -64,7 +65,7 @@ export class LeadsService {
     const lead = await this.byToken(token);
     if (!lead || lead.unsubscribedAt) return null;
     await this.db.update(leads).set({ wantsCall: true, phone, callConsentText: consentText }).where(eq(leads.id, lead.id));
-    await this.tracking.record({ sid: leadSid(lead), event: 'call_request', variant: lead.variant as Variant });
+    await this.tracking.record({ sid: leadSid(lead), event: 'call_request', variant: lead.variant });
     const updated = await this.scoring.rescore(lead.id);
     // Už předaný lead (dvojí odeslání, /help z e-mailu) se do CRM neposílá znovu – jen se aktualizuje telefon
     if (!updated || lead.handedOverAt) return updated;
@@ -74,7 +75,7 @@ export class LeadsService {
   async recordEmailClick(token: string, step: string) {
     const lead = await this.byToken(token);
     if (!lead) return;
-    await this.tracking.record({ sid: leadSid(lead), event: 'email_click', variant: lead.variant as Variant, utmSource: 'email', utmContent: step.slice(0, 20) });
+    await this.tracking.record({ sid: leadSid(lead), event: 'email_click', variant: lead.variant, utmSource: 'email', utmContent: step.slice(0, 20) });
     await this.scoring.rescore(lead.id);
   }
 
@@ -84,7 +85,7 @@ export class LeadsService {
     if (!lead.unsubscribedAt) {
       await this.db.update(leads).set({ unsubscribedAt: new Date() }).where(eq(leads.id, lead.id));
       await this.db.update(emailJobs).set({ status: 'cancelled' }).where(and(eq(emailJobs.leadId, lead.id), eq(emailJobs.status, 'scheduled')));
-      await this.tracking.record({ sid: leadSid(lead), event: 'unsubscribe', variant: lead.variant as Variant });
+      await this.tracking.record({ sid: leadSid(lead), event: 'unsubscribe', variant: lead.variant });
       await this.scoring.rescore(lead.id);
     }
     return true;
