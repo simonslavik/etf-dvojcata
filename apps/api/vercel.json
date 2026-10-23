@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "cd ../.. && npm ci --no-audit --no-fund",
+  "buildCommand": "cd ../.. && npm run build -w @etfd/shared && npm run build -w @etfd/api && npm run bundle -w @etfd/api && npm run migrate -w @etfd/api",
+  "outputDirectory": "public",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/cron/emails",
+      "schedule": "0 6 * * *"
+    }
+  ],
+  "regions": ["fra1"]
+}

@@ -9,3 +9,8 @@ AGENTS.md
 screenshots/tmp
 dist
 .data
+.vercel
+# agent skills, které nainstaluje Vercel CLI k integracím
+.agents
+.claude
+skills-lock.json

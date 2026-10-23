@@ -1,0 +1,15 @@
+# Nahrává se celý monorepo (Root Directory = apps/web nebo apps/api), build si závislosti nainstaluje sám
+node_modules
+**/node_modules
+**/.next
+**/dist
+**/*.tsbuildinfo
+.data
+.env*
+!.env.example
+screenshots
+ai-log
+ads
+.agents
+.claude
+skills-lock.json

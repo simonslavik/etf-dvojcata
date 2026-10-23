@@ -3,6 +3,9 @@
   "workspaces": {
     "apps/web": {
       "ignoreDependencies": ["tailwindcss"]
+    },
+    "apps/api": {
+      "entry": ["src/main.ts", "src/serverless.ts", "src/migrate.ts", "api/index.js"]
     }
   }
 }

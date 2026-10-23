@@ -20,6 +20,7 @@ export class PipelineScheduler implements OnModuleInit {
 
   /** Rozvrh z CRON_SCHEDULE (výchozí 7:00 denně, Europe/Prague) – proto registrace v kódu, ne dekorátorem */
   onModuleInit() {
+    if (this.config.get('VERCEL', { infer: true })) return this.log.log('denní běh: Vercel Cron → GET /cron/emails');
     const schedule = this.config.get('CRON_SCHEDULE', { infer: true });
     const job = CronJob.from({
       cronTime: schedule,
