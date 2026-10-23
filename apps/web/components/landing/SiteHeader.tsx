@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { data, fmtDate } from '@etfd/shared';
 import { ArrowRight } from '@/components/ui/icons';
 import { useLead } from './LeadProvider';
 import { Logo } from './Sections';
@@ -29,13 +28,6 @@ export function SiteHeader() {
       <div className={`wrap flex items-center justify-between gap-3 transition-[height] duration-300 ${scrolled ? 'h-14 sm:h-16' : 'h-16 sm:h-20'}`}>
         <Logo />
         <div className="flex items-center gap-3 sm:gap-4">
-          <span className="hidden items-center gap-2 rounded-full bg-paper px-3 py-1.5 text-[13px] text-muted md:inline-flex">
-            <span className="relative flex h-2 w-2" aria-hidden="true">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-40 [animation-duration:2.4s]" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-ok" />
-            </span>
-            Data k {fmtDate(data.as_of)}
-          </span>
           <button
             className={`btn btn-primary group !gap-2 !px-3.5 !text-[14px] sm:!px-5 sm:!text-[15px] ${scrolled ? '!min-h-10 sm:!min-h-11' : '!min-h-11 sm:!min-h-12'}`}
             onClick={() => openSheet('header')}
