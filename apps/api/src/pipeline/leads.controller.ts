@@ -1,11 +1,22 @@
-import { Body, Controller, HttpCode, Logger, NotFoundException, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpException, HttpStatus, Ip, Logger, NotFoundException, Post, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { CALL_CONSENT, consentRecord, EMAIL_RE, isVariant, MONTHLY_BANDS, normalizePhone, type MonthlyBand } from '@etfd/shared';
+import {
+  CALL_CONSENT,
+  consentRecord,
+  EMAIL_CONSENT,
+  EMAIL_RE,
+  isVariant,
+  MONTHLY_BANDS,
+  normalizePhone,
+  type MonthlyBand,
+} from '@etfd/shared';
 import { z } from 'zod';
+import { ipKey, maskEmail } from '../common/http.js';
 import { OriginGuard } from '../common/origin.guard.js';
 import { LIMITS } from '../common/throttle.js';
 import { clipped } from '../common/zod.js';
 import { ZodPipe } from '../common/zod.pipe.js';
+import { RateLimitService } from '../db/rate-limit.service.js';
 import { LeadsService, type LeadInput } from './leads.service.js';
 
 /** Honeypot: pole s nesmyslným názvem, které autofill nevyplní – bot dostane OK, nic se neuloží */
@@ -26,8 +37,8 @@ const RealLead = z
     device: clipped(10),
     interest: clipped(20),
     calc_monthly: z.number().int().nonnegative().max(1_000_000).nullish(),
-    // klient posílá jen ID verze souhlasu – kanonické znění uloží server
-    consent_id: z.string().max(20).nullish(),
+    // klient posílá jen ID verze souhlasu – kanonické znění uloží server; bez souhlasu žádný lead
+    consent_id: z.literal(EMAIL_CONSENT),
   })
   .transform((b): LeadInput => ({
     email: b.email,
@@ -40,7 +51,7 @@ const RealLead = z
     device: b.device,
     interest: b.interest,
     calcMonthly: b.calc_monthly ?? null,
-    consentText: b.consent_id ? consentRecord(b.consent_id) : null,
+    consentText: consentRecord(b.consent_id),
   }));
 
 const LeadBody = z.union([Honeypot, RealLead]);
@@ -64,18 +75,28 @@ const CallBody = z.object({
 export class LeadsController {
   private readonly log = new Logger('Leads');
 
-  constructor(private readonly leads: LeadsService) {}
+  constructor(
+    private readonly leads: LeadsService,
+    private readonly limits: RateLimitService,
+  ) {}
 
   @Post('lead')
   @HttpCode(200)
   @Throttle({ default: LIMITS.lead })
-  async lead(@Body(new ZodPipe(LeadBody, 'Zkontrolujte prosím e-mail.')) b: z.infer<typeof LeadBody>) {
+  async lead(@Body(new ZodPipe(LeadBody, 'Zkontrolujte prosím e-mail.')) b: z.infer<typeof LeadBody>, @Ip() ip: string) {
     if ('honeypot' in b) return { ok: true, emailSent: false, token: null };
+    // Denní strop na IP v Postgresu (platí napříč instancemi) – /lead nejde použít k rozesílání reportu na cizí adresy
+    const { limit, ttl } = LIMITS.leadPerDay;
+    if (!(await this.limits.within(`lead:ip:${ipKey(ip)}`, limit, ttl / 1000)))
+      throw new HttpException(
+        { error: 'rate', message: 'Z této sítě dnes přišlo příliš mnoho registrací. Zkuste to prosím zítra.' },
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
     try {
       return { ok: true, ...(await this.leads.capture(b)) };
     } catch (e) {
-      // Záměrně ok: true – návštěvník už má přehled odemčený na stránce a lead se nesmí ztratit: zůstane v logu
-      this.log.error(JSON.stringify({ k: 'lead_db_error', err: (e as Error).message, lead: b }));
+      // Záměrně ok: true – návštěvník už má přehled odemčený na stránce; do logu jde jen maskovaný e-mail
+      this.log.error(JSON.stringify({ k: 'lead_db_error', err: (e as Error).message, lead: maskEmail(b.email), variant: b.variant }));
       return { ok: true, emailSent: false, token: null };
     }
   }

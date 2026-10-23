@@ -3,10 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import type { Env } from '../config/env.js';
+import { RateLimitService } from '../db/rate-limit.service.js';
 import { SequenceService } from '../email/sequence.service.js';
 import { HandoffService } from './handoff.service.js';
 
-/** Denní běh: splatné kroky e-mailové sekvence + opakování neúspěšných předání */
+/** Denní běh: splatné kroky e-mailové sekvence + opakování neúspěšných předání + úklid vypršelých limitů */
 @Injectable()
 export class PipelineScheduler implements OnModuleInit {
   private readonly log = new Logger('Scheduler');
@@ -14,6 +15,7 @@ export class PipelineScheduler implements OnModuleInit {
   constructor(
     private readonly sequence: SequenceService,
     private readonly handoffs: HandoffService,
+    private readonly limits: RateLimitService,
     private readonly registry: SchedulerRegistry,
     private readonly config: ConfigService<Env, true>,
   ) {}
@@ -35,6 +37,7 @@ export class PipelineScheduler implements OnModuleInit {
   async run() {
     const emails = await this.sequence.runDue();
     const handoffRetries = await this.handoffs.retryFailed();
-    return { ...emails, handoffRetries };
+    const expiredLimits = await this.limits.purgeExpired();
+    return { ...emails, handoffRetries, expiredLimits };
   }
 }

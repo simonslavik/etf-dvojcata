@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { and, eq, isNull, sql } from 'drizzle-orm';
@@ -31,32 +32,41 @@ export class HandoffService {
     else if (!url) status = 'pending_no_webhook';
     else {
       try {
+        const body = JSON.stringify({
+          type: 'lead.handoff',
+          idempotency_key: lead.id, // CRM může odmítnout duplicitu při opakovaném pokusu
+          lead: {
+            id: lead.id,
+            email: lead.email,
+            phone: lead.phone,
+            created_at: lead.createdAt,
+            score: lead.score,
+            score_reasons: lead.scoreReasons,
+            monthly_band: lead.monthlyBand,
+            interest: lead.interest,
+            calc_monthly: lead.calcMonthly,
+            source: {
+              variant: lead.variant,
+              utm_source: lead.utmSource,
+              utm_campaign: lead.utmCampaign,
+              utm_content: lead.utmContent,
+              device: lead.device,
+            },
+            consent: lead.callConsentText,
+          },
+        });
+        // Podpis: CRM spočítá HMAC-SHA256(secret, `${timestamp}.${body}`) a odmítne staré časy (replay)
+        const timestamp = String(Math.floor(Date.now() / 1000));
+        const signature = secret
+          ? {
+              'x-webhook-timestamp': timestamp,
+              'x-webhook-signature': `sha256=${createHmac('sha256', secret).update(`${timestamp}.${body}`).digest('hex')}`,
+            }
+          : {};
         const r = await fetch(url, {
           method: 'POST',
-          headers: { 'content-type': 'application/json', ...(secret ? { 'x-webhook-secret': secret } : {}) },
-          body: JSON.stringify({
-            type: 'lead.handoff',
-            idempotency_key: lead.id, // CRM může odmítnout duplicitu při opakovaném pokusu
-            lead: {
-              id: lead.id,
-              email: lead.email,
-              phone: lead.phone,
-              created_at: lead.createdAt,
-              score: lead.score,
-              score_reasons: lead.scoreReasons,
-              monthly_band: lead.monthlyBand,
-              interest: lead.interest,
-              calc_monthly: lead.calcMonthly,
-              source: {
-                variant: lead.variant,
-                utm_source: lead.utmSource,
-                utm_campaign: lead.utmCampaign,
-                utm_content: lead.utmContent,
-                device: lead.device,
-              },
-              consent: lead.callConsentText,
-            },
-          }),
+          headers: { 'content-type': 'application/json', ...signature },
+          body,
           signal: AbortSignal.timeout(5000),
         });
         status = r.ok ? 'sent' : `failed_${r.status}`;

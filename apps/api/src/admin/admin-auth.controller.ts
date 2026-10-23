@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Throttle } from '@nestjs/throttler';
-import { ADMIN_COOKIE, DAY_MS } from '@etfd/shared';
+import { ADMIN_COOKIE } from '@etfd/shared';
 import type { Response } from 'express';
 import { z } from 'zod';
 import type { Env } from '../config/env.js';
@@ -9,7 +9,7 @@ import { safeEqual } from '../common/http.js';
 import { OriginGuard } from '../common/origin.guard.js';
 import { LIMITS } from '../common/throttle.js';
 import { ZodPipe } from '../common/zod.pipe.js';
-import { adminCookieValue } from './admin-auth.js';
+import { ADMIN_SESSION_MS, issueAdminCookie } from './admin-auth.js';
 
 const LoginBody = z.object({ token: z.string().max(200).default('') });
 
@@ -24,17 +24,18 @@ export class AdminAuthController {
   login(@Body(new ZodPipe(LoginBody)) body: z.infer<typeof LoginBody>, @Res() res: Response) {
     const token = this.config.get('ADMIN_TOKEN', { infer: true });
     if (!token || !safeEqual(body.token, token)) return res.redirect(303, '/admin/login?e=1');
-    res.cookie(ADMIN_COOKIE, adminCookieValue(token), {
+    res.cookie(ADMIN_COOKIE, issueAdminCookie(token), {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
-      maxAge: 14 * DAY_MS,
+      maxAge: ADMIN_SESSION_MS,
       secure: this.config.get('SITE_URL', { infer: true }).startsWith('https://'),
     });
     return res.redirect(303, '/admin');
   }
 
   @Post('logout')
+  @UseGuards(OriginGuard)
   logout(@Res() res: Response) {
     res.clearCookie(ADMIN_COOKIE, { path: '/' });
     return res.redirect(303, '/admin/login');

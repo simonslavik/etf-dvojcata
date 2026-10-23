@@ -2,15 +2,23 @@
 // node scripts/e2e.mjs [baseUrl]   (v `next dev` je admin API otevřené; jinak ADMIN_TOKEN=… node scripts/e2e.mjs)
 import puppeteer from 'puppeteer-core';
 import assert from 'node:assert/strict';
-import { createHmac } from 'node:crypto';
 
 const base = process.argv[2] || 'http://localhost:3000';
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true });
-// Stejná admin cookie, jakou nastaví přihlášení (lib/server/auth.ts)
-const admin = process.env.ADMIN_TOKEN
-  ? { cookie: `etfd_admin=${createHmac('sha256', process.env.ADMIN_TOKEN).update('etfd-admin-v1').digest('base64url')}` }
-  : {};
+// Admin cookie z běžného přihlášení (POST formuláře s Originem webu)
+async function adminLogin(token) {
+  const r = await fetch(`${base}/api/admin/login`, {
+    method: 'POST',
+    redirect: 'manual',
+    headers: { origin: new URL(base).origin, 'content-type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({ token }),
+  });
+  const cookie = r.headers.getSetCookie().find((c) => c.startsWith('etfd_admin='));
+  assert.ok(cookie, 'přihlášení do adminu');
+  return { cookie: cookie.split(';')[0] };
+}
+const admin = process.env.ADMIN_TOKEN ? await adminLogin(process.env.ADMIN_TOKEN) : {};
 const stats = async () => (await fetch(`${base}/api/admin/funnel?d=1`, { headers: admin })).json();
 const csv = async () => (await fetch(`${base}/api/admin/export`, { headers: admin })).text();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

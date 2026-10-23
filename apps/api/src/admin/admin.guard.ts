@@ -3,8 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ADMIN_COOKIE } from '@etfd/shared';
 import type { Request } from 'express';
 import type { Env } from '../config/env.js';
-import { safeEqual } from '../common/http.js';
-import { adminCookieValue } from './admin-auth.js';
+import { verifyAdminCookie } from './admin-auth.js';
 
 /** Bez ADMIN_TOKEN otevřeno jen ve vývoji; jinak fail closed */
 @Injectable()
@@ -18,7 +17,7 @@ export class AdminGuard implements CanActivate {
       throw new UnauthorizedException({ error: 'admin_disabled', message: 'ADMIN_TOKEN není nastavený' });
     }
     const cookie = (ctx.switchToHttp().getRequest<Request>().cookies as Record<string, string> | undefined)?.[ADMIN_COOKIE] ?? '';
-    if (!safeEqual(cookie, adminCookieValue(token))) throw new UnauthorizedException({ error: 'unauthorized' });
+    if (!verifyAdminCookie(cookie, token)) throw new UnauthorizedException({ error: 'unauthorized' });
     return true;
   }
 }

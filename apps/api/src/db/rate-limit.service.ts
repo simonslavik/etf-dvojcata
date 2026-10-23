@@ -19,4 +19,10 @@ export class RateLimitService {
       returning n`);
     return Number(res.rows[0]?.n) <= limit;
   }
+
+  /** Volá denní běh: smaže okna, která už vypršela */
+  async purgeExpired() {
+    const res = await this.db.execute(sql`delete from rate_limits where reset_at < now() - interval '1 day'`);
+    return res.rowCount ?? 0;
+  }
 }

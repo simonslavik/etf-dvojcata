@@ -10,4 +10,4 @@ export const CONSENTS = {
 export type ConsentId = keyof typeof CONSENTS;
 export const EMAIL_CONSENT: ConsentId = 'email_v1';
 export const CALL_CONSENT: ConsentId = 'call_v1';
-export const consentRecord = (id: string) => (id in CONSENTS ? `${id}: ${CONSENTS[id as ConsentId]}` : null);
+export const consentRecord = (id: string) => (Object.hasOwn(CONSENTS, id) ? `${id}: ${CONSENTS[id as ConsentId]}` : null);

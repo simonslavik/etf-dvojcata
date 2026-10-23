@@ -6,9 +6,11 @@ import 'reflect-metadata';
 import type { INestApplication } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
+import { createHmac } from 'node:crypto';
 import { createServer, type Server } from 'node:http';
 import pg from 'pg';
 import request from 'supertest';
+import { ipKey } from '../src/common/http.js';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 
 const DB_URL = process.env.TEST_DATABASE_URL || 'postgres://etfd:etfd@localhost:5544/etfd_test';
@@ -18,7 +20,9 @@ const CRON_SECRET = 'test-cron-secret';
 
 let app: INestApplication;
 let hookServer: Server;
+const HOOK_SECRET = 'test-hook-secret';
 const webhooks: { lead: { id: string; phone: string }; idempotency_key: string }[] = [];
+const hookSignatures: boolean[] = [];
 const resendCalls: { to: string; subject: string }[] = [];
 let sql: pg.Client;
 
@@ -38,6 +42,10 @@ beforeAll(async () => {
     let body = '';
     req.on('data', (c) => (body += c));
     req.on('end', () => {
+      // stejné ověření, jaké má udělat CRM
+      const ts = String(req.headers['x-webhook-timestamp']);
+      const expected = `sha256=${createHmac('sha256', HOOK_SECRET).update(`${ts}.${body}`).digest('hex')}`;
+      hookSignatures.push(req.headers['x-webhook-signature'] === expected);
       webhooks.push(JSON.parse(body));
       res.end('ok');
     });
@@ -65,6 +73,7 @@ beforeAll(async () => {
     RESEND_API_KEY: 're_test',
     RESEND_FROM: 'ETF <test@example.com>',
     HANDOFF_WEBHOOK_URL: `http://127.0.0.1:${hookPort}/hook`,
+    HANDOFF_WEBHOOK_SECRET: HOOK_SECRET,
   });
   // AppModule až po nastavení env – ConfigModule ho validuje při importu
   const { AppModule } = await import('../src/app.module.js');
@@ -123,6 +132,23 @@ describe('lead → kvalifikace → předání', () => {
     expect(resendCalls.filter((c) => c.to === 'anna@example.com')).toHaveLength(1);
   });
 
+  test('bez souhlasu s e-maily lead nevznikne', async () => {
+    await post('/lead', { email: 'nosouhlas@example.com', sid: 's-nosouhlas', variant: 'twin' }).expect(400);
+    await post('/lead', { email: 'nosouhlas@example.com', sid: 's-nosouhlas', variant: 'twin', consent_id: 'toString' }).expect(400);
+  });
+
+  test('denní strop leadů na IP platí i napříč instancemi (Postgres)', async () => {
+    await sql.query("insert into rate_limits (key, n, reset_at) values ($1, 50, now() + interval '1 day')", [
+      `lead:ip:${ipKey('10.9.9.9')}`,
+    ]);
+    const r = await post(
+      '/lead',
+      { email: 'strop@example.com', sid: 's-strop', variant: 'twin', consent_id: 'email_v1' },
+      '10.9.9.9',
+    ).expect(429);
+    expect(r.body.error).toBe('rate');
+  });
+
   test('honeypot: bot dostane OK, nic se neuloží', async () => {
     await post('/lead', { email: 'bot@example.com', hp_f7: 'x' }).expect(200);
     const { rows } = await sql.query("select 1 from leads where email = 'bot@example.com'");
@@ -148,6 +174,7 @@ describe('lead → kvalifikace → předání', () => {
     expect(webhooks).toHaveLength(1);
     expect(webhooks[0].lead.phone).toBe('+420777123456');
     expect(webhooks[0].idempotency_key).toBe(webhooks[0].lead.id);
+    expect(hookSignatures).toEqual([true]);
     const { rows } = await sql.query("select stage, phone, call_consent_text from leads where email = 'anna@example.com'");
     expect(rows[0]).toMatchObject({ stage: 'handed_over', phone: '+420777999888' });
     expect(rows[0].call_consent_text).toMatch(/^call_v1: Souhlasím/);
@@ -156,12 +183,15 @@ describe('lead → kvalifikace → předání', () => {
 
 describe('odkazy z e-mailů', () => {
   // '/\t/evil.com' = útok z review (?to=/%09/evil.com) – URL parser tabulátor zahodí a vznikne //evil.com
-  test.each(['//evil.com', '/\t/evil.com', '/\n/evil.com', 'https://evil.com/x'])('přesměrování %j zůstane na webu', async (to) => {
-    const r = await http()
-      .get(`/r?to=${encodeURIComponent(to)}`)
-      .expect(302);
-    expect(r.headers.location).toMatch(/^\/\?utm_source=email/);
-  });
+  test.each(['//evil.com', '/\t/evil.com', '/\n/evil.com', 'https://evil.com/x', '/.//evil.com', `${SITE}//evil.com`])(
+    'přesměrování %j zůstane na webu',
+    async (to) => {
+      const r = await http()
+        .get(`/r?to=${encodeURIComponent(to)}`)
+        .expect(302);
+      expect(r.headers.location).toMatch(/^\/\?utm_source=email/);
+    },
+  );
 
   test('klik v e-mailu přidá body a odhlášení zruší zbytek sekvence', async () => {
     const t = (await lead('ben@example.com')).body.token;
