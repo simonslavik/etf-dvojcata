@@ -174,6 +174,8 @@ Varianty `twin` vs. `fees` sú test na úrovni reklamy, preto ich medzi hypotéz
 
 Pracoval som v Claude Code v troch kolách a potom v sérii UX iterácií podľa mojej spätnej väzby. Vždy platilo: **najprv plán** ([PLAN.md](PLAN.md)), potom implementácia po krokoch s commitmi a nakoniec kontroly (unit testy, E2E v prehliadači, screenshoty, nezávislý review agent).
 
+**Prompty a inštrukcie pre agentov:** doslovný výber mojich promptov s rozhodnutím a commitom, ktorý z nich vznikol, a všetkých 7 zadaní pre výskumných, kontrolných a review agentov je v [ai-log/prompts.md](ai-log/prompts.md). Surové exporty konverzácií a časová os sú v [ai-log/](ai-log/README.md).
+
 ### Kolo 1 – statická stránka (Vite)
 
 | Agent | Zadanie (skrátene) | Ako som kontroloval výstup |
