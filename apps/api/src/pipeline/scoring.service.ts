@@ -17,11 +17,21 @@ export class ScoringService {
   async rescore(leadId: string): Promise<Lead | null> {
     const [lead] = await this.db.select().from(leads).where(eq(leads.id, leadId));
     if (!lead) return null;
-    const signalRows = await this.db.selectDistinct({ event: events.event }).from(events)
+    const signalRows = await this.db
+      .selectDistinct({ event: events.event })
+      .from(events)
       .where(and(inArray(events.sid, leadSids(lead)), inArray(events.event, Object.keys(SIGNAL_POINTS))));
-    const { score, reasons } = scoreLead({ monthlyBand: lead.monthlyBand, wantsCall: lead.wantsCall, signals: signalRows.map((r) => r.event) });
+    const { score, reasons } = scoreLead({
+      monthlyBand: lead.monthlyBand,
+      wantsCall: lead.wantsCall,
+      signals: signalRows.map((r) => r.event),
+    });
     const stage = stageFor({ score, handedOver: Boolean(lead.handedOverAt), unsubscribed: Boolean(lead.unsubscribedAt) });
-    const [updated] = await this.db.update(leads).set({ score, scoreReasons: reasons, stage, updatedAt: new Date() }).where(eq(leads.id, leadId)).returning();
+    const [updated] = await this.db
+      .update(leads)
+      .set({ score, scoreReasons: reasons, stage, updatedAt: new Date() })
+      .where(eq(leads.id, leadId))
+      .returning();
     return updated;
   }
 }

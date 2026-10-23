@@ -23,7 +23,8 @@ const migrationsFolder = fileURLToPath(new URL('../../drizzle', import.meta.url)
     {
       provide: POOL,
       inject: [ConfigService],
-      useFactory: (config: ConfigService<Env, true>) => new pg.Pool({ connectionString: config.get('DATABASE_URL', { infer: true }), max: 10 }),
+      useFactory: (config: ConfigService<Env, true>) =>
+        new pg.Pool({ connectionString: config.get('DATABASE_URL', { infer: true }), max: 10 }),
     },
     {
       provide: DB,

@@ -21,7 +21,11 @@ export class PipelineScheduler implements OnModuleInit {
   /** Rozvrh z CRON_SCHEDULE (výchozí 7:00 denně, Europe/Prague) – proto registrace v kódu, ne dekorátorem */
   onModuleInit() {
     const schedule = this.config.get('CRON_SCHEDULE', { infer: true });
-    const job = CronJob.from({ cronTime: schedule, timeZone: 'Europe/Prague', onTick: () => void this.run().catch((e: Error) => this.log.error(e.message)) });
+    const job = CronJob.from({
+      cronTime: schedule,
+      timeZone: 'Europe/Prague',
+      onTick: () => void this.run().catch((e: Error) => this.log.error(e.message)),
+    });
     this.registry.addCronJob('pipeline-daily', job);
     job.start();
     this.log.log(`denní běh: ${schedule}`);

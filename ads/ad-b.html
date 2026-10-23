@@ -1,26 +1,103 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css">
-<style>
-.card { margin-top: 60px; background: #163b3b; color: #e7efed; border-radius: 36px; padding: 48px 48px 44px; box-shadow: 0 30px 60px -30px rgba(22,59,59,.6); }
-.lbl { font: 700 22px/1 "Lexend"; letter-spacing: .12em; text-transform: uppercase; color: #9fbcb8; margin-bottom: 30px; }
-.row { margin-bottom: 30px; }
-.row .top { display: flex; justify-content: space-between; align-items: baseline; font-size: 30px; color: #b9cbc8; margin-bottom: 14px; }
-.row .top b { color: #fff; font-size: 40px; }
-.bar { height: 26px; border-radius: 13px; background: rgba(255,255,255,.08); overflow: hidden; }
-.bar i { display: block; height: 100%; border-radius: 13px; }
-.save { border-top: 2px solid rgba(255,255,255,.1); padding-top: 26px; margin-top: 6px; font-size: 32px; color: #d4e2df; }
-.save b { display: block; font: 700 120px/1 "Lora", serif; color: #f3b2aa; margin-top: 6px; }
-.fine { margin-top: 26px; font-size: 21px; line-height: 1.35; color: #5d6f6e; }
-</style></head><body><div class="grid"></div>
-<div class="pad">
-  <p class="eyebrow">3 000 Kč měsíčně · 20 let</p>
-  <h1>Kolik vám sebere <em>fond&nbsp;z&nbsp;banky?</em></h1>
-  <div class="card">
-    <p class="lbl">Na poplatcích zaplatíte</p>
-    <div class="row"><div class="top"><span>Akciový fond z banky</span><b>442 100 Kč</b></div><div class="bar"><i style="width:100%;background:#e07a6c"></i></div></div>
-    <div class="row"><div class="top"><span>ETF na S&amp;P 500</span><b>13 000 Kč</b></div><div class="bar"><i style="width:3%;background:#9fd1cb"></i></div></div>
-    <p class="save">Rozdíl ve vaší kapse<b>429 100 Kč</b></p>
-  </div>
-  <p class="fine">Příklad: ČSOB Akciový (vstup 3 %, náklady 2,59 % ročně dle KID k 1. 6. 2026) vs. VUAA (0,07 %). Výnos trhu 7 % ročně, ilustrace, ne předpověď.</p>
-</div>
-<div class="foot"><div class="logo"><svg width="48" height="48" viewBox="0 0 32 32"><rect x="3" y="6" width="17" height="17" rx="5" fill="#1d4a4a"/><rect x="12" y="10" width="17" height="17" rx="5" fill="#a63d36" fill-opacity=".92"/></svg><span>ETF <b>dvojčata</b></span></div><div class="cta">Spočítat →</div></div>
-</body></html>
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="_base.css" />
+    <style>
+      .card {
+        margin-top: 60px;
+        background: #163b3b;
+        color: #e7efed;
+        border-radius: 36px;
+        padding: 48px 48px 44px;
+        box-shadow: 0 30px 60px -30px rgba(22, 59, 59, 0.6);
+      }
+      .lbl {
+        font: 700 22px/1 'Lexend';
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #9fbcb8;
+        margin-bottom: 30px;
+      }
+      .row {
+        margin-bottom: 30px;
+      }
+      .row .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 30px;
+        color: #b9cbc8;
+        margin-bottom: 14px;
+      }
+      .row .top b {
+        color: #fff;
+        font-size: 40px;
+      }
+      .bar {
+        height: 26px;
+        border-radius: 13px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+      .bar i {
+        display: block;
+        height: 100%;
+        border-radius: 13px;
+      }
+      .save {
+        border-top: 2px solid rgba(255, 255, 255, 0.1);
+        padding-top: 26px;
+        margin-top: 6px;
+        font-size: 32px;
+        color: #d4e2df;
+      }
+      .save b {
+        display: block;
+        font:
+          700 120px/1 'Lora',
+          serif;
+        color: #f3b2aa;
+        margin-top: 6px;
+      }
+      .fine {
+        margin-top: 26px;
+        font-size: 21px;
+        line-height: 1.35;
+        color: #5d6f6e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid"></div>
+    <div class="pad">
+      <p class="eyebrow">3 000 Kč měsíčně · 20 let</p>
+      <h1>Kolik vám sebere <em>fond&nbsp;z&nbsp;banky?</em></h1>
+      <div class="card">
+        <p class="lbl">Na poplatcích zaplatíte</p>
+        <div class="row">
+          <div class="top"><span>Akciový fond z banky</span><b>442 100 Kč</b></div>
+          <div class="bar"><i style="width: 100%; background: #e07a6c"></i></div>
+        </div>
+        <div class="row">
+          <div class="top"><span>ETF na S&amp;P 500</span><b>13 000 Kč</b></div>
+          <div class="bar"><i style="width: 3%; background: #9fd1cb"></i></div>
+        </div>
+        <p class="save">Rozdíl ve vaší kapse<b>429 100 Kč</b></p>
+      </div>
+      <p class="fine">
+        Příklad: ČSOB Akciový (vstup 3 %, náklady 2,59 % ročně dle KID k 1. 6. 2026) vs. VUAA (0,07 %). Výnos trhu 7 % ročně, ilustrace, ne
+        předpověď.
+      </p>
+    </div>
+    <div class="foot">
+      <div class="logo">
+        <svg width="48" height="48" viewBox="0 0 32 32">
+          <rect x="3" y="6" width="17" height="17" rx="5" fill="#1d4a4a" />
+          <rect x="12" y="10" width="17" height="17" rx="5" fill="#a63d36" fill-opacity=".92" /></svg
+        ><span>ETF <b>dvojčata</b></span>
+      </div>
+      <div class="cta">Spočítat →</div>
+    </div>
+  </body>
+</html>

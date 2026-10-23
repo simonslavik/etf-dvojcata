@@ -11,9 +11,17 @@ import { HandoffService } from './handoff.service.js';
 import { leadSid, ScoringService } from './scoring.service.js';
 
 export interface LeadInput {
-  email: string; sid: string | null; variant: Variant; source: string | null;
-  utmSource: string | null; utmCampaign: string | null; utmContent: string | null; device: string | null;
-  interest: string | null; calcMonthly: number | null; consentText: string | null;
+  email: string;
+  sid: string | null;
+  variant: Variant;
+  source: string | null;
+  utmSource: string | null;
+  utmCampaign: string | null;
+  utmContent: string | null;
+  device: string | null;
+  interest: string | null;
+  calcMonthly: number | null;
+  consentText: string | null;
 }
 
 /** Návštěva → Lead → Kvalifikace → Předání → Péče. Každá změna končí přepočtem skóre (ScoringService). */
@@ -30,14 +38,24 @@ export class LeadsService {
   ) {}
 
   async capture(input: LeadInput) {
-    const [row] = await this.db.insert(leads)
+    const [row] = await this.db
+      .insert(leads)
       .values({ ...input, token: randomBytes(18).toString('base64url') })
       // Opakované odeslání stejného e-mailu: první kontext (created, zdroj, varianta) zůstává
       .onConflictDoUpdate({ target: leads.email, set: { updatedAt: sql`now()`, sid: sql`coalesce(${leads.sid}, excluded.sid)` } })
       .returning({ id: leads.id, token: leads.token, inserted: sql<boolean>`(xmax = 0)` });
     const isNew = Boolean(row.inserted);
 
-    await this.tracking.record({ sid: leadSid({ id: row.id, sid: input.sid }), event: 'lead_ok', variant: input.variant, utmSource: input.utmSource, utmCampaign: input.utmCampaign, utmContent: input.utmContent, device: input.device, props: { source: input.source, isNew } });
+    await this.tracking.record({
+      sid: leadSid({ id: row.id, sid: input.sid }),
+      event: 'lead_ok',
+      variant: input.variant,
+      utmSource: input.utmSource,
+      utmCampaign: input.utmCampaign,
+      utmContent: input.utmContent,
+      device: input.device,
+      props: { source: input.source, isNew },
+    });
 
     let emailSent = false;
     if (isNew) {
@@ -45,7 +63,9 @@ export class LeadsService {
       emailSent = await this.sequence.sendJob(row.id, 'd0_report');
     }
     await this.scoring.rescore(row.id);
-    this.log.log(JSON.stringify({ k: 'lead', email: maskEmail(input.email), variant: input.variant, source: input.source, isNew, mail: emailSent }));
+    this.log.log(
+      JSON.stringify({ k: 'lead', email: maskEmail(input.email), variant: input.variant, source: input.source, isNew, mail: emailSent }),
+    );
     // Token (kvalifikace, telefon, odhlášení) dostane jen ten, kdo lead právě založil – ne kdokoli, kdo zná cizí e-mail
     return { emailSent, token: isNew ? row.token : null };
   }
@@ -75,7 +95,13 @@ export class LeadsService {
   async recordEmailClick(token: string, step: string) {
     const lead = await this.byToken(token);
     if (!lead) return;
-    await this.tracking.record({ sid: leadSid(lead), event: 'email_click', variant: lead.variant, utmSource: 'email', utmContent: step.slice(0, 20) });
+    await this.tracking.record({
+      sid: leadSid(lead),
+      event: 'email_click',
+      variant: lead.variant,
+      utmSource: 'email',
+      utmContent: step.slice(0, 20),
+    });
     await this.scoring.rescore(lead.id);
   }
 
@@ -84,7 +110,10 @@ export class LeadsService {
     if (!lead) return false;
     if (!lead.unsubscribedAt) {
       await this.db.update(leads).set({ unsubscribedAt: new Date() }).where(eq(leads.id, lead.id));
-      await this.db.update(emailJobs).set({ status: 'cancelled' }).where(and(eq(emailJobs.leadId, lead.id), eq(emailJobs.status, 'scheduled')));
+      await this.db
+        .update(emailJobs)
+        .set({ status: 'cancelled' })
+        .where(and(eq(emailJobs.leadId, lead.id), eq(emailJobs.status, 'scheduled')));
       await this.tracking.record({ sid: leadSid(lead), event: 'unsubscribe', variant: lead.variant });
       await this.scoring.rescore(lead.id);
     }

@@ -11,27 +11,50 @@ import { LeadsService, type LeadInput } from './leads.service.js';
 /** Honeypot: pole s nesmyslným názvem, které autofill nevyplní – bot dostane OK, nic se neuloží */
 const Honeypot = z.object({ hp_f7: z.string().min(1) }).transform(() => ({ honeypot: true as const }));
 
-const RealLead = z.object({
-  email: z.string().trim().toLowerCase().max(120).regex(EMAIL_RE),
-  sid: clipped(64),
-  variant: z.string().nullish().transform((v) => (isVariant(v) ? v : 'twin')),
-  source: clipped(20),
-  utm_source: clipped(60), utm_campaign: clipped(60), utm_content: clipped(60), device: clipped(10),
-  interest: clipped(20),
-  calc_monthly: z.number().int().nonnegative().max(1_000_000).nullish(),
-  // klient posílá jen ID verze souhlasu – kanonické znění uloží server
-  consent_id: z.string().max(20).nullish(),
-}).transform((b): LeadInput => ({
-  email: b.email, sid: b.sid, variant: b.variant, source: b.source,
-  utmSource: b.utm_source, utmCampaign: b.utm_campaign, utmContent: b.utm_content, device: b.device,
-  interest: b.interest, calcMonthly: b.calc_monthly ?? null, consentText: b.consent_id ? consentRecord(b.consent_id) : null,
-}));
+const RealLead = z
+  .object({
+    email: z.string().trim().toLowerCase().max(120).regex(EMAIL_RE),
+    sid: clipped(64),
+    variant: z
+      .string()
+      .nullish()
+      .transform((v) => (isVariant(v) ? v : 'twin')),
+    source: clipped(20),
+    utm_source: clipped(60),
+    utm_campaign: clipped(60),
+    utm_content: clipped(60),
+    device: clipped(10),
+    interest: clipped(20),
+    calc_monthly: z.number().int().nonnegative().max(1_000_000).nullish(),
+    // klient posílá jen ID verze souhlasu – kanonické znění uloží server
+    consent_id: z.string().max(20).nullish(),
+  })
+  .transform((b): LeadInput => ({
+    email: b.email,
+    sid: b.sid,
+    variant: b.variant,
+    source: b.source,
+    utmSource: b.utm_source,
+    utmCampaign: b.utm_campaign,
+    utmContent: b.utm_content,
+    device: b.device,
+    interest: b.interest,
+    calcMonthly: b.calc_monthly ?? null,
+    consentText: b.consent_id ? consentRecord(b.consent_id) : null,
+  }));
 
 const LeadBody = z.union([Honeypot, RealLead]);
-const QualifyBody = z.object({ token: z.string().min(10).max(64), band: z.enum(Object.keys(MONTHLY_BANDS) as [MonthlyBand, ...MonthlyBand[]]) });
+const QualifyBody = z.object({
+  token: z.string().min(10).max(64),
+  band: z.enum(Object.keys(MONTHLY_BANDS) as [MonthlyBand, ...MonthlyBand[]]),
+});
 const CallBody = z.object({
   token: z.string().min(10).max(64),
-  phone: z.string().max(30).transform(normalizePhone).refine((p): p is string => p !== null, { message: 'Zkontrolujte prosím číslo – 9 číslic, např. 777 123 456.' }),
+  phone: z
+    .string()
+    .max(30)
+    .transform(normalizePhone)
+    .refine((p): p is string => p !== null, { message: 'Zkontrolujte prosím číslo – 9 číslic, např. 777 123 456.' }),
   consent: z.literal(true),
   consent_id: z.literal(CALL_CONSENT),
 });

@@ -28,7 +28,11 @@ for (const v of views) {
   const total = await page.evaluate(() => document.documentElement.scrollHeight);
   const step = v.isMobile ? 1400 : 1800;
   for (let y = 0, i = 0; y < total; y += step, i++) {
-    await page.screenshot({ path: `${out}/${tag}-${v.name}-part${i}.png`, clip: { x: 0, y, width: v.width, height: Math.min(step, total - y) }, captureBeyondViewport: true });
+    await page.screenshot({
+      path: `${out}/${tag}-${v.name}-part${i}.png`,
+      clip: { x: 0, y, width: v.width, height: Math.min(step, total - y) },
+      captureBeyondViewport: true,
+    });
   }
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   console.log(v.name, { errors, horizontalOverflow: overflow });

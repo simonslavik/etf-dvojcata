@@ -1,17 +1,95 @@
-@import url("https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Lexend:wght@400;500;700&family=JetBrains+Mono:wght@700&display=swap");
-* { box-sizing: border-box; margin: 0; }
-html, body { width: 1080px; height: 1350px; }
-body { font-family: "Lexend", sans-serif; background: #f5f8f7; color: #163b3b; position: relative; overflow: hidden; }
-.grid { position: absolute; inset: 0; overflow: hidden; }
-.grid::before, .grid::after { content: ""; position: absolute; background: #e7eeec; transform: skewX(-24deg); }
-.grid::before { width: 48%; height: 120%; right: -14%; top: -6%; opacity: .8; }
-.grid::after { width: 30%; height: 80%; right: -18%; top: 40%; background: #e2ecea; opacity: .6; }
-.pad { position: relative; padding: 84px 84px 0; }
-.eyebrow { font: 600 25px/1 "Lexend"; letter-spacing: .2em; text-transform: uppercase; color: #a63d36; margin-bottom: 26px; }
-h1 { font: 700 92px/1.02 "Lora", serif; letter-spacing: -.005em; }
-h1 em { font-style: normal; color: #a63d36; }
-.mono { font-family: "JetBrains Mono", monospace; }
-.foot { position: absolute; left: 84px; right: 84px; bottom: 72px; display: flex; align-items: center; justify-content: space-between; }
-.logo { display: flex; align-items: center; gap: 14px; font: 700 34px/1 "Lexend"; }
-.logo b { font-weight: 700; color: #33716e; }
-.cta { background: #a63d36; color: #fff; font: 700 32px/1 "Lexend"; padding: 26px 36px; border-radius: 22px; box-shadow: 0 14px 30px -12px rgba(166,61,54,.8); }
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Lexend:wght@400;500;700&family=JetBrains+Mono:wght@700&display=swap');
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+html,
+body {
+  width: 1080px;
+  height: 1350px;
+}
+body {
+  font-family: 'Lexend', sans-serif;
+  background: #f5f8f7;
+  color: #163b3b;
+  position: relative;
+  overflow: hidden;
+}
+.grid {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.grid::before,
+.grid::after {
+  content: '';
+  position: absolute;
+  background: #e7eeec;
+  transform: skewX(-24deg);
+}
+.grid::before {
+  width: 48%;
+  height: 120%;
+  right: -14%;
+  top: -6%;
+  opacity: 0.8;
+}
+.grid::after {
+  width: 30%;
+  height: 80%;
+  right: -18%;
+  top: 40%;
+  background: #e2ecea;
+  opacity: 0.6;
+}
+.pad {
+  position: relative;
+  padding: 84px 84px 0;
+}
+.eyebrow {
+  font: 600 25px/1 'Lexend';
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #a63d36;
+  margin-bottom: 26px;
+}
+h1 {
+  font:
+    700 92px/1.02 'Lora',
+    serif;
+  letter-spacing: -0.005em;
+}
+h1 em {
+  font-style: normal;
+  color: #a63d36;
+}
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+.foot {
+  position: absolute;
+  left: 84px;
+  right: 84px;
+  bottom: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font: 700 34px/1 'Lexend';
+}
+.logo b {
+  font-weight: 700;
+  color: #33716e;
+}
+.cta {
+  background: #a63d36;
+  color: #fff;
+  font: 700 32px/1 'Lexend';
+  padding: 26px 36px;
+  border-radius: 22px;
+  box-shadow: 0 14px 30px -12px rgba(166, 61, 54, 0.8);
+}

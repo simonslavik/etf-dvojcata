@@ -20,9 +20,13 @@ export function MagnetPreview() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="eyebrow">Zdarma za e-mail</p>
-              <h2 id="magnet-title" className="h2 mt-3">Přehled {data.pairs.length} dvojčat + návod na první nákup</h2>
+              <h2 id="magnet-title" className="h2 mt-3">
+                Přehled {data.pairs.length} dvojčat + návod na první nákup
+              </h2>
             </div>
-            <div className="animate-float mt-1 flex-none"><ReportCover size="sm" /></div>
+            <div className="mt-1 flex-none animate-float">
+              <ReportCover size="sm" />
+            </div>
           </div>
           <ul className="mt-4 space-y-2 text-[15.5px] sm:mt-6 sm:space-y-3 sm:text-[16px]">
             {[
@@ -31,8 +35,12 @@ export function MagnetPreview() {
               ['Daně v Česku', '– co platí po 3 letech'],
             ].map(([b, t]) => (
               <li key={b} className="flex items-start gap-3">
-                <span className="mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-full bg-ok-50 text-ok"><Check className="h-3.5 w-3.5" /></span>
-                <span><b className="font-semibold text-ink">{b}</b> <span className="text-muted">{t}</span></span>
+                <span className="mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-full bg-ok-50 text-ok">
+                  <Check className="h-3.5 w-3.5" />
+                </span>
+                <span>
+                  <b className="font-semibold text-ink">{b}</b> <span className="text-muted">{t}</span>
+                </span>
               </li>
             ))}
           </ul>
@@ -40,7 +48,11 @@ export function MagnetPreview() {
 
         <div className="window">
           <div className="window-bar">
-            <span className="window-dots" aria-hidden="true"><i /><i /><i /></span>
+            <span className="window-dots" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
             <span className="window-url">přehled · {data.pairs.length} ETF dvojčat · PDF</span>
           </div>
           <div className="relative">
@@ -56,9 +68,19 @@ export function MagnetPreview() {
                 {data.pairs.slice(0, PREVIEW_ROWS).map((p, i) => {
                   const locked = !unlocked && i >= FREE_ROWS;
                   return (
-                    <tr key={p.us.ticker} className={`border-t border-line ${locked ? 'blur-[5px] select-none' : ''}`} aria-hidden={locked || undefined}>
-                      <td className="px-4 py-2 sm:px-6 sm:py-2.5"><span className="font-mono font-bold text-muted line-through decoration-brick/70">{p.us.ticker}</span><span className="block text-[11.5px] text-muted">{formatPct(p.us.ter_pct)}</span></td>
-                      <td className="px-2 py-2 sm:py-2.5"><span className="font-mono font-bold text-ink">{p.twin.ticker}</span><span className="block font-mono text-[11.5px] text-muted">{locked ? 'IE00XXXXXXXX' : p.twin.isin}</span></td>
+                    <tr
+                      key={p.us.ticker}
+                      className={`border-t border-line ${locked ? 'blur-[5px] select-none' : ''}`}
+                      aria-hidden={locked || undefined}
+                    >
+                      <td className="px-4 py-2 sm:px-6 sm:py-2.5">
+                        <span className="font-mono font-bold text-muted line-through decoration-brick/70">{p.us.ticker}</span>
+                        <span className="block text-[11.5px] text-muted">{formatPct(p.us.ter_pct)}</span>
+                      </td>
+                      <td className="px-2 py-2 sm:py-2.5">
+                        <span className="font-mono font-bold text-ink">{p.twin.ticker}</span>
+                        <span className="block font-mono text-[11.5px] text-muted">{locked ? 'IE00XXXXXXXX' : p.twin.isin}</span>
+                      </td>
                       <td className="px-4 py-2 text-right font-semibold text-ink sm:px-6 sm:py-2.5">{formatPct(p.twin.ter_pct)}</td>
                     </tr>
                   );
@@ -68,12 +90,18 @@ export function MagnetPreview() {
 
             {unlocked ? (
               <div className="border-t border-line p-4 sm:p-5">
-                <p className="mb-3 text-center text-[13px] text-muted">+ {data.pairs.length - PREVIEW_ROWS} dalších dvojčat, návod a daně v přehledu</p>
-                <Link href="/report" className="btn btn-primary w-full" data-open-report>Otevřít celý přehled <ArrowRight /></Link>
+                <p className="mb-3 text-center text-[13px] text-muted">
+                  + {data.pairs.length - PREVIEW_ROWS} dalších dvojčat, návod a daně v přehledu
+                </p>
+                <Link href="/report" className="btn btn-primary w-full" data-open-report>
+                  Otevřít celý přehled <ArrowRight />
+                </Link>
               </div>
             ) : (
               <div className="relative -mt-20 bg-gradient-to-t from-white from-55% to-white/0 px-4 pt-14 pb-5 sm:px-6">
-                <p className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-ink"><Lock className="h-4 w-4 text-brick" /> Kam vám přehled pošleme?</p>
+                <p className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-ink">
+                  <Lock className="h-4 w-4 text-brick" /> Kam vám přehled pošleme?
+                </p>
                 <LeadForm name="inline" cta="Odemknout" />
               </div>
             )}

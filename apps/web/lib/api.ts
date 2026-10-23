@@ -21,19 +21,45 @@ type Counts = Record<string, number>;
 type StageCounts = Record<Stage, number>;
 
 export interface LeadDto {
-  id: string; email: string; createdAt: string; sid: string | null; variant: Variant; source: string | null;
-  utmSource: string | null; utmCampaign: string | null; utmContent: string | null; device: string | null;
-  interest: string | null; calcMonthly: number | null; consentText: string | null; monthlyBand: string | null;
-  wantsCall: boolean; phone: string | null; callConsentText: string | null; score: number;
-  scoreReasons: { label: string; points: number }[] | null; stage: Stage;
-  handedOverAt: string | null; handoffStatus: string | null; unsubscribedAt: string | null;
+  id: string;
+  email: string;
+  createdAt: string;
+  sid: string | null;
+  variant: Variant;
+  source: string | null;
+  utmSource: string | null;
+  utmCampaign: string | null;
+  utmContent: string | null;
+  device: string | null;
+  interest: string | null;
+  calcMonthly: number | null;
+  consentText: string | null;
+  monthlyBand: string | null;
+  wantsCall: boolean;
+  phone: string | null;
+  callConsentText: string | null;
+  score: number;
+  scoreReasons: { label: string; points: number }[] | null;
+  stage: Stage;
+  handedOverAt: string | null;
+  handoffStatus: string | null;
+  unsubscribedAt: string | null;
 }
 
 export interface DashboardDto {
   days: number;
   funnel: Record<'all' | 'twin' | 'fees', Counts>;
   stages: Record<'all' | 'twin' | 'fees', StageCounts>;
-  campaigns: { key: string; visits: number; leads: number; qualified: number; handed: number; spend: number | null; cpl: number | null; conv: number | null }[];
+  campaigns: {
+    key: string;
+    visits: number;
+    leads: number;
+    qualified: number;
+    handed: number;
+    spend: number | null;
+    cpl: number | null;
+    conv: number | null;
+  }[];
   daily: { day: string; n: number }[];
   sequence: { rows: { step: SequenceStep; status: string; n: number }[]; clicks: Record<string, number> };
   latest: LeadDto[];

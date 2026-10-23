@@ -1,8 +1,19 @@
 /* Jediný seznam událostí – sdílí ho prohlížeč (track), API (validace) i dashboard (popisky). */
 export const EVENTS = [
-  'page_view', 'scroll', 'finder_select', 'isin_copy', 'calc_change', 'cta_click',
-  'form_view', 'form_start', 'form_error', 'form_submit', 'report_open', 'report_view',
-  'faq_open', 'term_open',
+  'page_view',
+  'scroll',
+  'finder_select',
+  'isin_copy',
+  'calc_change',
+  'cta_click',
+  'form_view',
+  'form_start',
+  'form_error',
+  'form_submit',
+  'report_open',
+  'report_view',
+  'faq_open',
+  'term_open',
 ] as const;
 export type EventName = (typeof EVENTS)[number];
 

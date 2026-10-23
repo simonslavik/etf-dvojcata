@@ -18,8 +18,14 @@ export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?:
     if (!consent) return setError('Potvrďte prosím souhlas, jinak vám nesmíme zavolat.');
     setState('busy');
     const r = await fetch('/api/call', {
-      method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ token, phone: (f.elements.namedItem('phone') as HTMLInputElement).value, consent: true, consent_id: CALL_CONSENT }),
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        token,
+        phone: (f.elements.namedItem('phone') as HTMLInputElement).value,
+        consent: true,
+        consent_id: CALL_CONSENT,
+      }),
     }).catch(() => null);
     const res = await r?.json().catch(() => ({}));
     if (!r?.ok) {
@@ -34,7 +40,9 @@ export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?:
     return (
       <div className="flex items-start gap-3 rounded-2xl bg-ok-50 p-4 text-[15px] text-ok" role="status">
         <Check className="mt-0.5 h-5 w-5 flex-none" />
-        <p><b>Díky, ozveme se do 2 pracovních dnů.</b> Volat budeme z běžného českého čísla, hovor trvá asi 10 minut.</p>
+        <p>
+          <b>Díky, ozveme se do 2 pracovních dnů.</b> Volat budeme z běžného českého čísla, hovor trvá asi 10 minut.
+        </p>
       </div>
     );
   }
@@ -42,22 +50,53 @@ export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?:
   return (
     <form onSubmit={onSubmit} noValidate className="rounded-2xl border border-line bg-paper p-4" data-form="call">
       <div className="flex items-start gap-3">
-        <span className="icon-tile !h-10 !w-10 !bg-white"><Phone /></span>
+        <span className="icon-tile !h-10 !w-10 !bg-white">
+          <Phone />
+        </span>
         <div>
           <p className="font-semibold text-ink">Chcete pomoct s prvním nákupem?</p>
-          <p className="text-[14px] text-muted">Zavoláme vám a za 10 minut spolu najdete dvojče v aplikaci a nastavíte pravidelný nákup. Zdarma, nic neprodáváme.</p>
+          <p className="text-[14px] text-muted">
+            Zavoláme vám a za 10 minut spolu najdete dvojče v aplikaci a nastavíte pravidelný nákup. Zdarma, nic neprodáváme.
+          </p>
         </div>
       </div>
-      <label htmlFor={phoneId} className="sr-only">Telefon</label>
-      <input id={phoneId} name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="777 123 456" className="input mt-3" aria-invalid={error ? true : undefined} onInput={() => setError(null)} />
+      <label htmlFor={phoneId} className="sr-only">
+        Telefon
+      </label>
+      <input
+        id={phoneId}
+        name="phone"
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        placeholder="777 123 456"
+        className="input mt-3"
+        aria-invalid={error ? true : undefined}
+        onInput={() => setError(null)}
+      />
       <label className="mt-3 flex items-start gap-2.5 text-[13px] leading-snug text-muted">
         <input name="consent" type="checkbox" className="mt-0.5 h-5 w-5 flex-none accent-brick" />
-        <span>{CONSENTS[CALL_CONSENT]} <Link href="/privacy" className="src-link">Ochrana údajů</Link></span>
+        <span>
+          {CONSENTS[CALL_CONSENT]}{' '}
+          <Link href="/privacy" className="src-link">
+            Ochrana údajů
+          </Link>
+        </span>
       </label>
-      {error && <p role="alert" className="mt-2 text-[14px] font-medium text-brick">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-2 text-[14px] font-medium text-brick">
+          {error}
+        </p>
+      )}
       <div className="mt-3 flex gap-2">
-        <button type="submit" className="btn btn-primary flex-1" disabled={state === 'busy'}>{state === 'busy' ? 'Odesílám…' : 'Zavolejte mi'}</button>
-        {onSkip && <button type="button" className="btn btn-ghost" onClick={onSkip}>Ne, díky</button>}
+        <button type="submit" className="btn btn-primary flex-1" disabled={state === 'busy'}>
+          {state === 'busy' ? 'Odesílám…' : 'Zavolejte mi'}
+        </button>
+        {onSkip && (
+          <button type="button" className="btn btn-ghost" onClick={onSkip}>
+            Ne, díky
+          </button>
+        )}
       </div>
     </form>
   );

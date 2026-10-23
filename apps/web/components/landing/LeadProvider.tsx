@@ -8,7 +8,10 @@ import { KEYS, storage } from '@/lib/storage';
 import { initPosthog, initTracking, track, trackContext, trackScrollDepth } from '@/lib/track';
 
 type SheetStep = 'form' | 'done';
-interface SubmitResult { ok: boolean; message?: string }
+interface SubmitResult {
+  ok: boolean;
+  message?: string;
+}
 
 interface LeadState {
   variant: Variant;
@@ -70,15 +73,18 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
     calcDebounce.current = setTimeout(() => track('calc_change', c), 600);
   }, []);
 
-  const openSheet = useCallback((source: string) => {
-    track('cta_click', { source });
-    if (storage.get(KEYS.unlocked) === '1') {
-      router.push('/report');
-      return;
-    }
-    setSheet({ open: true, step: 'form', source });
-    track('form_view', { form: 'sheet', source });
-  }, [router]);
+  const openSheet = useCallback(
+    (source: string) => {
+      track('cta_click', { source });
+      if (storage.get(KEYS.unlocked) === '1') {
+        router.push('/report');
+        return;
+      }
+      setSheet({ open: true, step: 'form', source });
+      track('form_view', { form: 'sheet', source });
+    },
+    [router],
+  );
 
   const markCalled = useCallback(() => {
     storage.set(KEYS.called, '1');
@@ -86,41 +92,63 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
 
   const closeSheet = useCallback(() => setSheet((s) => ({ ...s, open: false })), []);
 
-  const submitLead = useCallback(async (email: string, { form, consentId, hp }: { form: string; consentId: string; hp: string }): Promise<SubmitResult> => {
-    const fail = (message: string, reason: string) => {
-      track('form_error', { form, reason });
-      return { ok: false, message };
-    };
-    if (!EMAIL_RE.test(email)) return fail('Zkontrolujte prosím e-mail – chybí zavináč nebo doména.', 'invalid');
-    const source = form === 'sheet' ? sheet.source || 'sheet' : form;
-    track('form_submit', { form, source });
-    try {
-      const r = await fetch('/api/lead', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          email, hp_f7: hp, source, ...trackContext(),
-          interest: selected,
-          calc_monthly: calcTouched.current ? calc.monthly : null,
-          consent_id: consentId,
-        }),
-      });
-      const res = await r.json().catch(() => ({}));
-      if (!r.ok) return fail(res.message || 'Něco se pokazilo. Zkuste to prosím znovu.', `http_${r.status}`);
-      storage.set(KEYS.unlocked, '1', { persist: true });
-      setEmailSent(Boolean(res.emailSent));
-      if (res.token) storage.set(KEYS.leadToken, res.token);
-      // Po odeslání vždy sheet s poděkováním + kvalifikací (i když se odesílalo z formuláře na stránce)
-      setSheet({ open: true, step: 'done', source });
-      return { ok: true };
-    } catch {
-      return fail('Nepodařilo se připojit. Zkontrolujte internet a zkuste to znovu.', 'network');
-    }
-  }, [calc.monthly, selected, sheet.source]);
+  const submitLead = useCallback(
+    async (email: string, { form, consentId, hp }: { form: string; consentId: string; hp: string }): Promise<SubmitResult> => {
+      const fail = (message: string, reason: string) => {
+        track('form_error', { form, reason });
+        return { ok: false, message };
+      };
+      if (!EMAIL_RE.test(email)) return fail('Zkontrolujte prosím e-mail – chybí zavináč nebo doména.', 'invalid');
+      const source = form === 'sheet' ? sheet.source || 'sheet' : form;
+      track('form_submit', { form, source });
+      try {
+        const r = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            hp_f7: hp,
+            source,
+            ...trackContext(),
+            interest: selected,
+            calc_monthly: calcTouched.current ? calc.monthly : null,
+            consent_id: consentId,
+          }),
+        });
+        const res = await r.json().catch(() => ({}));
+        if (!r.ok) return fail(res.message || 'Něco se pokazilo. Zkuste to prosím znovu.', `http_${r.status}`);
+        storage.set(KEYS.unlocked, '1', { persist: true });
+        setEmailSent(Boolean(res.emailSent));
+        if (res.token) storage.set(KEYS.leadToken, res.token);
+        // Po odeslání vždy sheet s poděkováním + kvalifikací (i když se odesílalo z formuláře na stránce)
+        setSheet({ open: true, step: 'done', source });
+        return { ok: true };
+      } catch {
+        return fail('Nepodařilo se připojit. Zkontrolujte internet a zkuste to znovu.', 'network');
+      }
+    },
+    [calc.monthly, selected, sheet.source],
+  );
 
-  const value = useMemo<LeadState>(() => ({
-    variant, selected, select, calc, setCalc, unlocked, token, called, markCalled, emailSent, sheet, openSheet, closeSheet, submitLead,
-  }), [variant, selected, select, calc, setCalc, unlocked, token, called, markCalled, emailSent, sheet, openSheet, closeSheet, submitLead]);
+  const value = useMemo<LeadState>(
+    () => ({
+      variant,
+      selected,
+      select,
+      calc,
+      setCalc,
+      unlocked,
+      token,
+      called,
+      markCalled,
+      emailSent,
+      sheet,
+      openSheet,
+      closeSheet,
+      submitLead,
+    }),
+    [variant, selected, select, calc, setCalc, unlocked, token, called, markCalled, emailSent, sheet, openSheet, closeSheet, submitLead],
+  );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

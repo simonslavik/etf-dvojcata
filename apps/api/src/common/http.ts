@@ -17,7 +17,9 @@ export function sameOriginUrl(to: string | null | undefined, origin: string) {
   try {
     const u = new URL(to || '/', origin);
     if (u.origin === origin) return u;
-  } catch { /* neplatná URL */ }
+  } catch {
+    /* neplatná URL */
+  }
   return new URL('/', origin);
 }
 

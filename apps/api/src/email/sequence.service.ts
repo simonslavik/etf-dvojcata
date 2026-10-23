@@ -24,7 +24,10 @@ export class SequenceService {
   ) {}
 
   async schedule(leadId: string, created = new Date()) {
-    await this.db.insert(emailJobs).values(scheduleFor(created).map((j) => ({ leadId, step: j.step, sendAt: j.sendAt }))).onConflictDoNothing();
+    await this.db
+      .insert(emailJobs)
+      .values(scheduleFor(created).map((j) => ({ leadId, step: j.step, sendAt: j.sendAt })))
+      .onConflictDoNothing();
   }
 
   /**
@@ -32,15 +35,22 @@ export class SequenceService {
    * a odeslání formuláře nikdy nepošlou dvakrát; odhlášení se kontroluje až po zabrání.
    */
   async sendJob(leadId: string, step: SequenceStep) {
-    const [job] = await this.db.update(emailJobs)
+    const [job] = await this.db
+      .update(emailJobs)
       .set({ status: 'sending', attempts: sql`${emailJobs.attempts} + 1` })
       .where(and(eq(emailJobs.leadId, leadId), eq(emailJobs.step, step), eq(emailJobs.status, 'scheduled')))
       .returning({ attempts: emailJobs.attempts });
     if (!job) return false;
     const setJob = (v: Partial<typeof emailJobs.$inferInsert>) =>
-      this.db.update(emailJobs).set(v).where(and(eq(emailJobs.leadId, leadId), eq(emailJobs.step, step)));
+      this.db
+        .update(emailJobs)
+        .set(v)
+        .where(and(eq(emailJobs.leadId, leadId), eq(emailJobs.step, step)));
 
-    const [lead] = await this.db.select({ email: leads.email, token: leads.token, unsubscribedAt: leads.unsubscribedAt }).from(leads).where(eq(leads.id, leadId));
+    const [lead] = await this.db
+      .select({ email: leads.email, token: leads.token, unsubscribedAt: leads.unsubscribedAt })
+      .from(leads)
+      .where(eq(leads.id, leadId));
     if (!lead || lead.unsubscribedAt) {
       await setJob({ status: 'cancelled' });
       return false;
@@ -48,9 +58,10 @@ export class SequenceService {
 
     // Okamžitý přehled (D0) má vlastní denní strop, aby ho nemohla vyčerpat sekvence (a naopak)
     const day = new Date().toISOString().slice(0, 10);
-    const [capKey, cap] = step === 'd0_report'
-      ? [`mail0:${day}`, this.config.get('DAILY_EMAIL_CAP', { infer: true })]
-      : [`mail:${day}`, this.config.get('DAILY_NURTURE_CAP', { infer: true })];
+    const [capKey, cap] =
+      step === 'd0_report'
+        ? [`mail0:${day}`, this.config.get('DAILY_EMAIL_CAP', { infer: true })]
+        : [`mail:${day}`, this.config.get('DAILY_NURTURE_CAP', { infer: true })];
     if (!(await this.limits.within(capKey, cap, 86_400))) {
       await setJob({ status: 'scheduled', attempts: job.attempts - 1, error: 'daily_cap' }); // zkusí další běh cronu
       return false;
@@ -66,9 +77,12 @@ export class SequenceService {
 
   /** Všechny splatné kroky (s odstupem kvůli limitu Resend API ~2 požadavky/s) */
   async runDue(limit = 50, gapMs = 550) {
-    const due = await this.db.select({ leadId: emailJobs.leadId, step: emailJobs.step }).from(emailJobs)
+    const due = await this.db
+      .select({ leadId: emailJobs.leadId, step: emailJobs.step })
+      .from(emailJobs)
       .where(and(eq(emailJobs.status, 'scheduled'), lte(emailJobs.sendAt, new Date())))
-      .orderBy(emailJobs.sendAt).limit(limit);
+      .orderBy(emailJobs.sendAt)
+      .limit(limit);
     let sent = 0;
     for (const j of due) {
       if (await this.sendJob(j.leadId, j.step)) sent++;

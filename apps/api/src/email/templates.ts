@@ -28,12 +28,16 @@ export function createTemplates(site: string) {
 
   const templates: Record<SequenceStep, (token: string) => string> = {
     d0_report: (token) => {
-      const rows = data.pairs.map((p) => `
+      const rows = data.pairs
+        .map(
+          (p) => `
         <tr>
           <td style="padding:10px 6px;border-bottom:1px solid ${C.line};color:${C.muted};text-decoration:line-through">${p.us.ticker}</td>
           <td style="padding:10px 6px;border-bottom:1px solid ${C.line}"><b>${p.twin.ticker}</b><br><span style="font-family:monospace;font-size:13px;color:${C.muted}">${p.twin.isin}</span></td>
           <td style="padding:10px 6px;border-bottom:1px solid ${C.line};text-align:right">${formatPct(p.twin.ter_pct)}</td>
-        </tr>`).join('');
+        </tr>`,
+        )
+        .join('');
       return `${h1('Vaše ETF dvojčata')}
         <p>Tady je slíbený přehled. ISIN zkopírujte do vyhledávání ve své aplikaci (XTB, Trading 212, DEGIRO…) – je jednoznačný, ticker se mezi burzami liší.</p>
         <table style="width:100%;border-collapse:collapse;font-size:14px">

@@ -1,741 +1,741 @@
 {
- "as_of": "2026-10-22",
- "pairs": [
-  {
-   "us": {
-    "ticker": "VOO",
-    "name": "Vanguard S&P 500 ETF",
-    "issuer": "Vanguard",
-    "exchange": "NYSE Arca",
-    "index": "S&P 500",
-    "ter_pct": 0.03,
-    "aum_usd_bn": 1032.3,
-    "aum_as_of": "2026-09-30",
-    "source_url": "https://advisors.vanguard.com/investments/products/voo/vanguard-sp-500-etf",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "VUAA",
-    "aka": null,
-    "name": "Vanguard S&P 500 UCITS ETF (USD) Acc",
-    "issuer": "Vanguard",
-    "isin": "IE00BFMXXD54",
-    "index": "S&P 500",
-    "ter_pct": 0.07,
-    "distribution": "Acc",
-    "size_eur_m": 33158,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BFMXXD54",
-    "accessed": "2026-10-22"
-   },
-   "alts": [
+  "as_of": "2026-10-22",
+  "pairs": [
     {
-     "ticker": "SPYL",
-     "isin": "IE000XZSV718",
-     "ter_pct": 0.03,
-     "name": "SPDR S&P 500 UCITS ETF (Acc)"
+      "us": {
+        "ticker": "VOO",
+        "name": "Vanguard S&P 500 ETF",
+        "issuer": "Vanguard",
+        "exchange": "NYSE Arca",
+        "index": "S&P 500",
+        "ter_pct": 0.03,
+        "aum_usd_bn": 1032.3,
+        "aum_as_of": "2026-09-30",
+        "source_url": "https://advisors.vanguard.com/investments/products/voo/vanguard-sp-500-etf",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "VUAA",
+        "aka": null,
+        "name": "Vanguard S&P 500 UCITS ETF (USD) Acc",
+        "issuer": "Vanguard",
+        "isin": "IE00BFMXXD54",
+        "index": "S&P 500",
+        "ter_pct": 0.07,
+        "distribution": "Acc",
+        "size_eur_m": 33158,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BFMXXD54",
+        "accessed": "2026-10-22"
+      },
+      "alts": [
+        {
+          "ticker": "SPYL",
+          "isin": "IE000XZSV718",
+          "ter_pct": 0.03,
+          "name": "SPDR S&P 500 UCITS ETF (Acc)"
+        },
+        {
+          "ticker": "SXR8 / CSPX",
+          "isin": "IE00B5BMR087",
+          "ter_pct": 0.07,
+          "name": "iShares Core S&P 500 UCITS ETF (Acc)"
+        }
+      ],
+      "match": "exact",
+      "note": null
     },
     {
-     "ticker": "SXR8 / CSPX",
-     "isin": "IE00B5BMR087",
-     "ter_pct": 0.07,
-     "name": "iShares Core S&P 500 UCITS ETF (Acc)"
-    }
-   ],
-   "match": "exact",
-   "note": null
-  },
-  {
-   "us": {
-    "ticker": "SPY",
-    "name": "SPDR S&P 500 ETF Trust",
-    "issuer": "State Street",
-    "exchange": "NYSE Arca",
-    "index": "S&P 500",
-    "ter_pct": 0.0945,
-    "aum_usd_bn": 820.7,
-    "aum_as_of": "2026-10-21",
-    "source_url": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "SPYL",
-    "aka": null,
-    "name": "SPDR S&P 500 UCITS ETF (Acc)",
-    "issuer": "State Street",
-    "isin": "IE000XZSV718",
-    "index": "S&P 500",
-    "ter_pct": 0.03,
-    "distribution": "Acc",
-    "size_eur_m": 17401,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-sp-500-ucits-etf-acc-spyl-gy",
-    "accessed": "2026-10-22"
-   },
-   "alts": [
-    {
-     "ticker": "VUAA",
-     "isin": "IE00BFMXXD54",
-     "ter_pct": 0.07,
-     "name": "Vanguard S&P 500 UCITS ETF (USD) Acc"
+      "us": {
+        "ticker": "SPY",
+        "name": "SPDR S&P 500 ETF Trust",
+        "issuer": "State Street",
+        "exchange": "NYSE Arca",
+        "index": "S&P 500",
+        "ter_pct": 0.0945,
+        "aum_usd_bn": 820.7,
+        "aum_as_of": "2026-10-21",
+        "source_url": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "SPYL",
+        "aka": null,
+        "name": "SPDR S&P 500 UCITS ETF (Acc)",
+        "issuer": "State Street",
+        "isin": "IE000XZSV718",
+        "index": "S&P 500",
+        "ter_pct": 0.03,
+        "distribution": "Acc",
+        "size_eur_m": 17401,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-sp-500-ucits-etf-acc-spyl-gy",
+        "accessed": "2026-10-22"
+      },
+      "alts": [
+        {
+          "ticker": "VUAA",
+          "isin": "IE00BFMXXD54",
+          "ter_pct": 0.07,
+          "name": "Vanguard S&P 500 UCITS ETF (USD) Acc"
+        },
+        {
+          "ticker": "SXR8 / CSPX",
+          "isin": "IE00B5BMR087",
+          "ter_pct": 0.07,
+          "name": "iShares Core S&P 500 UCITS ETF (Acc)"
+        }
+      ],
+      "match": "exact",
+      "note": null
     },
     {
-     "ticker": "SXR8 / CSPX",
-     "isin": "IE00B5BMR087",
-     "ter_pct": 0.07,
-     "name": "iShares Core S&P 500 UCITS ETF (Acc)"
-    }
-   ],
-   "match": "exact",
-   "note": null
-  },
-  {
-   "us": {
-    "ticker": "IVV",
-    "name": "iShares Core S&P 500 ETF",
-    "issuer": "iShares",
-    "exchange": "NYSE Arca",
-    "index": "S&P 500",
-    "ter_pct": 0.03,
-    "aum_usd_bn": 890.4,
-    "aum_as_of": "2026-10-21",
-    "source_url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "SXR8",
-    "aka": "CSPX (LSE)",
-    "name": "iShares Core S&P 500 UCITS ETF (Acc)",
-    "issuer": "iShares",
-    "isin": "IE00B5BMR087",
-    "index": "S&P 500",
-    "ter_pct": 0.07,
-    "distribution": "Acc",
-    "size_eur_m": 138625,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087",
-    "accessed": "2026-10-22"
-   },
-   "alts": [
-    {
-     "ticker": "SPYL",
-     "isin": "IE000XZSV718",
-     "ter_pct": 0.03,
-     "name": "SPDR S&P 500 UCITS ETF (Acc)"
+      "us": {
+        "ticker": "IVV",
+        "name": "iShares Core S&P 500 ETF",
+        "issuer": "iShares",
+        "exchange": "NYSE Arca",
+        "index": "S&P 500",
+        "ter_pct": 0.03,
+        "aum_usd_bn": 890.4,
+        "aum_as_of": "2026-10-21",
+        "source_url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "SXR8",
+        "aka": "CSPX (LSE)",
+        "name": "iShares Core S&P 500 UCITS ETF (Acc)",
+        "issuer": "iShares",
+        "isin": "IE00B5BMR087",
+        "index": "S&P 500",
+        "ter_pct": 0.07,
+        "distribution": "Acc",
+        "size_eur_m": 138625,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087",
+        "accessed": "2026-10-22"
+      },
+      "alts": [
+        {
+          "ticker": "SPYL",
+          "isin": "IE000XZSV718",
+          "ter_pct": 0.03,
+          "name": "SPDR S&P 500 UCITS ETF (Acc)"
+        },
+        {
+          "ticker": "VUAA",
+          "isin": "IE00BFMXXD54",
+          "ter_pct": 0.07,
+          "name": "Vanguard S&P 500 UCITS ETF (USD) Acc"
+        }
+      ],
+      "match": "exact",
+      "note": null
     },
     {
-     "ticker": "VUAA",
-     "isin": "IE00BFMXXD54",
-     "ter_pct": 0.07,
-     "name": "Vanguard S&P 500 UCITS ETF (USD) Acc"
-    }
-   ],
-   "match": "exact",
-   "note": null
-  },
-  {
-   "us": {
-    "ticker": "VTI",
-    "name": "Vanguard Morningstar Total Stock Market ETF",
-    "issuer": "Vanguard",
-    "exchange": "NYSE Arca",
-    "index": "Morningstar U.S. Total Market",
-    "ter_pct": 0.03,
-    "aum_usd_bn": 689.2,
-    "aum_as_of": "2026-09-30",
-    "source_url": "https://advisors.vanguard.com/investments/products/vti",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "XD9U",
-    "aka": null,
-    "name": "Xtrackers MSCI USA UCITS ETF 1C",
-    "issuer": "Xtrackers",
-    "isin": "IE00BJ0KDR00",
-    "index": "MSCI USA",
-    "ter_pct": 0.03,
-    "distribution": "Acc",
-    "size_eur_m": 12092,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ0KDR00",
-    "accessed": "2026-10-22"
-   },
-   "alts": [],
-   "match": "close",
-   "note": "MSCI USA pokrývá velké a střední firmy, bez malých. Celý americký trh v jednom UCITS fondu neexistuje."
-  },
-  {
-   "us": {
-    "ticker": "VT",
-    "name": "Vanguard Total World Stock ETF",
-    "issuer": "Vanguard",
-    "exchange": "NYSE Arca",
-    "index": "FTSE Global All Cap",
-    "ter_pct": 0.06,
-    "aum_usd_bn": 81.8,
-    "aum_as_of": "2026-09-30",
-    "source_url": "https://advisors.vanguard.com/investments/products/vt",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "VWCE",
-    "aka": "VWRA (LSE)",
-    "name": "Vanguard FTSE All-World UCITS ETF (USD) Acc",
-    "issuer": "Vanguard",
-    "isin": "IE00BK5BQT80",
-    "index": "FTSE All-World",
-    "ter_pct": 0.14,
-    "distribution": "Acc",
-    "size_eur_m": 55108,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BQT80",
-    "accessed": "2026-10-22"
-   },
-   "alts": [
-    {
-     "ticker": "IUSQ",
-     "isin": "IE00B6R52259",
-     "ter_pct": 0.2,
-     "name": "iShares MSCI ACWI UCITS ETF (Acc)"
-    }
-   ],
-   "match": "close",
-   "note": "stejná rodina indexů FTSE, jen bez malých firem."
-  },
-  {
-   "us": {
-    "ticker": "VEA",
-    "name": "Vanguard FTSE Developed Markets ETF",
-    "issuer": "Vanguard",
-    "exchange": "NYSE Arca",
-    "index": "FTSE Developed All Cap ex US",
-    "ter_pct": 0.03,
-    "aum_usd_bn": 231.6,
-    "aum_as_of": "2026-09-30",
-    "source_url": "https://advisors.vanguard.com/investments/products/vea",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "EXUS",
-    "aka": null,
-    "name": "Xtrackers MSCI World ex USA UCITS ETF 1C",
-    "issuer": "Xtrackers",
-    "isin": "IE0006WW1TQ4",
-    "index": "MSCI World ex USA",
-    "ter_pct": 0.15,
-    "distribution": "Acc",
-    "size_eur_m": 7084,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE0006WW1TQ4",
-    "accessed": "2026-10-22"
-   },
-   "alts": [],
-   "match": "close",
-   "note": "vyspělé trhy mimo USA, ale bez malých firem a bez Jižní Koreje."
-  },
-  {
-   "us": {
-    "ticker": "VWO",
-    "name": "Vanguard FTSE Emerging Markets ETF",
-    "issuer": "Vanguard",
-    "exchange": "NYSE Arca",
-    "index": "FTSE Emerging Markets All Cap China A Inclusion",
-    "ter_pct": 0.06,
-    "aum_usd_bn": 125.4,
-    "aum_as_of": "2026-09-30",
-    "source_url": "https://advisors.vanguard.com/investments/products/vwo",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "VFEA",
-    "aka": null,
-    "name": "Vanguard FTSE Emerging Markets UCITS ETF (USD) Acc",
-    "issuer": "Vanguard",
-    "isin": "IE00BK5BR733",
-    "index": "FTSE Emerging",
-    "ter_pct": 0.17,
-    "distribution": "Acc",
-    "size_eur_m": 2263,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BR733",
-    "accessed": "2026-10-22"
-   },
-   "alts": [
-    {
-     "ticker": "IS3N / EIMI",
-     "isin": "IE00BKM4GZ66",
-     "ter_pct": 0.18,
-     "name": "iShares Core MSCI EM IMI UCITS ETF (Acc) – i malé firmy"
-    }
-   ],
-   "match": "close",
-   "note": "stejný správce i rodina indexů FTSE, jen bez malých firem."
-  },
-  {
-   "us": {
-    "ticker": "SCHD",
-    "name": "Schwab US Dividend Equity ETF",
-    "issuer": "Charles Schwab",
-    "exchange": "NYSE Arca",
-    "index": "Dow Jones U.S. Dividend 100",
-    "ter_pct": 0.06,
-    "aum_usd_bn": 114.8,
-    "aum_as_of": "2026-10-22",
-    "source_url": "https://stockanalysis.com/etf/schd/",
-    "accessed": "2026-10-22",
-    "source_note": "Web emitenta blokoval přístup (HTTP 403), údaje ze stockanalysis.com."
-   },
-   "twin": {
-    "ticker": "SPYD",
-    "aka": "USDV",
-    "name": "SPDR S&P U.S. Dividend Aristocrats UCITS ETF (Dist)",
-    "issuer": "State Street",
-    "isin": "IE00B6YX5D40",
-    "index": "S&P High Yield Dividend Aristocrats",
-    "ter_pct": 0.35,
-    "distribution": "Dist",
-    "size_eur_m": 3390,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B6YX5D40",
-    "accessed": "2026-10-22"
-   },
-   "alts": [],
-   "match": "close",
-   "note": "UCITS verze indexu Dow Jones U.S. Dividend 100 neexistuje. Aristokraté = firmy, které zvyšují dividendu 20+ let."
-  },
-  {
-   "us": {
-    "ticker": "VUG",
-    "name": "Vanguard Morningstar Growth ETF",
-    "issuer": "Vanguard",
-    "exchange": "NYSE Arca",
-    "index": "Morningstar U.S. Large Cap Growth",
-    "ter_pct": 0.03,
-    "aum_usd_bn": 232.9,
-    "aum_as_of": "2026-09-30",
-    "source_url": "https://advisors.vanguard.com/investments/products/vug",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "MWOW",
-    "aka": null,
-    "name": "Amundi Russell 1000 Growth UCITS ETF Acc",
-    "issuer": "Amundi",
-    "isin": "IE0005E8B9S4",
-    "index": "Russell 1000 Growth",
-    "ter_pct": 0.19,
-    "distribution": "Acc",
-    "size_eur_m": 590,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE0005E8B9S4",
-    "accessed": "2026-10-22"
-   },
-   "alts": [],
-   "match": "close",
-   "note": "jiný poskytovatel indexu, ale stejný princip – velké růstové firmy v USA."
-  },
-  {
-   "us": {
-    "ticker": "VIG",
-    "name": "Vanguard Dividend Appreciation ETF",
-    "issuer": "Vanguard",
-    "exchange": "NYSE Arca",
-    "index": "S&P U.S. Dividend Growers",
-    "ter_pct": 0.04,
-    "aum_usd_bn": 109.1,
-    "aum_as_of": "2026-09-30",
-    "source_url": "https://advisors.vanguard.com/investments/products/vig",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "WTDM",
-    "aka": "DGRA (LSE)",
-    "name": "WisdomTree US Quality Dividend Growth UCITS ETF Acc",
-    "issuer": "WisdomTree",
-    "isin": "IE00BZ56RG20",
-    "index": "WisdomTree US Quality Dividend Growth",
-    "ter_pct": 0.33,
-    "distribution": "Acc",
-    "size_eur_m": 632,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BZ56RG20",
-    "accessed": "2026-10-22"
-   },
-   "alts": [],
-   "match": "close",
-   "note": "také kvalitní firmy s rostoucí dividendou, ale výběr a váhy se liší."
-  },
-  {
-   "us": {
-    "ticker": "IWM",
-    "name": "iShares Russell 2000 ETF",
-    "issuer": "iShares",
-    "exchange": "NYSE Arca",
-    "index": "Russell 2000",
-    "ter_pct": 0.19,
-    "aum_usd_bn": 75.1,
-    "aum_as_of": "2026-10-21",
-    "source_url": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "ZPRR",
-    "aka": "R2US (LSE)",
-    "name": "SPDR Russell 2000 U.S. Small Cap UCITS ETF",
-    "issuer": "State Street",
-    "isin": "IE00BJ38QD84",
-    "index": "Russell 2000",
-    "ter_pct": 0.3,
-    "distribution": "Acc",
-    "size_eur_m": 4082,
-    "form": "UCITS",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ38QD84",
-    "accessed": "2026-10-22"
-   },
-   "alts": [],
-   "match": "exact",
-   "note": null
-  },
-  {
-   "us": {
-    "ticker": "GLD",
-    "name": "SPDR Gold Shares",
-    "issuer": "State Street",
-    "exchange": "NYSE Arca",
-    "index": "fyzické zlato (LBMA Gold Price)",
-    "ter_pct": 0.4,
-    "aum_usd_bn": 140.3,
-    "aum_as_of": "2026-10-21",
-    "source_url": "https://www.ssga.com/us/en/intermediary/etfs/spdr-gold-shares-gld",
-    "accessed": "2026-10-22"
-   },
-   "twin": {
-    "ticker": "PPFB",
-    "aka": "SGLN (LSE)",
-    "name": "iShares Physical Gold ETC",
-    "issuer": "iShares",
-    "isin": "IE00B4ND3602",
-    "index": "LBMA Gold Price (fyzické zlato)",
-    "ter_pct": 0.12,
-    "distribution": "–",
-    "size_eur_m": 34242,
-    "form": "ETC",
-    "exchange": "Xetra",
-    "domicile": "Irsko",
-    "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602",
-    "accessed": "2026-10-22"
-   },
-   "alts": [
-    {
-     "ticker": "4GLD",
-     "isin": "DE000A0S9GB0",
-     "ter_pct": 0.0,
-     "name": "Xetra-Gold (TER 0 %, ostatní náklady jsme neověřovali)"
+      "us": {
+        "ticker": "VTI",
+        "name": "Vanguard Morningstar Total Stock Market ETF",
+        "issuer": "Vanguard",
+        "exchange": "NYSE Arca",
+        "index": "Morningstar U.S. Total Market",
+        "ter_pct": 0.03,
+        "aum_usd_bn": 689.2,
+        "aum_as_of": "2026-09-30",
+        "source_url": "https://advisors.vanguard.com/investments/products/vti",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "XD9U",
+        "aka": null,
+        "name": "Xtrackers MSCI USA UCITS ETF 1C",
+        "issuer": "Xtrackers",
+        "isin": "IE00BJ0KDR00",
+        "index": "MSCI USA",
+        "ter_pct": 0.03,
+        "distribution": "Acc",
+        "size_eur_m": 12092,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ0KDR00",
+        "accessed": "2026-10-22"
+      },
+      "alts": [],
+      "match": "close",
+      "note": "MSCI USA pokrývá velké a střední firmy, bez malých. Celý americký trh v jednom UCITS fondu neexistuje."
     },
     {
-     "ticker": "8PSG",
-     "isin": "IE00B579F325",
-     "ter_pct": 0.12,
-     "name": "Invesco Physical Gold ETC"
+      "us": {
+        "ticker": "VT",
+        "name": "Vanguard Total World Stock ETF",
+        "issuer": "Vanguard",
+        "exchange": "NYSE Arca",
+        "index": "FTSE Global All Cap",
+        "ter_pct": 0.06,
+        "aum_usd_bn": 81.8,
+        "aum_as_of": "2026-09-30",
+        "source_url": "https://advisors.vanguard.com/investments/products/vt",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "VWCE",
+        "aka": "VWRA (LSE)",
+        "name": "Vanguard FTSE All-World UCITS ETF (USD) Acc",
+        "issuer": "Vanguard",
+        "isin": "IE00BK5BQT80",
+        "index": "FTSE All-World",
+        "ter_pct": 0.14,
+        "distribution": "Acc",
+        "size_eur_m": 55108,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BQT80",
+        "accessed": "2026-10-22"
+      },
+      "alts": [
+        {
+          "ticker": "IUSQ",
+          "isin": "IE00B6R52259",
+          "ter_pct": 0.2,
+          "name": "iShares MSCI ACWI UCITS ETF (Acc)"
+        }
+      ],
+      "match": "close",
+      "note": "stejná rodina indexů FTSE, jen bez malých firem."
+    },
+    {
+      "us": {
+        "ticker": "VEA",
+        "name": "Vanguard FTSE Developed Markets ETF",
+        "issuer": "Vanguard",
+        "exchange": "NYSE Arca",
+        "index": "FTSE Developed All Cap ex US",
+        "ter_pct": 0.03,
+        "aum_usd_bn": 231.6,
+        "aum_as_of": "2026-09-30",
+        "source_url": "https://advisors.vanguard.com/investments/products/vea",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "EXUS",
+        "aka": null,
+        "name": "Xtrackers MSCI World ex USA UCITS ETF 1C",
+        "issuer": "Xtrackers",
+        "isin": "IE0006WW1TQ4",
+        "index": "MSCI World ex USA",
+        "ter_pct": 0.15,
+        "distribution": "Acc",
+        "size_eur_m": 7084,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE0006WW1TQ4",
+        "accessed": "2026-10-22"
+      },
+      "alts": [],
+      "match": "close",
+      "note": "vyspělé trhy mimo USA, ale bez malých firem a bez Jižní Koreje."
+    },
+    {
+      "us": {
+        "ticker": "VWO",
+        "name": "Vanguard FTSE Emerging Markets ETF",
+        "issuer": "Vanguard",
+        "exchange": "NYSE Arca",
+        "index": "FTSE Emerging Markets All Cap China A Inclusion",
+        "ter_pct": 0.06,
+        "aum_usd_bn": 125.4,
+        "aum_as_of": "2026-09-30",
+        "source_url": "https://advisors.vanguard.com/investments/products/vwo",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "VFEA",
+        "aka": null,
+        "name": "Vanguard FTSE Emerging Markets UCITS ETF (USD) Acc",
+        "issuer": "Vanguard",
+        "isin": "IE00BK5BR733",
+        "index": "FTSE Emerging",
+        "ter_pct": 0.17,
+        "distribution": "Acc",
+        "size_eur_m": 2263,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BR733",
+        "accessed": "2026-10-22"
+      },
+      "alts": [
+        {
+          "ticker": "IS3N / EIMI",
+          "isin": "IE00BKM4GZ66",
+          "ter_pct": 0.18,
+          "name": "iShares Core MSCI EM IMI UCITS ETF (Acc) – i malé firmy"
+        }
+      ],
+      "match": "close",
+      "note": "stejný správce i rodina indexů FTSE, jen bez malých firem."
+    },
+    {
+      "us": {
+        "ticker": "SCHD",
+        "name": "Schwab US Dividend Equity ETF",
+        "issuer": "Charles Schwab",
+        "exchange": "NYSE Arca",
+        "index": "Dow Jones U.S. Dividend 100",
+        "ter_pct": 0.06,
+        "aum_usd_bn": 114.8,
+        "aum_as_of": "2026-10-22",
+        "source_url": "https://stockanalysis.com/etf/schd/",
+        "accessed": "2026-10-22",
+        "source_note": "Web emitenta blokoval přístup (HTTP 403), údaje ze stockanalysis.com."
+      },
+      "twin": {
+        "ticker": "SPYD",
+        "aka": "USDV",
+        "name": "SPDR S&P U.S. Dividend Aristocrats UCITS ETF (Dist)",
+        "issuer": "State Street",
+        "isin": "IE00B6YX5D40",
+        "index": "S&P High Yield Dividend Aristocrats",
+        "ter_pct": 0.35,
+        "distribution": "Dist",
+        "size_eur_m": 3390,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B6YX5D40",
+        "accessed": "2026-10-22"
+      },
+      "alts": [],
+      "match": "close",
+      "note": "UCITS verze indexu Dow Jones U.S. Dividend 100 neexistuje. Aristokraté = firmy, které zvyšují dividendu 20+ let."
+    },
+    {
+      "us": {
+        "ticker": "VUG",
+        "name": "Vanguard Morningstar Growth ETF",
+        "issuer": "Vanguard",
+        "exchange": "NYSE Arca",
+        "index": "Morningstar U.S. Large Cap Growth",
+        "ter_pct": 0.03,
+        "aum_usd_bn": 232.9,
+        "aum_as_of": "2026-09-30",
+        "source_url": "https://advisors.vanguard.com/investments/products/vug",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "MWOW",
+        "aka": null,
+        "name": "Amundi Russell 1000 Growth UCITS ETF Acc",
+        "issuer": "Amundi",
+        "isin": "IE0005E8B9S4",
+        "index": "Russell 1000 Growth",
+        "ter_pct": 0.19,
+        "distribution": "Acc",
+        "size_eur_m": 590,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE0005E8B9S4",
+        "accessed": "2026-10-22"
+      },
+      "alts": [],
+      "match": "close",
+      "note": "jiný poskytovatel indexu, ale stejný princip – velké růstové firmy v USA."
+    },
+    {
+      "us": {
+        "ticker": "VIG",
+        "name": "Vanguard Dividend Appreciation ETF",
+        "issuer": "Vanguard",
+        "exchange": "NYSE Arca",
+        "index": "S&P U.S. Dividend Growers",
+        "ter_pct": 0.04,
+        "aum_usd_bn": 109.1,
+        "aum_as_of": "2026-09-30",
+        "source_url": "https://advisors.vanguard.com/investments/products/vig",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "WTDM",
+        "aka": "DGRA (LSE)",
+        "name": "WisdomTree US Quality Dividend Growth UCITS ETF Acc",
+        "issuer": "WisdomTree",
+        "isin": "IE00BZ56RG20",
+        "index": "WisdomTree US Quality Dividend Growth",
+        "ter_pct": 0.33,
+        "distribution": "Acc",
+        "size_eur_m": 632,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BZ56RG20",
+        "accessed": "2026-10-22"
+      },
+      "alts": [],
+      "match": "close",
+      "note": "také kvalitní firmy s rostoucí dividendou, ale výběr a váhy se liší."
+    },
+    {
+      "us": {
+        "ticker": "IWM",
+        "name": "iShares Russell 2000 ETF",
+        "issuer": "iShares",
+        "exchange": "NYSE Arca",
+        "index": "Russell 2000",
+        "ter_pct": 0.19,
+        "aum_usd_bn": 75.1,
+        "aum_as_of": "2026-10-21",
+        "source_url": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "ZPRR",
+        "aka": "R2US (LSE)",
+        "name": "SPDR Russell 2000 U.S. Small Cap UCITS ETF",
+        "issuer": "State Street",
+        "isin": "IE00BJ38QD84",
+        "index": "Russell 2000",
+        "ter_pct": 0.3,
+        "distribution": "Acc",
+        "size_eur_m": 4082,
+        "form": "UCITS",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ38QD84",
+        "accessed": "2026-10-22"
+      },
+      "alts": [],
+      "match": "exact",
+      "note": null
+    },
+    {
+      "us": {
+        "ticker": "GLD",
+        "name": "SPDR Gold Shares",
+        "issuer": "State Street",
+        "exchange": "NYSE Arca",
+        "index": "fyzické zlato (LBMA Gold Price)",
+        "ter_pct": 0.4,
+        "aum_usd_bn": 140.3,
+        "aum_as_of": "2026-10-21",
+        "source_url": "https://www.ssga.com/us/en/intermediary/etfs/spdr-gold-shares-gld",
+        "accessed": "2026-10-22"
+      },
+      "twin": {
+        "ticker": "PPFB",
+        "aka": "SGLN (LSE)",
+        "name": "iShares Physical Gold ETC",
+        "issuer": "iShares",
+        "isin": "IE00B4ND3602",
+        "index": "LBMA Gold Price (fyzické zlato)",
+        "ter_pct": 0.12,
+        "distribution": "–",
+        "size_eur_m": 34242,
+        "form": "ETC",
+        "exchange": "Xetra",
+        "domicile": "Irsko",
+        "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602",
+        "accessed": "2026-10-22"
+      },
+      "alts": [
+        {
+          "ticker": "4GLD",
+          "isin": "DE000A0S9GB0",
+          "ter_pct": 0.0,
+          "name": "Xetra-Gold (TER 0 %, ostatní náklady jsme neověřovali)"
+        },
+        {
+          "ticker": "8PSG",
+          "isin": "IE00B579F325",
+          "ter_pct": 0.12,
+          "name": "Invesco Physical Gold ETC"
+        }
+      ],
+      "match": "exact",
+      "note": "Zlato v EU není UCITS fond, ale ETC (dluhový cenný papír krytý fyzickým zlatem)."
     }
-   ],
-   "match": "exact",
-   "note": "Zlato v EU není UCITS fond, ale ETC (dluhový cenný papír krytý fyzickým zlatem)."
-  }
- ],
- "excluded": [
-  {
-   "ticker": "QQQ",
-   "reason": "Obchoduje se na Nasdaq, ne na NYSE",
-   "url": "https://stockanalysis.com/etf/qqq/"
+  ],
+  "excluded": [
+    {
+      "ticker": "QQQ",
+      "reason": "Obchoduje se na Nasdaq, ne na NYSE",
+      "url": "https://stockanalysis.com/etf/qqq/"
+    },
+    {
+      "ticker": "VXUS",
+      "reason": "Obchoduje se na Nasdaq, ne na NYSE",
+      "url": "https://stockanalysis.com/etf/vxus/"
+    },
+    {
+      "ticker": "BND",
+      "reason": "Obchoduje se na Nasdaq, ne na NYSE",
+      "url": "https://stockanalysis.com/etf/bnd/"
+    }
+  ],
+  "calc": {
+    "annual_return": 0.07,
+    "bank": {
+      "label": "Akciový fond z banky",
+      "ter_pct": 2.59,
+      "entry_fee_pct": 3.0,
+      "example": "ČSOB Akciový – vstupní poplatek 3 %, průběžné náklady 2,59 % ročně (KID k 1. 6. 2026; transakční náklady 0,39 % nezapočítány)",
+      "source_url": "https://multimediafiles.kbcgroup.eu/ng/feed/am/funds/KID/KID_770000001170_CS.PDF",
+      "accessed": "2026-10-22"
+    },
+    "etf": {
+      "label": "ETF dvojče S&P 500 (VUAA)",
+      "ter_pct": 0.07,
+      "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BFMXXD54"
+    },
+    "other_bank_funds": [
+      {
+        "name": "Amundi Funds Global Equity A CZK Hgd",
+        "isin": "LU1894680591",
+        "entry_fee_pct": 4.5,
+        "ter_pct": 1.93,
+        "source_url": "https://www.amundi.cz/dl/doc/kid-priips/LU1894680591/CES/CZE/",
+        "note": "KID 19. 8. 2026; + výkonnostní poplatek"
+      },
+      {
+        "name": "ERSTE STOCK GLOBAL",
+        "isin": null,
+        "entry_fee_pct": 4.0,
+        "ter_pct": 1.8,
+        "source_url": "https://data.erste-am.com/gem/erste-am/getDocumentContent/fa750cbd-c9ba-4d23-a17c-5690935b8cf1",
+        "note": "factsheet 27. 2. 2026; jen správcovský poplatek, ne průběžné náklady z KID"
+      }
+    ]
   },
-  {
-   "ticker": "VXUS",
-   "reason": "Obchoduje se na Nasdaq, ne na NYSE",
-   "url": "https://stockanalysis.com/etf/vxus/"
+  "facts": {
+    "priips": {
+      "label": "Nařízení EU 1286/2014 (PRIIPs), čl. 5 a 13",
+      "url": "https://eur-lex.europa.eu/eli/reg/2014/1286/oj",
+      "cs": "Fond prodávaný drobným investorům v EU musí mít sdělení klíčových informací (KID).",
+      "accessed": "2026-10-22"
+    },
+    "priips_broker": {
+      "label": "Lynx – Key Information Document",
+      "url": "https://www.lynxbroker.com/service/products-and-regulations/regulations/key-information-document/",
+      "cs": "Retailový klient nemůže koupit ETF, ke kterému emitent nevydává KID – typicky americká ETF. Držené pozice lze prodat, ale ne navýšit.",
+      "accessed": "2026-10-22"
+    },
+    "elective_pro": {
+      "label": "MiFID II (2014/65/EU), příloha II",
+      "url": "https://eur-lex.europa.eu/eli/dir/2014/65/oj",
+      "cs": "Profesionálním klientem na žádost se stanete, když splníte 2 ze 3 podmínek (např. portfolio nad 500 000 EUR).",
+      "accessed": "2026-10-22"
+    },
+    "time_test": {
+      "label": "zákon č. 586/1992 Sb., § 4 odst. 1 písm. u)",
+      "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+      "cs": "Když ETF držíte déle než 3 roky, zisk z prodeje je od daně osvobozený. Od roku 2026 už pro cenné papíry neplatí strop 40 mil. Kč (týkal se jen prodejů v roce 2025).",
+      "accessed": "2026-10-22"
+    },
+    "value_limit": {
+      "label": "zákon č. 586/1992 Sb., § 4 odst. 1 písm. t)",
+      "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+      "cs": "Pokud celkové příjmy z prodeje cenných papírů za rok nepřesáhnou 100 000 Kč (hrubá částka prodejů, ne zisk), jsou osvobozené i bez časového testu.",
+      "accessed": "2026-10-22"
+    },
+    "cap": {
+      "label": "POHODA – Nové zdanění příjmů z prodeje cenných papírů od 2026",
+      "url": "https://portal.pohoda.cz/rychle-zpravy/nove-zdaneni-prijmu-z-prodeje-cennych-papiru-od-2026/",
+      "cs": "Strop 40 mil. Kč pro osvobození po 3 letech platil u cenných papírů jen v roce 2025, od 1. 1. 2026 byl zrušen.",
+      "accessed": "2026-10-22"
+    },
+    "dividends": {
+      "label": "Finzi.cz – Proč jsou irská ETF výhodná (31. 5. 2026); smlouva USA–ČR čl. 10 (irs.gov)",
+      "url": "https://www.finzi.cz/etf/clanky/ireland-domiciled-etf-proc-jsou-vyhodne/",
+      "cs": "U amerického ETF vám USA strhnou 15 % z dividend (s formulářem W-8BEN) a dividendy musíte přiznat. Irský akumulační fond zaplatí 15 % sám a dividendy reinvestuje – v přiznání je neřešíte.",
+      "accessed": "2026-10-22"
+    },
+    "brokers": {
+      "label": "XTB – Účet a poplatky; Trading 212 – Help Centre",
+      "url": "https://www.xtb.com/cz/ucet-a-poplatky",
+      "cs": "Ověřili jsme XTB: nabízí např. CSPX, SXR8, VUAA i VWCE a nákup ETF je zdarma do obratu 100 000 EUR měsíčně (konverze měny 0,5 %). Trading 212 účtuje 0 Kč za obchod a 0,15 % za konverzi měny.",
+      "accessed": "2026-10-22"
+    }
   },
-  {
-   "ticker": "BND",
-   "reason": "Obchoduje se na Nasdaq, ne na NYSE",
-   "url": "https://stockanalysis.com/etf/bnd/"
-  }
- ],
- "calc": {
-  "annual_return": 0.07,
-  "bank": {
-   "label": "Akciový fond z banky",
-   "ter_pct": 2.59,
-   "entry_fee_pct": 3.0,
-   "example": "ČSOB Akciový – vstupní poplatek 3 %, průběžné náklady 2,59 % ročně (KID k 1. 6. 2026; transakční náklady 0,39 % nezapočítány)",
-   "source_url": "https://multimediafiles.kbcgroup.eu/ng/feed/am/funds/KID/KID_770000001170_CS.PDF",
-   "accessed": "2026-10-22"
-  },
-  "etf": {
-   "label": "ETF dvojče S&P 500 (VUAA)",
-   "ter_pct": 0.07,
-   "source_url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BFMXXD54"
-  },
-  "other_bank_funds": [
-   {
-    "name": "Amundi Funds Global Equity A CZK Hgd",
-    "isin": "LU1894680591",
-    "entry_fee_pct": 4.5,
-    "ter_pct": 1.93,
-    "source_url": "https://www.amundi.cz/dl/doc/kid-priips/LU1894680591/CES/CZE/",
-    "note": "KID 19. 8. 2026; + výkonnostní poplatek"
-   },
-   {
-    "name": "ERSTE STOCK GLOBAL",
-    "isin": null,
-    "entry_fee_pct": 4.0,
-    "ter_pct": 1.8,
-    "source_url": "https://data.erste-am.com/gem/erste-am/getDocumentContent/fa750cbd-c9ba-4d23-a17c-5690935b8cf1",
-    "note": "factsheet 27. 2. 2026; jen správcovský poplatek, ne průběžné náklady z KID"
-   }
+  "sources": [
+    {
+      "label": "VOO – Vanguard S&P 500 ETF",
+      "url": "https://advisors.vanguard.com/investments/products/voo/vanguard-sp-500-etf",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "VUAA – Vanguard S&P 500 UCITS ETF (USD) Acc",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BFMXXD54",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "SPY – SPDR S&P 500 ETF Trust",
+      "url": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "SPYL – SPDR S&P 500 UCITS ETF (Acc)",
+      "url": "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-sp-500-ucits-etf-acc-spyl-gy",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "IVV – iShares Core S&P 500 ETF",
+      "url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "SXR8 – iShares Core S&P 500 UCITS ETF (Acc)",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "VTI – Vanguard Morningstar Total Stock Market ETF",
+      "url": "https://advisors.vanguard.com/investments/products/vti",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "XD9U – Xtrackers MSCI USA UCITS ETF 1C",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ0KDR00",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "VT – Vanguard Total World Stock ETF",
+      "url": "https://advisors.vanguard.com/investments/products/vt",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "VWCE – Vanguard FTSE All-World UCITS ETF (USD) Acc",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BQT80",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "VEA – Vanguard FTSE Developed Markets ETF",
+      "url": "https://advisors.vanguard.com/investments/products/vea",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "EXUS – Xtrackers MSCI World ex USA UCITS ETF 1C",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE0006WW1TQ4",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "VWO – Vanguard FTSE Emerging Markets ETF",
+      "url": "https://advisors.vanguard.com/investments/products/vwo",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "VFEA – Vanguard FTSE Emerging Markets UCITS ETF (USD) Acc",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BR733",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "SCHD – Schwab US Dividend Equity ETF",
+      "url": "https://stockanalysis.com/etf/schd/",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "SPYD – SPDR S&P U.S. Dividend Aristocrats UCITS ETF (Dist)",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B6YX5D40",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "VUG – Vanguard Morningstar Growth ETF",
+      "url": "https://advisors.vanguard.com/investments/products/vug",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "MWOW – Amundi Russell 1000 Growth UCITS ETF Acc",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE0005E8B9S4",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "VIG – Vanguard Dividend Appreciation ETF",
+      "url": "https://advisors.vanguard.com/investments/products/vig",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "WTDM – WisdomTree US Quality Dividend Growth UCITS ETF Acc",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BZ56RG20",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "IWM – iShares Russell 2000 ETF",
+      "url": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "ZPRR – SPDR Russell 2000 U.S. Small Cap UCITS ETF",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ38QD84",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "GLD – SPDR Gold Shares",
+      "url": "https://www.ssga.com/us/en/intermediary/etfs/spdr-gold-shares-gld",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "PPFB – iShares Physical Gold ETC",
+      "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "Nařízení EU 1286/2014 (PRIIPs), čl. 5 a 13",
+      "url": "https://eur-lex.europa.eu/eli/reg/2014/1286/oj",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "Lynx – Key Information Document",
+      "url": "https://www.lynxbroker.com/service/products-and-regulations/regulations/key-information-document/",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "MiFID II (2014/65/EU), příloha II",
+      "url": "https://eur-lex.europa.eu/eli/dir/2014/65/oj",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "zákon č. 586/1992 Sb., § 4 odst. 1 písm. u)",
+      "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "zákon č. 586/1992 Sb., § 4 odst. 1 písm. t)",
+      "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "POHODA – Nové zdanění příjmů z prodeje cenných papírů od 2026",
+      "url": "https://portal.pohoda.cz/rychle-zpravy/nove-zdaneni-prijmu-z-prodeje-cennych-papiru-od-2026/",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "Finzi.cz – Proč jsou irská ETF výhodná (31. 5. 2026); smlouva USA–ČR čl. 10 (irs.gov)",
+      "url": "https://www.finzi.cz/etf/clanky/ireland-domiciled-etf-proc-jsou-vyhodne/",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "XTB – Účet a poplatky; Trading 212 – Help Centre",
+      "url": "https://www.xtb.com/cz/ucet-a-poplatky",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "ČSOB Akciový – KID",
+      "url": "https://multimediafiles.kbcgroup.eu/ng/feed/am/funds/KID/KID_770000001170_CS.PDF",
+      "accessed": "2026-10-22"
+    },
+    {
+      "label": "Trading 212 – poplatky",
+      "url": "https://helpcentre.trading212.com/hc/en-us/articles/11471996799517-What-are-the-fees-in-the-Invest-ISAs-and-SIPP",
+      "accessed": "2026-10-22"
+    }
   ]
- },
- "facts": {
-  "priips": {
-   "label": "Nařízení EU 1286/2014 (PRIIPs), čl. 5 a 13",
-   "url": "https://eur-lex.europa.eu/eli/reg/2014/1286/oj",
-   "cs": "Fond prodávaný drobným investorům v EU musí mít sdělení klíčových informací (KID).",
-   "accessed": "2026-10-22"
-  },
-  "priips_broker": {
-   "label": "Lynx – Key Information Document",
-   "url": "https://www.lynxbroker.com/service/products-and-regulations/regulations/key-information-document/",
-   "cs": "Retailový klient nemůže koupit ETF, ke kterému emitent nevydává KID – typicky americká ETF. Držené pozice lze prodat, ale ne navýšit.",
-   "accessed": "2026-10-22"
-  },
-  "elective_pro": {
-   "label": "MiFID II (2014/65/EU), příloha II",
-   "url": "https://eur-lex.europa.eu/eli/dir/2014/65/oj",
-   "cs": "Profesionálním klientem na žádost se stanete, když splníte 2 ze 3 podmínek (např. portfolio nad 500 000 EUR).",
-   "accessed": "2026-10-22"
-  },
-  "time_test": {
-   "label": "zákon č. 586/1992 Sb., § 4 odst. 1 písm. u)",
-   "url": "https://www.zakonyprolidi.cz/cs/1992-586",
-   "cs": "Když ETF držíte déle než 3 roky, zisk z prodeje je od daně osvobozený. Od roku 2026 už pro cenné papíry neplatí strop 40 mil. Kč (týkal se jen prodejů v roce 2025).",
-   "accessed": "2026-10-22"
-  },
-  "value_limit": {
-   "label": "zákon č. 586/1992 Sb., § 4 odst. 1 písm. t)",
-   "url": "https://www.zakonyprolidi.cz/cs/1992-586",
-   "cs": "Pokud celkové příjmy z prodeje cenných papírů za rok nepřesáhnou 100 000 Kč (hrubá částka prodejů, ne zisk), jsou osvobozené i bez časového testu.",
-   "accessed": "2026-10-22"
-  },
-  "cap": {
-   "label": "POHODA – Nové zdanění příjmů z prodeje cenných papírů od 2026",
-   "url": "https://portal.pohoda.cz/rychle-zpravy/nove-zdaneni-prijmu-z-prodeje-cennych-papiru-od-2026/",
-   "cs": "Strop 40 mil. Kč pro osvobození po 3 letech platil u cenných papírů jen v roce 2025, od 1. 1. 2026 byl zrušen.",
-   "accessed": "2026-10-22"
-  },
-  "dividends": {
-   "label": "Finzi.cz – Proč jsou irská ETF výhodná (31. 5. 2026); smlouva USA–ČR čl. 10 (irs.gov)",
-   "url": "https://www.finzi.cz/etf/clanky/ireland-domiciled-etf-proc-jsou-vyhodne/",
-   "cs": "U amerického ETF vám USA strhnou 15 % z dividend (s formulářem W-8BEN) a dividendy musíte přiznat. Irský akumulační fond zaplatí 15 % sám a dividendy reinvestuje – v přiznání je neřešíte.",
-   "accessed": "2026-10-22"
-  },
-  "brokers": {
-   "label": "XTB – Účet a poplatky; Trading 212 – Help Centre",
-   "url": "https://www.xtb.com/cz/ucet-a-poplatky",
-   "cs": "Ověřili jsme XTB: nabízí např. CSPX, SXR8, VUAA i VWCE a nákup ETF je zdarma do obratu 100 000 EUR měsíčně (konverze měny 0,5 %). Trading 212 účtuje 0 Kč za obchod a 0,15 % za konverzi měny.",
-   "accessed": "2026-10-22"
-  }
- },
- "sources": [
-  {
-   "label": "VOO – Vanguard S&P 500 ETF",
-   "url": "https://advisors.vanguard.com/investments/products/voo/vanguard-sp-500-etf",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "VUAA – Vanguard S&P 500 UCITS ETF (USD) Acc",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BFMXXD54",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "SPY – SPDR S&P 500 ETF Trust",
-   "url": "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "SPYL – SPDR S&P 500 UCITS ETF (Acc)",
-   "url": "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-sp-500-ucits-etf-acc-spyl-gy",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "IVV – iShares Core S&P 500 ETF",
-   "url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "SXR8 – iShares Core S&P 500 UCITS ETF (Acc)",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "VTI – Vanguard Morningstar Total Stock Market ETF",
-   "url": "https://advisors.vanguard.com/investments/products/vti",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "XD9U – Xtrackers MSCI USA UCITS ETF 1C",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ0KDR00",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "VT – Vanguard Total World Stock ETF",
-   "url": "https://advisors.vanguard.com/investments/products/vt",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "VWCE – Vanguard FTSE All-World UCITS ETF (USD) Acc",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BQT80",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "VEA – Vanguard FTSE Developed Markets ETF",
-   "url": "https://advisors.vanguard.com/investments/products/vea",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "EXUS – Xtrackers MSCI World ex USA UCITS ETF 1C",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE0006WW1TQ4",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "VWO – Vanguard FTSE Emerging Markets ETF",
-   "url": "https://advisors.vanguard.com/investments/products/vwo",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "VFEA – Vanguard FTSE Emerging Markets UCITS ETF (USD) Acc",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BR733",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "SCHD – Schwab US Dividend Equity ETF",
-   "url": "https://stockanalysis.com/etf/schd/",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "SPYD – SPDR S&P U.S. Dividend Aristocrats UCITS ETF (Dist)",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B6YX5D40",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "VUG – Vanguard Morningstar Growth ETF",
-   "url": "https://advisors.vanguard.com/investments/products/vug",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "MWOW – Amundi Russell 1000 Growth UCITS ETF Acc",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE0005E8B9S4",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "VIG – Vanguard Dividend Appreciation ETF",
-   "url": "https://advisors.vanguard.com/investments/products/vig",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "WTDM – WisdomTree US Quality Dividend Growth UCITS ETF Acc",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BZ56RG20",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "IWM – iShares Russell 2000 ETF",
-   "url": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "ZPRR – SPDR Russell 2000 U.S. Small Cap UCITS ETF",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ38QD84",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "GLD – SPDR Gold Shares",
-   "url": "https://www.ssga.com/us/en/intermediary/etfs/spdr-gold-shares-gld",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "PPFB – iShares Physical Gold ETC",
-   "url": "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "Nařízení EU 1286/2014 (PRIIPs), čl. 5 a 13",
-   "url": "https://eur-lex.europa.eu/eli/reg/2014/1286/oj",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "Lynx – Key Information Document",
-   "url": "https://www.lynxbroker.com/service/products-and-regulations/regulations/key-information-document/",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "MiFID II (2014/65/EU), příloha II",
-   "url": "https://eur-lex.europa.eu/eli/dir/2014/65/oj",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "zákon č. 586/1992 Sb., § 4 odst. 1 písm. u)",
-   "url": "https://www.zakonyprolidi.cz/cs/1992-586",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "zákon č. 586/1992 Sb., § 4 odst. 1 písm. t)",
-   "url": "https://www.zakonyprolidi.cz/cs/1992-586",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "POHODA – Nové zdanění příjmů z prodeje cenných papírů od 2026",
-   "url": "https://portal.pohoda.cz/rychle-zpravy/nove-zdaneni-prijmu-z-prodeje-cennych-papiru-od-2026/",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "Finzi.cz – Proč jsou irská ETF výhodná (31. 5. 2026); smlouva USA–ČR čl. 10 (irs.gov)",
-   "url": "https://www.finzi.cz/etf/clanky/ireland-domiciled-etf-proc-jsou-vyhodne/",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "XTB – Účet a poplatky; Trading 212 – Help Centre",
-   "url": "https://www.xtb.com/cz/ucet-a-poplatky",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "ČSOB Akciový – KID",
-   "url": "https://multimediafiles.kbcgroup.eu/ng/feed/am/funds/KID/KID_770000001170_CS.PDF",
-   "accessed": "2026-10-22"
-  },
-  {
-   "label": "Trading 212 – poplatky",
-   "url": "https://helpcentre.trading212.com/hc/en-us/articles/11471996799517-What-are-the-fees-in-the-Invest-ISAs-and-SIPP",
-   "accessed": "2026-10-22"
-  }
- ]
 }

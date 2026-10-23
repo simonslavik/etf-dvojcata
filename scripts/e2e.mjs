@@ -8,17 +8,24 @@ const base = process.argv[2] || 'http://localhost:3000';
 const CHROME = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: true });
 // Stejná admin cookie, jakou nastaví přihlášení (lib/server/auth.ts)
-const admin = process.env.ADMIN_TOKEN ? { cookie: `etfd_admin=${createHmac('sha256', process.env.ADMIN_TOKEN).update('etfd-admin-v1').digest('base64url')}` } : {};
+const admin = process.env.ADMIN_TOKEN
+  ? { cookie: `etfd_admin=${createHmac('sha256', process.env.ADMIN_TOKEN).update('etfd-admin-v1').digest('base64url')}` }
+  : {};
 const stats = async () => (await fetch(`${base}/api/admin/funnel?d=1`, { headers: admin })).json();
 const csv = async () => (await fetch(`${base}/api/admin/export`, { headers: admin })).text();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const before = await stats();
 
 /** React sleduje setter hodnoty – změnu slideru je nutné poslat přes nativní setter */
-const setRange = (page, sel, v) => page.$eval(sel, (i, v) => {
-  Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, String(v));
-  i.dispatchEvent(new Event('input', { bubbles: true }));
-}, v);
+const setRange = (page, sel, v) =>
+  page.$eval(
+    sel,
+    (i, v) => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, String(v));
+      i.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+    v,
+  );
 
 async function journey({ query, variant }) {
   const ctx = await browser.createBrowserContext(); // čistý storage = nový návštěvník
@@ -29,7 +36,11 @@ async function journey({ query, variant }) {
   await page.goto(`${base}/${query}`, { waitUntil: 'networkidle0' });
 
   assert.equal(await page.$eval('main', (m) => m.dataset.variant), variant, 'varianta podle ?ad=');
-  assert.equal(await page.$eval('[data-hero] [data-module]', (m) => m.dataset.module), variant === 'fees' ? 'calc' : 'finder', 'hero obsahuje nástroj podle varianty reklamy');
+  assert.equal(
+    await page.$eval('[data-hero] [data-module]', (m) => m.dataset.module),
+    variant === 'fees' ? 'calc' : 'finder',
+    'hero obsahuje nástroj podle varianty reklamy',
+  );
   assert.equal(await page.$$eval('[data-module]', (els) => els.length), 2, 'druhý nástroj má vlastní sekci');
 
   await page.$eval('[data-ticker="SPY"]', (b) => b.click());
@@ -40,14 +51,19 @@ async function journey({ query, variant }) {
   await page.$eval('[data-copy-isin]', (b) => b.click());
 
   // CTA → sheet → špatný e-mail → chyba → správný e-mail → hotovo
-  await page.$eval('[data-hero] [data-cta]', (b) => { b.scrollIntoView({ block: 'center' }); b.click(); });
+  await page.$eval('[data-hero] [data-cta]', (b) => {
+    b.scrollIntoView({ block: 'center' });
+    b.click();
+  });
   await page.waitForSelector('dialog[open] #email-sheet');
   await sleep(450); // animace vysunutí sheetu
   assert.equal(await page.evaluate(() => document.activeElement?.id), 'email-sheet', 'fokus je v poli e-mailu');
   await page.type('#email-sheet', 'spatny-email');
   await page.click('[data-form="sheet"] button[type="submit"]');
   await page.waitForSelector('[data-form="sheet"] [role="alert"]');
-  await page.$eval('#email-sheet', (i) => { i.value = ''; });
+  await page.$eval('#email-sheet', (i) => {
+    i.value = '';
+  });
   const email = `e2e+${variant}${Date.now()}@example.com`;
   await page.type('#email-sheet', email);
   await page.click('[data-form="sheet"] button[type="submit"]');
@@ -89,9 +105,16 @@ await sleep(500);
   for (const label of ['Dvojčata', 'Jak koupit', 'Daně']) {
     await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
     await sleep(250);
-    await page.evaluate((l) => [...document.querySelectorAll('nav[aria-label="Obsah přehledu"] a')].find((a) => a.textContent === l).click(), label);
+    await page.evaluate(
+      (l) => [...document.querySelectorAll('nav[aria-label="Obsah přehledu"] a')].find((a) => a.textContent === l).click(),
+      label,
+    );
     await sleep(1300);
-    assert.equal(await page.$eval('nav[aria-label="Obsah přehledu"] [aria-current]', (a) => a.textContent), label, `navigace přehledu: ${label}`);
+    assert.equal(
+      await page.$eval('nav[aria-label="Obsah přehledu"] [aria-current]', (a) => a.textContent),
+      label,
+      `navigace přehledu: ${label}`,
+    );
   }
   await page.close();
 }
@@ -110,5 +133,7 @@ for (const e of emails) {
   assert.match(row, /"\+420777123456"/, 'telefon uložen normalizovaný');
 }
 console.log('✓ E2E OK – obě varianty, celý trychtýř a pipeline (lead → kvalifikace → žádost o hovor)');
-console.table(Object.fromEntries(Object.keys(after.funnel.all).map((k) => [k, { twin: after.funnel.twin[k], fees: after.funnel.fees[k] }])));
+console.table(
+  Object.fromEntries(Object.keys(after.funnel.all).map((k) => [k, { twin: after.funnel.twin[k], fees: after.funnel.fees[k] }])),
+);
 await browser.close();

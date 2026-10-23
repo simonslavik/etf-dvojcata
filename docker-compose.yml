@@ -10,8 +10,8 @@ services:
       # při prvním startu vytvoří navíc prázdnou DB etfd_test pro integrační testy API (npm test)
       - ./docker/postgres/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
     # jen na localhost – pro integrační testy API z hostitele
-    ports: ["127.0.0.1:${DB_PORT:-5544}:5432"]
-    healthcheck: { test: ["CMD-SHELL", "pg_isready -U etfd -d etfd"], interval: 5s, timeout: 3s, retries: 20 }
+    ports: ['127.0.0.1:${DB_PORT:-5544}:5432']
+    healthcheck: { test: ['CMD-SHELL', 'pg_isready -U etfd -d etfd'], interval: 5s, timeout: 3s, retries: 20 }
     restart: unless-stopped
 
   api:
@@ -30,9 +30,9 @@ services:
     restart: unless-stopped
 
   web:
-    build: { context: ., dockerfile: apps/web/Dockerfile, args: { API_URL: http://api:4000, SITE_URL: "http://localhost:${PORT:-3000}" } }
+    build: { context: ., dockerfile: apps/web/Dockerfile, args: { API_URL: http://api:4000, SITE_URL: 'http://localhost:${PORT:-3000}' } }
     environment: { API_URL: http://api:4000 }
-    ports: ["${PORT:-3000}:3000"]
+    ports: ['${PORT:-3000}:3000']
     depends_on: { api: { condition: service_healthy } }
     restart: unless-stopped
 
@@ -41,10 +41,10 @@ services:
     profiles: [demo]
     image: node:22-alpine
     working_dir: /scripts
-    volumes: ["./scripts/simulate.mjs:/scripts/simulate.mjs:ro"]
-    command: ["node", "simulate.mjs", "http://web:3000", "400"]
+    volumes: ['./scripts/simulate.mjs:/scripts/simulate.mjs:ro']
+    command: ['node', 'simulate.mjs', 'http://web:3000', '400']
     # Formuláře přijímají jen Origin webu (ochrana proti zneužití) – simulace se tváří jako prohlížeč
-    environment: { SIM_ORIGIN: "http://localhost:${PORT:-3000}" }
+    environment: { SIM_ORIGIN: 'http://localhost:${PORT:-3000}' }
     depends_on: { web: { condition: service_healthy } }
 
 volumes:

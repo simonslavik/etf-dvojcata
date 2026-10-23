@@ -23,10 +23,10 @@ const resendCalls: { to: string; subject: string }[] = [];
 let sql: pg.Client;
 
 const http = () => request(app.getHttpServer());
-const post = (path: string, body: object, ip = '10.0.0.1') =>
-  http().post(path).set('origin', SITE).set('x-forwarded-for', ip).send(body);
+const post = (path: string, body: object, ip = '10.0.0.1') => http().post(path).set('origin', SITE).set('x-forwarded-for', ip).send(body);
 let ipCounter = 0;
-const lead = (email: string) => post('/lead', { email, sid: `sid-${email}`, variant: 'fees', consent_id: 'email_v1', utm_content: 'ad_b' }, `10.1.0.${++ipCounter}`);
+const lead = (email: string) =>
+  post('/lead', { email, sid: `sid-${email}`, variant: 'fees', consent_id: 'email_v1', utm_content: 'ad_b' }, `10.1.0.${++ipCounter}`);
 
 beforeAll(async () => {
   sql = new pg.Client({ connectionString: DB_URL });
@@ -37,7 +37,10 @@ beforeAll(async () => {
   hookServer = createServer((req, res) => {
     let body = '';
     req.on('data', (c) => (body += c));
-    req.on('end', () => { webhooks.push(JSON.parse(body)); res.end('ok'); });
+    req.on('end', () => {
+      webhooks.push(JSON.parse(body));
+      res.end('ok');
+    });
   });
   await new Promise<void>((r) => hookServer.listen(0, r));
   const hookPort = (hookServer.address() as { port: number }).port;
@@ -54,8 +57,14 @@ beforeAll(async () => {
   });
 
   Object.assign(process.env, {
-    NODE_ENV: 'test', DATABASE_URL: DB_URL, SITE_URL: SITE, ADMIN_TOKEN, CRON_SECRET,
-    RESEND_API_KEY: 're_test', RESEND_FROM: 'ETF <test@example.com>', HANDOFF_WEBHOOK_URL: `http://127.0.0.1:${hookPort}/hook`,
+    NODE_ENV: 'test',
+    DATABASE_URL: DB_URL,
+    SITE_URL: SITE,
+    ADMIN_TOKEN,
+    CRON_SECRET,
+    RESEND_API_KEY: 're_test',
+    RESEND_FROM: 'ETF <test@example.com>',
+    HANDOFF_WEBHOOK_URL: `http://127.0.0.1:${hookPort}/hook`,
   });
   // AppModule až po nastavení env – ConfigModule ho validuje při importu
   const { AppModule } = await import('../src/app.module.js');
@@ -78,10 +87,18 @@ test('health = API + DB', async () => {
 
 describe('tracking', () => {
   test('text/plain ze sendBeacon se uloží', async () => {
-    await http().post('/track').set('content-type', 'text/plain').send(JSON.stringify({ event: 'page_view', sid: 's-track', variant: 'twin' })).expect(200);
+    await http()
+      .post('/track')
+      .set('content-type', 'text/plain')
+      .send(JSON.stringify({ event: 'page_view', sid: 's-track', variant: 'twin' }))
+      .expect(200);
   });
   test('události vyhrazené serveru prohlížeč poslat nesmí', async () => {
-    await http().post('/track').set('content-type', 'text/plain').send(JSON.stringify({ event: 'qualify', sid: 's-track' })).expect(400);
+    await http()
+      .post('/track')
+      .set('content-type', 'text/plain')
+      .send(JSON.stringify({ event: 'qualify', sid: 's-track' }))
+      .expect(400);
   });
 });
 
@@ -140,7 +157,9 @@ describe('lead → kvalifikace → předání', () => {
 describe('odkazy z e-mailů', () => {
   // '/\t/evil.com' = útok z review (?to=/%09/evil.com) – URL parser tabulátor zahodí a vznikne //evil.com
   test.each(['//evil.com', '/\t/evil.com', '/\n/evil.com', 'https://evil.com/x'])('přesměrování %j zůstane na webu', async (to) => {
-    const r = await http().get(`/r?to=${encodeURIComponent(to)}`).expect(302);
+    const r = await http()
+      .get(`/r?to=${encodeURIComponent(to)}`)
+      .expect(302);
     expect(r.headers.location).toMatch(/^\/\?utm_source=email/);
   });
 
@@ -154,7 +173,9 @@ describe('odkazy z e-mailů', () => {
 
     await http().get(`/unsubscribe?t=${t}`).expect(302); // GET nic nemění (skenery odkazů)
     await http().post(`/unsubscribe?t=${t}`).expect(200, { ok: true });
-    const { rows } = await sql.query("select j.status from email_jobs j join leads l on l.id = j.lead_id where l.email = 'ben@example.com' and j.step <> 'd0_report'");
+    const { rows } = await sql.query(
+      "select j.status from email_jobs j join leads l on l.id = j.lead_id where l.email = 'ben@example.com' and j.step <> 'd0_report'",
+    );
     expect(rows.every((x) => x.status === 'cancelled')).toBe(true);
   });
 });
@@ -166,7 +187,9 @@ describe('denní běh sekvence', () => {
 
   test('splatný krok odejde právě jednou, i když běží dva crony naráz', async () => {
     await lead('cyril@example.com');
-    await sql.query("update email_jobs set send_at = now() - interval '1 minute' from leads where leads.id = email_jobs.lead_id and leads.email = 'cyril@example.com' and email_jobs.step = 'd2_howto'");
+    await sql.query(
+      "update email_jobs set send_at = now() - interval '1 minute' from leads where leads.id = email_jobs.lead_id and leads.email = 'cyril@example.com' and email_jobs.step = 'd2_howto'",
+    );
     const run = () => http().get('/cron/emails').set('authorization', `Bearer ${CRON_SECRET}`).expect(200);
     await Promise.all([run(), run()]);
     expect(resendCalls.filter((c) => c.to === 'cyril@example.com' && c.subject.startsWith('Jak koupit'))).toHaveLength(1);

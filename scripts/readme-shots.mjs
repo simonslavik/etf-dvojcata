@@ -15,7 +15,10 @@ async function fresh(viewport) {
   return page;
 }
 
-for (const [v, file] of [['twin', 'mobile-a'], ['fees', 'mobile-b']]) {
+for (const [v, file] of [
+  ['twin', 'mobile-a'],
+  ['fees', 'mobile-b'],
+]) {
   const p = await fresh(mobile);
   await p.goto(`${base}/?ad=${v}`, { waitUntil: 'networkidle0' });
   await p.evaluate(() => document.fonts.ready);

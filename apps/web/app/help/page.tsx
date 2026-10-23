@@ -11,8 +11,12 @@ export default async function HelpPage({ searchParams }: { searchParams: Promise
     <Shell narrow>
       <p className="eyebrow">Zdarma · 10 minut · nezávazně</p>
       <h1 className="h2 mt-3">Pomůžeme vám s prvním nákupem</h1>
-      <p className="mt-4 text-[17px] text-muted">Zavoláme vám, spolu najdeme dvojče ve vaší aplikaci a nastavíme pravidelný nákup. Nic neprodáváme a nejde o investiční poradenství.</p>
-      <div className="mt-6">{t ? <CallRequest token={t} /> : <p className="text-brick">Odkaz je neplatný – otevřete ho prosím znovu z e-mailu.</p>}</div>
+      <p className="mt-4 text-[17px] text-muted">
+        Zavoláme vám, spolu najdeme dvojče ve vaší aplikaci a nastavíme pravidelný nákup. Nic neprodáváme a nejde o investiční poradenství.
+      </p>
+      <div className="mt-6">
+        {t ? <CallRequest token={t} /> : <p className="text-brick">Odkaz je neplatný – otevřete ho prosím znovu z e-mailu.</p>}
+      </div>
     </Shell>
   );
 }

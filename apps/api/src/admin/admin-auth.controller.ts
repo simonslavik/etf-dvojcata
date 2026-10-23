@@ -25,7 +25,10 @@ export class AdminAuthController {
     const token = this.config.get('ADMIN_TOKEN', { infer: true });
     if (!token || !safeEqual(body.token, token)) return res.redirect(303, '/admin/login?e=1');
     res.cookie(ADMIN_COOKIE, adminCookieValue(token), {
-      httpOnly: true, sameSite: 'lax', path: '/', maxAge: 14 * DAY_MS,
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 14 * DAY_MS,
       secure: this.config.get('SITE_URL', { infer: true }).startsWith('https://'),
     });
     return res.redirect(303, '/admin');

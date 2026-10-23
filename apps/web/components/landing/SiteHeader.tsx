@@ -25,7 +25,9 @@ export function SiteHeader() {
       data-scrolled={scrolled || undefined}
       className="sticky top-0 z-40 border-b border-transparent bg-white/85 backdrop-blur-md transition-[box-shadow,border-color,background-color] duration-300 data-[scrolled]:border-line/70 data-[scrolled]:bg-white/92 data-[scrolled]:shadow-[0_8px_24px_-16px_rgb(22_59_59/0.35)]"
     >
-      <div className={`wrap flex items-center justify-between gap-3 transition-[height] duration-300 ${scrolled ? 'h-14 sm:h-16' : 'h-16 sm:h-20'}`}>
+      <div
+        className={`wrap flex items-center justify-between gap-3 transition-[height] duration-300 ${scrolled ? 'h-14 sm:h-16' : 'h-16 sm:h-20'}`}
+      >
         <Logo />
         <div className="flex items-center gap-3 sm:gap-4">
           <button

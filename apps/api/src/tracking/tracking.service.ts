@@ -4,9 +4,15 @@ import { InjectDb, type Db } from '../db/db.js';
 import { events } from '../db/schema.js';
 
 interface EventInput {
-  sid: string; event: string; variant: Variant;
-  utmSource?: string | null; utmCampaign?: string | null; utmContent?: string | null; device?: string | null;
-  props?: Record<string, unknown> | null; tMs?: number | null;
+  sid: string;
+  event: string;
+  variant: Variant;
+  utmSource?: string | null;
+  utmCampaign?: string | null;
+  utmContent?: string | null;
+  device?: string | null;
+  props?: Record<string, unknown> | null;
+  tMs?: number | null;
 }
 
 /** Každá událost z prohlížeče i serveru – z nich se skládá trychtýř a cesta jedné relace */

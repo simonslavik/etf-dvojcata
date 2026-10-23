@@ -11,15 +11,24 @@ export function CopyIsinButton({ isin, from, size = 'md' }: { isin: string; from
   return (
     <button
       type="button"
-      onClick={() => { copy(isin); track('isin_copy', { isin, from }); }}
+      onClick={() => {
+        copy(isin);
+        track('isin_copy', { isin, from });
+      }}
       data-copy-isin
       data-copied={copied || undefined}
       aria-label={`Kopírovat ISIN ${isin}`}
       className={`inline-flex flex-none items-center gap-1.5 rounded-lg bg-teal-900 font-semibold text-white transition-colors hover:bg-teal-700 data-[copied]:bg-ok print:hidden ${sm ? 'min-h-9 px-2.5 text-[12.5px]' : 'min-h-10 px-3 text-[13px]'}`}
     >
-      {copied
-        ? <span className="animate-pop inline-flex items-center gap-1.5"><Check className="h-4 w-4" /> Zkopírováno</span>
-        : <><Copy className="h-4 w-4" /> Kopírovat</>}
+      {copied ? (
+        <span className="inline-flex animate-pop items-center gap-1.5">
+          <Check className="h-4 w-4" /> Zkopírováno
+        </span>
+      ) : (
+        <>
+          <Copy className="h-4 w-4" /> Kopírovat
+        </>
+      )}
     </button>
   );
 }

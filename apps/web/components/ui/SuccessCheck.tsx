@@ -12,12 +12,27 @@ export function SuccessCheck() {
       {PARTICLES.map((p, i) => (
         <i
           key={i}
-          className="absolute top-1/2 left-1/2 -mt-1 -ml-1 rounded-full animate-burst opacity-0"
-          style={{ width: p.s, height: p.s, background: p.c, ['--x' as string]: `${p.x}px`, ['--y' as string]: `${p.y}px`, ['--r' as string]: `${p.r}deg` }}
+          className="absolute top-1/2 left-1/2 -mt-1 -ml-1 animate-burst rounded-full opacity-0"
+          style={{
+            width: p.s,
+            height: p.s,
+            background: p.c,
+            ['--x' as string]: `${p.x}px`,
+            ['--y' as string]: `${p.y}px`,
+            ['--r' as string]: `${p.r}deg`,
+          }}
         />
       ))}
-      <span className="animate-pop grid h-14 w-14 place-items-center rounded-full bg-ok-50 text-ok">
-        <svg viewBox="0 0 24 24" className="draw-check h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <span className="grid h-14 w-14 animate-pop place-items-center rounded-full bg-ok-50 text-ok">
+        <svg
+          viewBox="0 0 24 24"
+          className="draw-check h-7 w-7"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="m5 12.5 4.5 4.5L19 7.5" />
         </svg>
       </span>

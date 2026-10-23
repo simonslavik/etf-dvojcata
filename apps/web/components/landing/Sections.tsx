@@ -13,14 +13,37 @@ const HERO: Record<Variant, { eyebrow: string; title: [string, string]; lead: Re
   twin: {
     eyebrow: 'ETF · UCITS · pro investory z Česka',
     title: ['VOO si v Česku nekoupíte.', 'Jeho dvojče ano.'],
-    lead: <>Evropský broker vám americká ETF kvůli regulaci <Term k="PRIIPs" /> neprodá. Ukážeme vám jejich evropskou verzi se stejným indexem – i&nbsp;s&nbsp;<Term k="ISIN" />, který zadáte do aplikace.</>,
-    short: <>Americká ETF vám evropský broker neprodá. Tady je jejich evropská verze – i&nbsp;s&nbsp;<Term k="ISIN" /> do aplikace.</>,
+    lead: (
+      <>
+        Evropský broker vám americká ETF kvůli regulaci <Term k="PRIIPs" /> neprodá. Ukážeme vám jejich evropskou verzi se stejným indexem –
+        i&nbsp;s&nbsp;
+        <Term k="ISIN" />, který zadáte do aplikace.
+      </>
+    ),
+    short: (
+      <>
+        Americká ETF vám evropský broker neprodá. Tady je jejich evropská verze – i&nbsp;s&nbsp;
+        <Term k="ISIN" /> do aplikace.
+      </>
+    ),
   },
   fees: {
     eyebrow: 'Poplatky · pro investory z Česka',
-    title: [`Fond z banky si bere až ${formatPct(Math.round(data.calc.bank.ter_pct * 10) / 10)} ročně.`, `ETF jen ${formatPct(data.calc.etf.ter_pct)}.`],
-    lead: <>Spočítejte si, kolik vám fond z banky za roky sebere na poplatcích – a které evropské <Term k="UCITS">ETF</Term> na S&amp;P&nbsp;500 si místo něj koupíte.</>,
-    short: <>Posuňte posuvníky a uvidíte, kolik vám s <Term k="UCITS">ETF</Term> zůstane navíc.</>,
+    title: [
+      `Fond z banky si bere až ${formatPct(Math.round(data.calc.bank.ter_pct * 10) / 10)} ročně.`,
+      `ETF jen ${formatPct(data.calc.etf.ter_pct)}.`,
+    ],
+    lead: (
+      <>
+        Spočítejte si, kolik vám fond z banky za roky sebere na poplatcích – a které evropské <Term k="UCITS">ETF</Term> na S&amp;P&nbsp;500
+        si místo něj koupíte.
+      </>
+    ),
+    short: (
+      <>
+        Posuňte posuvníky a uvidíte, kolik vám s <Term k="UCITS">ETF</Term> zůstane navíc.
+      </>
+    ),
   },
 };
 
@@ -36,14 +59,20 @@ export function Hero({ variant, tool }: { variant: Variant; tool: ReactNode }) {
       <div className="wrap relative grid grid-cols-1 items-center gap-5 pt-5 pb-8 sm:gap-7 sm:pt-8 sm:pb-10 lg:grid-cols-[1fr_minmax(0,500px)] lg:gap-14 lg:pt-10 lg:pb-14">
         <div>
           <p className="eyebrow">{h.eyebrow}</p>
-          <h1 id="hero-title" className="mt-2.5 font-display text-[clamp(31px,5.2vw,56px)] leading-[1.05] font-bold tracking-[-0.015em] text-ink text-balance">
+          <h1
+            id="hero-title"
+            className="mt-2.5 font-display text-[clamp(31px,5.2vw,56px)] leading-[1.05] font-bold tracking-[-0.015em] text-balance text-ink"
+          >
             {h.title[0]} <span className="text-brick">{h.title[1]}</span>
           </h1>
           <p className="mt-3 text-[16px] leading-snug text-muted sm:hidden">{h.short}</p>
           <p className="mt-4 hidden max-w-[34em] text-[19px] leading-relaxed text-muted sm:block">{h.lead}</p>
-          <p className="mt-6 hidden items-center gap-2 text-[14.5px] text-muted lg:flex"><Check className="h-4 w-4 text-ok" />Zdarma, bez registrace · výsledek hned</p>
+          <p className="mt-6 hidden items-center gap-2 text-[14.5px] text-muted lg:flex">
+            <Check className="h-4 w-4 text-ok" />
+            Zdarma, bez registrace · výsledek hned
+          </p>
         </div>
-        <div className="animate-rise-late relative">{tool}</div>
+        <div className="relative animate-rise-late">{tool}</div>
       </div>
     </section>
   );
@@ -70,7 +99,10 @@ export function ProofStrip() {
             [<Mail key="m" />, 'Žádný spam, odhlášení 1 klikem'],
             [<LinkIcon key="l" />, `Zdroje: Vanguard, iShares, SPDR, justETF, zákony ČR · k ${fmtDate(data.as_of)}`],
           ].map(([icon, t]) => (
-            <li key={String(t)} className="flex items-center gap-2 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:flex-none [&_svg]:text-teal-600">{icon}{t}</li>
+            <li key={String(t)} className="flex items-center gap-2 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:flex-none [&_svg]:text-teal-600">
+              {icon}
+              {t}
+            </li>
           ))}
         </ul>
       </div>
@@ -80,8 +112,16 @@ export function ProofStrip() {
 
 const SECOND: Record<Variant, { eyebrow: string; title: string; lead: string }> = {
   // varianta A má v hero vyhledávač → tady kalkulačka; varianta B naopak
-  twin: { eyebrow: 'Kalkulačka poplatků', title: 'Máte peníze ve fondu z banky?', lead: 'Spočítejte si, kolik vás za roky stojí oproti ETF na stejný trh.' },
-  fees: { eyebrow: 'Vyhledávač dvojčat', title: 'Chtěli jste VOO nebo SPY?', lead: 'V aplikaci je nenajdete. Klepněte na ticker a uvidíte evropskou verzi, kterou koupíte.' },
+  twin: {
+    eyebrow: 'Kalkulačka poplatků',
+    title: 'Máte peníze ve fondu z banky?',
+    lead: 'Spočítejte si, kolik vás za roky stojí oproti ETF na stejný trh.',
+  },
+  fees: {
+    eyebrow: 'Vyhledávač dvojčat',
+    title: 'Chtěli jste VOO nebo SPY?',
+    lead: 'V aplikaci je nenajdete. Klepněte na ticker a uvidíte evropskou verzi, kterou koupíte.',
+  },
 };
 
 /** Druhý nástroj jako vlastní kompaktní sekce – v hero je vždy jen jeden (podle reklamy), bez přepínače */
@@ -93,7 +133,9 @@ export function SecondTool({ variant, tool }: { variant: Variant; tool: ReactNod
       <div className="reveal wrap relative grid grid-cols-1 items-center gap-6 lg:grid-cols-[1fr_minmax(0,500px)] lg:gap-14">
         <div>
           <p className="eyebrow eyebrow-light">{s.eyebrow}</p>
-          <h2 id="second-title" className="mt-2 font-display text-[clamp(26px,4vw,40px)] leading-[1.08] font-bold text-balance">{s.title}</h2>
+          <h2 id="second-title" className="mt-2 font-display text-[clamp(26px,4vw,40px)] leading-[1.08] font-bold text-balance">
+            {s.title}
+          </h2>
           <p className="mt-3 max-w-[30em] text-[15.5px] leading-relaxed text-white/75 sm:text-[17px]">{s.lead}</p>
         </div>
         <div className="text-text">{tool}</div>
@@ -115,18 +157,28 @@ export function HowItWorks() {
         <div className="reveal flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow">Jak to funguje</p>
-            <h2 id="how-title" className="mt-2 font-display text-[26px] leading-tight font-bold text-ink sm:text-[32px]">Od tickeru k nákupu ve 3 krocích</h2>
+            <h2 id="how-title" className="mt-2 font-display text-[26px] leading-tight font-bold text-ink sm:text-[32px]">
+              Od tickeru k nákupu ve 3 krocích
+            </h2>
           </div>
           <p className="text-[14px] text-muted">Podrobný návod je v přehledu zdarma.</p>
         </div>
         <ol className="stagger relative mt-6 grid gap-3 sm:mt-8 sm:gap-5 md:grid-cols-3">
           {/* spojnice kroků – na desktopu se při scrollu „nakreslí“ zleva doprava */}
-          <span aria-hidden="true" className="how-line absolute top-[42px] right-[16%] left-[16%] hidden h-[2px] origin-left bg-gradient-to-r from-teal-200 via-teal-500 to-brick md:block" />
+          <span
+            aria-hidden="true"
+            className="how-line absolute top-[42px] right-[16%] left-[16%] hidden h-[2px] origin-left bg-gradient-to-r from-teal-200 via-teal-500 to-brick md:block"
+          />
           {steps.map((s, i) => (
-            <li key={s.t} className="lift card group relative flex items-start gap-4 p-4 shadow-none md:flex-col md:items-center md:p-6 md:text-center">
+            <li
+              key={s.t}
+              className="lift card group relative flex items-start gap-4 p-4 shadow-none md:flex-col md:items-center md:p-6 md:text-center"
+            >
               <span className="relative grid h-14 w-14 flex-none place-items-center rounded-2xl bg-teal-800 text-white shadow-[0_10px_24px_-12px_rgb(22_59_59/0.6)] transition-transform duration-300 group-hover:-rotate-6 [&_svg]:h-6 [&_svg]:w-6">
                 {s.icon}
-                <span className="absolute -top-2 -right-2 grid h-6 w-6 place-items-center rounded-full bg-brick text-[12px] font-bold text-white ring-2 ring-white">{i + 1}</span>
+                <span className="absolute -top-2 -right-2 grid h-6 w-6 place-items-center rounded-full bg-brick text-[12px] font-bold text-white ring-2 ring-white">
+                  {i + 1}
+                </span>
               </span>
               <div>
                 <p className="text-[17px] font-bold text-ink">{s.t}</p>
@@ -145,7 +197,9 @@ export function Faq() {
     <section aria-labelledby="faq-title" className="bg-paper pt-10 pb-8 sm:pt-16 sm:pb-10">
       <div className="wrap max-w-[820px]">
         <p className="eyebrow">FAQ</p>
-        <h2 id="faq-title" className="h2 mt-3">Časté otázky</h2>
+        <h2 id="faq-title" className="h2 mt-3">
+          Časté otázky
+        </h2>
         <FaqList items={FAQ} />
       </div>
     </section>
@@ -157,16 +211,29 @@ export function Footer() {
     <footer className="border-t border-line bg-paper py-10 text-[13.5px] text-muted">
       <div className="wrap space-y-4">
         <Logo />
-        <p className="max-w-[60em]"><b className="text-ink">Nejde o investiční doporučení.</b> Informace mají vzdělávací charakter. Investice nesou riziko, minulé výnosy nezaručují budoucí. Poplatky a údaje se mohou měnit – u každého údaje uvádíme zdroj a datum.</p>
+        <p className="max-w-[60em]">
+          <b className="text-ink">Nejde o investiční doporučení.</b> Informace mají vzdělávací charakter. Investice nesou riziko, minulé
+          výnosy nezaručují budoucí. Poplatky a údaje se mohou měnit – u každého údaje uvádíme zdroj a datum.
+        </p>
         <details className="group">
           <summary className="cursor-pointer font-semibold text-ink">Zdroje dat ({data.sources.length})</summary>
           <ul className="mt-3 grid gap-1.5 sm:grid-cols-2">
             {data.sources.map((s) => (
-              <li key={s.url + s.label}>{s.label} – <a className="src-link" href={s.url} target="_blank" rel="noopener">{host(s.url)}</a> ({fmtDate(s.accessed)})</li>
+              <li key={s.url + s.label}>
+                {s.label} –{' '}
+                <a className="src-link" href={s.url} target="_blank" rel="noopener">
+                  {host(s.url)}
+                </a>{' '}
+                ({fmtDate(s.accessed)})
+              </li>
             ))}
           </ul>
         </details>
-        <p><Link className="src-link" href="/privacy">Ochrana osobních údajů</Link></p>
+        <p>
+          <Link className="src-link" href="/privacy">
+            Ochrana osobních údajů
+          </Link>
+        </p>
       </div>
     </footer>
   );

@@ -6,7 +6,12 @@ import type { EventName, Variant } from '@etfd/shared';
 import { KEYS } from './storage';
 
 interface TrackContext {
-  sid: string; variant: Variant; utm_source: string; utm_campaign: string | null; utm_content: string | null; device: 'mobile' | 'desktop';
+  sid: string;
+  variant: Variant;
+  utm_source: string;
+  utm_campaign: string | null;
+  utm_content: string | null;
+  device: 'mobile' | 'desktop';
 }
 
 const ENDPOINT = '/api/track';
@@ -31,7 +36,11 @@ export function initTracking(variant: Variant) {
   if (ctx) return ctx;
   const p = new URLSearchParams(location.search);
   let ref: string | null = null;
-  try { ref = document.referrer ? new URL(document.referrer).hostname : null; } catch { /* neplatný referrer */ }
+  try {
+    ref = document.referrer ? new URL(document.referrer).hostname : null;
+  } catch {
+    /* neplatný referrer */
+  }
   ctx = {
     sid: sid(),
     variant,
@@ -56,13 +65,17 @@ export function track(event: EventName, props: Record<string, unknown> = {}, { o
   }
   const body = JSON.stringify({ event, ...ctx, props, t: Math.round(performance.now() - t0) });
   // text/plain = „simple request“: sendBeacon ho nikdy neodmítne kvůli CORS; server ho parsuje jako JSON
-  const viaFetch = () => fetch(ENDPOINT, { method: 'POST', body, headers: { 'content-type': 'text/plain' }, keepalive: true }).catch(() => {});
+  const viaFetch = () =>
+    fetch(ENDPOINT, { method: 'POST', body, headers: { 'content-type': 'text/plain' }, keepalive: true }).catch(() => {});
   try {
     if (!navigator.sendBeacon?.(ENDPOINT, new Blob([body], { type: 'text/plain' }))) viaFetch();
   } catch {
     viaFetch(); // měření nikdy nesmí rozbít stránku
   }
-  (window as unknown as { posthog?: { capture: (e: string, p: object) => void } }).posthog?.capture(event, { ...props, variant: ctx.variant });
+  (window as unknown as { posthog?: { capture: (e: string, p: object) => void } }).posthog?.capture(event, {
+    ...props,
+    variant: ctx.variant,
+  });
 }
 
 export function trackScrollDepth() {
@@ -82,9 +95,16 @@ export function initPosthog() {
   const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   if (!key || !ctx) return;
   const c = ctx;
-  import('posthog-js').then(({ default: posthog }) => {
-    posthog.init(key, { api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com', persistence: 'memory', autocapture: false, capture_pageview: true });
-    posthog.register({ variant: c.variant, sid: c.sid });
-    (window as unknown as { posthog: unknown }).posthog = posthog;
-  }).catch(() => {});
+  import('posthog-js')
+    .then(({ default: posthog }) => {
+      posthog.init(key, {
+        api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com',
+        persistence: 'memory',
+        autocapture: false,
+        capture_pageview: true,
+      });
+      posthog.register({ variant: c.variant, sid: c.sid });
+      (window as unknown as { posthog: unknown }).posthog = posthog;
+    })
+    .catch(() => {});
 }

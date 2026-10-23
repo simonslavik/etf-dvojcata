@@ -14,10 +14,16 @@ import { RevealOnScroll } from '@/components/RevealOnScroll';
  * → jak to funguje (3 kroky) → magnet + formulář → FAQ → kompaktní závěrečná výzva. Varianta B jen prohodí nástroje.
  */
 export function Landing({ variant }: { variant: Variant }) {
-  const [first, second] = variant === 'fees' ? [<FeeCalculator key="c" />, <TwinFinder key="f" />] : [<TwinFinder key="f" />, <FeeCalculator key="c" />];
+  const [first, second] =
+    variant === 'fees' ? [<FeeCalculator key="c" />, <TwinFinder key="f" />] : [<TwinFinder key="f" />, <FeeCalculator key="c" />];
   return (
     <LeadProvider variant={variant}>
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2">Přeskočit na obsah</a>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2"
+      >
+        Přeskočit na obsah
+      </a>
       <SiteHeader />
       <main id="main" data-variant={variant}>
         <Hero variant={variant} tool={first} />

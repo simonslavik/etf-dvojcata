@@ -8,7 +8,11 @@ import type { Env } from '../config/env.js';
  * chybí jen u skriptů (curl), proto mimo vývoj bez Originu odmítneme (jinak by šlo /lead zneužít k rozesílání e-mailů).
  */
 const sameHost = (a: string, b: string) => {
-  try { return new URL(a).host === new URL(b).host; } catch { return false; }
+  try {
+    return new URL(a).host === new URL(b).host;
+  } catch {
+    return false;
+  }
 };
 
 @Injectable()

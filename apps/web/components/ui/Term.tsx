@@ -21,12 +21,17 @@ export function Term({ k, children }: { k: GlossaryKey; children?: ReactNode }) 
 
   useEffect(() => {
     if (!pos) return;
-    const close = (e: Event) => { if (!(e.target instanceof Node && btn.current?.contains(e.target))) setPos(null); };
+    const close = (e: Event) => {
+      if (!(e.target instanceof Node && btn.current?.contains(e.target))) setPos(null);
+    };
     const esc = (e: KeyboardEvent) => e.key === 'Escape' && setPos(null);
     addEventListener('pointerdown', close);
     addEventListener('scroll', () => setPos(null), { once: true, passive: true });
     addEventListener('keydown', esc);
-    return () => { removeEventListener('pointerdown', close); removeEventListener('keydown', esc); };
+    return () => {
+      removeEventListener('pointerdown', close);
+      removeEventListener('keydown', esc);
+    };
   }, [pos]);
 
   const toggle = () => {
@@ -55,7 +60,7 @@ export function Term({ k, children }: { k: GlossaryKey; children?: ReactNode }) 
           id={id}
           role="tooltip"
           style={{ top: pos.top, left: pos.left, width: Math.min(300, innerWidth - 24) }}
-          className="fixed z-50 rounded-2xl bg-teal-900 p-4 text-left font-sans text-[14px] leading-snug font-normal tracking-normal text-white normal-case shadow-xl animate-fade-in"
+          className="fixed z-50 animate-fade-in rounded-2xl bg-teal-900 p-4 text-left font-sans text-[14px] leading-snug font-normal tracking-normal text-white normal-case shadow-xl"
         >
           <b className="mb-1 block text-[13px] font-semibold text-[#e9a9a2]">{k}</b>
           {GLOSSARY[k]}

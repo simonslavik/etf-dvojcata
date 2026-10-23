@@ -16,18 +16,22 @@ export function RevealOnScroll() {
       [...parent.children].forEach((child, i) => {
         (child as HTMLElement).style.setProperty('--reveal-delay', `${i * 70}ms`);
         els.push(child as HTMLElement);
-      }));
+      }),
+    );
 
     const below = els.filter((el) => el.getBoundingClientRect().top > innerHeight);
     below.forEach((el) => el.classList.add('pre-reveal'));
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (!e.isIntersecting) continue;
-        e.target.classList.add('revealed');
-        e.target.classList.remove('pre-reveal');
-        io.unobserve(e.target);
-      }
-    }, { rootMargin: '0px 0px -8% 0px' });
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          e.target.classList.add('revealed');
+          e.target.classList.remove('pre-reveal');
+          io.unobserve(e.target);
+        }
+      },
+      { rootMargin: '0px 0px -8% 0px' },
+    );
     below.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);

@@ -38,10 +38,22 @@ export class HandoffService {
             type: 'lead.handoff',
             idempotency_key: lead.id, // CRM může odmítnout duplicitu při opakovaném pokusu
             lead: {
-              id: lead.id, email: lead.email, phone: lead.phone, created_at: lead.createdAt,
-              score: lead.score, score_reasons: lead.scoreReasons, monthly_band: lead.monthlyBand,
-              interest: lead.interest, calc_monthly: lead.calcMonthly,
-              source: { variant: lead.variant, utm_source: lead.utmSource, utm_campaign: lead.utmCampaign, utm_content: lead.utmContent, device: lead.device },
+              id: lead.id,
+              email: lead.email,
+              phone: lead.phone,
+              created_at: lead.createdAt,
+              score: lead.score,
+              score_reasons: lead.scoreReasons,
+              monthly_band: lead.monthlyBand,
+              interest: lead.interest,
+              calc_monthly: lead.calcMonthly,
+              source: {
+                variant: lead.variant,
+                utm_source: lead.utmSource,
+                utm_campaign: lead.utmCampaign,
+                utm_content: lead.utmContent,
+                device: lead.device,
+              },
               consent: lead.callConsentText,
             },
           }),
@@ -53,7 +65,10 @@ export class HandoffService {
       }
     }
     const delivered = status === 'sent' || status === 'manual';
-    await this.db.update(leads).set({ handoffStatus: status, ...(delivered ? { handedOverAt: new Date() } : {}) }).where(eq(leads.id, lead.id));
+    await this.db
+      .update(leads)
+      .set({ handoffStatus: status, ...(delivered ? { handedOverAt: new Date() } : {}) })
+      .where(eq(leads.id, lead.id));
     if (delivered) await this.tracking.record({ sid: leadSid(lead), event: 'handoff', variant: lead.variant, props: { status } });
     this.log.log(JSON.stringify({ k: 'handoff', lead: maskEmail(lead.email), status }));
     return this.scoring.rescore(lead.id);
@@ -61,8 +76,18 @@ export class HandoffService {
 
   /** Volá denní plánovač: zopakuje neúspěšná předání (webhook nedostupný, timeout) */
   async retryFailed(limit = 20) {
-    const failed = await this.db.select().from(leads)
-      .where(and(eq(leads.wantsCall, true), isNull(leads.handedOverAt), isNull(leads.unsubscribedAt), sql`${leads.handoffStatus} like 'failed_%'`)).limit(limit);
+    const failed = await this.db
+      .select()
+      .from(leads)
+      .where(
+        and(
+          eq(leads.wantsCall, true),
+          isNull(leads.handedOverAt),
+          isNull(leads.unsubscribedAt),
+          sql`${leads.handoffStatus} like 'failed_%'`,
+        ),
+      )
+      .limit(limit);
     for (const l of failed) await this.handoff(l);
     return failed.length;
   }

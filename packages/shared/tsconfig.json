@@ -3,10 +3,7 @@
     "target": "ES2022",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "lib": [
-      "ES2022",
-      "DOM"
-    ],
+    "lib": ["ES2022", "DOM"],
     "declaration": true,
     "outDir": "dist",
     "rootDir": ".",
@@ -15,8 +12,5 @@
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*.ts",
-    "data/*.json"
-  ]
+  "include": ["src/**/*.ts", "data/*.json"]
 }

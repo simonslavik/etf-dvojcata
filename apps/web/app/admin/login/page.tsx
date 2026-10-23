@@ -13,9 +13,23 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <h1 className="mt-6 text-[22px] font-bold text-ink">Přihlášení do adminu</h1>
         <p className="mt-1 text-[14px] text-muted">Zadejte ADMIN_TOKEN z nastavení projektu.</p>
         <form action="/api/admin/login" method="post" className="mt-5 space-y-3">
-          <label htmlFor="token" className="sr-only">Token</label>
-          <input id="token" name="token" type="password" autoComplete="current-password" className="input" placeholder="ADMIN_TOKEN" required />
-          {e && <p role="alert" className="text-[14px] text-brick">Neplatný token.</p>}
+          <label htmlFor="token" className="sr-only">
+            Token
+          </label>
+          <input
+            id="token"
+            name="token"
+            type="password"
+            autoComplete="current-password"
+            className="input"
+            placeholder="ADMIN_TOKEN"
+            required
+          />
+          {e && (
+            <p role="alert" className="text-[14px] text-brick">
+              Neplatný token.
+            </p>
+          )}
           <button className="btn btn-primary w-full">Přihlásit</button>
         </form>
       </div>

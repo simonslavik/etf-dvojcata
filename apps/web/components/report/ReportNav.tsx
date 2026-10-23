@@ -40,7 +40,10 @@ export function ReportNav() {
     };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
-    return () => { stickIo.disconnect(); removeEventListener('scroll', onScroll); };
+    return () => {
+      stickIo.disconnect();
+      removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   const idx = ITEMS.findIndex((i) => i.id === active);
@@ -55,7 +58,10 @@ export function ReportNav() {
       >
         <div className="flex items-center gap-2">
           {/* mini logo – jen když je navigace přilepená */}
-          <span aria-hidden="true" className="ml-1 hidden w-0 overflow-hidden opacity-0 transition-[width,opacity] duration-300 group-data-[stuck]:w-7 group-data-[stuck]:opacity-100 sm:block">
+          <span
+            aria-hidden="true"
+            className="ml-1 hidden w-0 overflow-hidden opacity-0 transition-[width,opacity] duration-300 group-data-[stuck]:w-7 group-data-[stuck]:opacity-100 sm:block"
+          >
             <LogoMark className="h-7 w-7" />
           </span>
           <ul className="relative grid flex-1 grid-cols-3 sm:flex sm:flex-none">
@@ -81,7 +87,10 @@ export function ReportNav() {
         </div>
         {/* ukazatel přečtení */}
         <span aria-hidden="true" className="absolute inset-x-3 -bottom-px h-[2px] overflow-hidden rounded-full">
-          <span className="block h-full origin-left bg-gradient-to-r from-teal-600 to-brick transition-transform duration-150" style={{ transform: `scaleX(${progress})` }} />
+          <span
+            className="block h-full origin-left bg-gradient-to-r from-teal-600 to-brick transition-transform duration-150"
+            style={{ transform: `scaleX(${progress})` }}
+          />
         </span>
       </nav>
     </>

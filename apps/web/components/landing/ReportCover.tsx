@@ -9,7 +9,9 @@ export function ReportCover({ size = 'md' }: { size?: 'sm' | 'md' }) {
       <div className="absolute inset-0 translate-x-2 translate-y-2 rotate-[3deg] rounded-xl border border-line bg-white shadow-card" />
       <div className={`relative overflow-hidden rounded-xl border border-line bg-white shadow-float ${sm ? 'p-2' : 'p-4'} rotate-[-2deg]`}>
         <div className={`flex items-center justify-between rounded-lg bg-teal-900 text-white ${sm ? 'px-1.5 py-1' : 'px-3 py-2'}`}>
-          <span className={`font-semibold ${sm ? 'text-[7px]' : 'text-[11px]'}`}>ETF <span className="text-[#9fd1cb]">dvojčata</span></span>
+          <span className={`font-semibold ${sm ? 'text-[7px]' : 'text-[11px]'}`}>
+            ETF <span className="text-[#9fd1cb]">dvojčata</span>
+          </span>
           <span className={`rounded bg-brick font-bold ${sm ? 'px-1 text-[6px]' : 'px-1.5 py-0.5 text-[9px]'}`}>PDF</span>
         </div>
         <p className={`font-display leading-tight font-bold text-ink ${sm ? 'mt-1.5 text-[9px]' : 'mt-3 text-[17px]'}`}>

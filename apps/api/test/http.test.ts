@@ -5,9 +5,12 @@ import { csvCell, maskEmail, safeEqual, sameOriginUrl } from '../src/common/http
 const O = 'https://etf-dvojcata.cz';
 
 describe('přesměrování z e-mailu zůstane na webu', () => {
-  test.each(['//evil.com', '/\\evil.com', '/\t/evil.com', '/\n/evil.com', 'https://evil.com', 'javascript:alert(1)', '%2F%2Fevil.com'])('%j → vlastní origin', (to) => {
-    expect(sameOriginUrl(to, O).origin).toBe(O);
-  });
+  test.each(['//evil.com', '/\\evil.com', '/\t/evil.com', '/\n/evil.com', 'https://evil.com', 'javascript:alert(1)', '%2F%2Fevil.com'])(
+    '%j → vlastní origin',
+    (to) => {
+      expect(sameOriginUrl(to, O).origin).toBe(O);
+    },
+  );
   test('vlastní cesta projde i s parametry', () => {
     expect(sameOriginUrl('/help?t=abc#x', O).href).toBe(`${O}/help?t=abc#x`);
   });

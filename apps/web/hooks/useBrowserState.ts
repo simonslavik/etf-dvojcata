@@ -10,7 +10,11 @@ const noopSubscribe = () => () => {};
  * bez setState v efektu a bez hydration mismatch.
  */
 export function useStoredValue(key: string) {
-  return useSyncExternalStore(subscribeStorage, () => storage.get(key), () => null);
+  return useSyncExternalStore(
+    subscribeStorage,
+    () => storage.get(key),
+    () => null,
+  );
 }
 
 /** Uživatel má zapnuté „omezit pohyb“ */
@@ -28,5 +32,9 @@ export function useReducedMotion() {
 
 /** Parametr z URL (?utm_content=VT) – stránky jsou statické, takže se čte až v prohlížeči */
 export function useSearchParam(name: string) {
-  return useSyncExternalStore(noopSubscribe, () => new URLSearchParams(location.search).get(name), () => null);
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => new URLSearchParams(location.search).get(name),
+    () => null,
+  );
 }

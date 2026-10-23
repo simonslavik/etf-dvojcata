@@ -23,7 +23,11 @@ export const BASE_POINTS = 10;
 export const CALL_POINTS = 30;
 export const QUALIFIED_AT = 35;
 
-export interface ScoreInput { monthlyBand: string | null; wantsCall: boolean; signals: Iterable<string> }
+export interface ScoreInput {
+  monthlyBand: string | null;
+  wantsCall: boolean;
+  signals: Iterable<string>;
+}
 
 export function scoreLead({ monthlyBand, wantsCall, signals }: ScoreInput) {
   const reasons: { label: string; points: number }[] = [{ label: 'Nechal e-mail', points: BASE_POINTS }];
@@ -38,7 +42,10 @@ export function scoreLead({ monthlyBand, wantsCall, signals }: ScoreInput) {
 export const STAGES = ['lead', 'qualified', 'handed_over', 'unsubscribed'] as const;
 export type Stage = (typeof STAGES)[number];
 export const STAGE_LABEL: Record<Stage, string> = {
-  lead: 'Lead', qualified: 'Kvalifikovaný', handed_over: 'Předaný', unsubscribed: 'Odhlášený',
+  lead: 'Lead',
+  qualified: 'Kvalifikovaný',
+  handed_over: 'Předaný',
+  unsubscribed: 'Odhlášený',
 };
 
 export function stageFor({ score, handedOver, unsubscribed }: { score: number; handedOver: boolean; unsubscribed: boolean }): Stage {

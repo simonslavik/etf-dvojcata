@@ -14,7 +14,9 @@ export function Logo() {
   return (
     <Link href="/" className="inline-flex items-center gap-2.5 text-[19px] font-bold tracking-tight text-ink">
       <LogoMark />
-      <span>ETF <span className="text-teal-600">dvojčata</span></span>
+      <span>
+        ETF <span className="text-teal-600">dvojčata</span>
+      </span>
     </Link>
   );
 }

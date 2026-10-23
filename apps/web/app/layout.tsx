@@ -15,7 +15,8 @@ const site = process.env.SITE_URL || 'http://localhost:3000';
 export const metadata: Metadata = {
   metadataBase: new URL(site),
   title: 'ETF dvojčata – evropské verze amerických ETF, které v Česku koupíte',
-  description: 'VOO, SPY nebo VTI vám evropský broker neprodá. Najděte jejich evropská dvojčata se stejným indexem, ISIN a poplatky. Zdarma, za pár vteřin.',
+  description:
+    'VOO, SPY nebo VTI vám evropský broker neprodá. Najděte jejich evropská dvojčata se stejným indexem, ISIN a poplatky. Zdarma, za pár vteřin.',
   openGraph: {
     title: 'VOO si v Česku nekoupíte. Jeho dvojče ano.',
     description: 'Evropské verze populárních amerických ETF – stejný index, ISIN, poplatky. Přehled zdarma.',

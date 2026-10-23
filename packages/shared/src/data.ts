@@ -1,25 +1,65 @@
 /* Typovaný přístup k ověřeným datům (data/etfs.json). Každý údaj má zdroj a datum. */
 import raw from '../data/etfs.json' with { type: 'json' };
 
-export interface Fact { label: string; url: string; cs: string; accessed: string }
+export interface Fact {
+  label: string;
+  url: string;
+  cs: string;
+  accessed: string;
+}
 
 export interface UsEtf {
-  ticker: string; name: string; issuer: string; exchange: string; index: string;
-  ter_pct: number; aum_usd_bn: number | null; aum_as_of: string | null; source_url: string; accessed: string;
+  ticker: string;
+  name: string;
+  issuer: string;
+  exchange: string;
+  index: string;
+  ter_pct: number;
+  aum_usd_bn: number | null;
+  aum_as_of: string | null;
+  source_url: string;
+  accessed: string;
 }
 
 export interface Twin {
-  ticker: string; aka: string | null; name: string; issuer: string; isin: string; index: string;
-  ter_pct: number; distribution: 'Acc' | 'Dist' | '–'; size_eur_m: number | null;
-  form: 'UCITS' | 'ETC'; exchange: string; domicile: string; source_url: string; accessed: string;
+  ticker: string;
+  aka: string | null;
+  name: string;
+  issuer: string;
+  isin: string;
+  index: string;
+  ter_pct: number;
+  distribution: 'Acc' | 'Dist' | '–';
+  size_eur_m: number | null;
+  form: 'UCITS' | 'ETC';
+  exchange: string;
+  domicile: string;
+  source_url: string;
+  accessed: string;
 }
 
-export interface Alt { ticker: string; isin: string; ter_pct: number; name: string }
+export interface Alt {
+  ticker: string;
+  isin: string;
+  ter_pct: number;
+  name: string;
+}
 
-export interface Pair { us: UsEtf; twin: Twin; alts: Alt[]; match: 'exact' | 'close'; note: string | null }
+export interface Pair {
+  us: UsEtf;
+  twin: Twin;
+  alts: Alt[];
+  match: 'exact' | 'close';
+  note: string | null;
+}
 
 export interface BankFund {
-  label: string; ter_pct: number; entry_fee_pct: number; example: string; source_url: string; accessed: string;
+  label: string;
+  ter_pct: number;
+  entry_fee_pct: number;
+  example: string;
+  source_url: string;
+  accessed: string;
 }
 
 export interface EtfData {

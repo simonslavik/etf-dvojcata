@@ -11,13 +11,21 @@ export class LinksController {
   private readonly log = new Logger('Links');
   private readonly site: string;
 
-  constructor(private readonly leads: LeadsService, config: ConfigService<Env, true>) {
+  constructor(
+    private readonly leads: LeadsService,
+    config: ConfigService<Env, true>,
+  ) {
     this.site = new URL(config.get('SITE_URL', { infer: true })).origin;
   }
 
   /** Klik z e-mailu: zapíše email_click (skóre) a přesměruje – jen v rámci webu, žádný open redirect */
   @Get('r')
-  async click(@Query('t') token: string | undefined, @Query('s') step: string | undefined, @Query('to') to: string | undefined, @Res() res: Response) {
+  async click(
+    @Query('t') token: string | undefined,
+    @Query('s') step: string | undefined,
+    @Query('to') to: string | undefined,
+    @Res() res: Response,
+  ) {
     if (token) await this.leads.recordEmailClick(token, step || 'email').catch((e: Error) => this.log.error(e.message));
     const dest = sameOriginUrl(to, this.site);
     dest.searchParams.set('utm_source', 'email');
