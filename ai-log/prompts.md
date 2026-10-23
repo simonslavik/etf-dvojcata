@@ -1,68 +1,38 @@
-# Ako pracujem s AI – kľúčové prompty
+# Kľúčové prompty
 
-Výber mojich promptov z oboch konverzácií a všetkých zadaní, ktoré Claude napísal agentom. Prompty sú **doslovné** (aj s preklepmi), skrátené sú len vložené texty a obrázky. Úplný kontext je v [surových exportoch](README.md). Každý riadok vedie na commit, ktorý z promptu vznikol. Časy sú miestne (SELČ).
+Prompty, ktoré niečo rozhodli. Sú doslovne, aj s preklepmi, a pri každom je commit, ktorý z neho vznikol. Celé konverzácie sú v [exportoch](README.md).
 
-## V skratke
+## Ako pracujem s AI
 
-- **Plán pred kódom.** Každé kolo začalo zápisom do [PLAN.md](../PLAN.md) (v1 → v3), až potom implementácia.
-- **Stránku testujem ako návštevník.** Väčšinu iterácií riadili moje screenshoty s krátkou spätnou väzbou („overwhelming“, „nepochopí“, „prespamované“). Claude najprv zmeral problém a až potom upravoval.
-- **AI nepreberám bez kontroly.** Keď návrh nesedel na cieľ (lead z mobilu za pár sekúnd), zamietol som ho. Prehľad je nižšie.
-- **Práca rozdelená na agentov.** Výskum dát, kontrolu dát a review kódu nechal Claude robiť samostatným agentom. Zadania im napísal sám, s pravidlami „zdroj pri každej hodnote, radšej null než odhad“ a „iba reportuj, nič neupravuj“. Ja som určil, čo sa má overiť, a ich výstupy som posudzoval.
-- **Hotovo = overené.** Testy (25 + 39), E2E cez celý stack, screenshoty mobilu aj desktopu, Lighthouse a nezávislý review pred každým zverejnením.
+- Najprv plán, potom kód po malých krokoch.
+- Stránku skúšam ako návštevník na mobile a dávam krátku spätnú väzbu so screenshotom.
+- Výstup AI neberiem bez kontroly: testy, screenshoty, nezávislé kontroly.
 
 ## Kde som AI opravil
 
-| Moja námietka | Čo bolo zle | Výsledok |
+- „to preklikavanie neviem či si uživatel všimne“ – AI navrhla prepínač nástrojov, ktorý by návštevník prehliadol. Rozdelili sme ich do dvoch sekcií. [f9a0577](https://github.com/simonslavik/etf-dvojcata/commit/f9a0577)
+- „Otevrit prehlad je potom prespamovane“ – po odomknutí sa tlačidlo opakovalo šesťkrát. [97b7b90](https://github.com/simonslavik/etf-dvojcata/commit/97b7b90)
+- „klikne Jak Koupit a nie dvojcata“ – AI chybu „opravila“ bez overenia. Odhalil to až test, ktorý odvtedy beží stále. [39b55da](https://github.com/simonslavik/etf-dvojcata/commit/39b55da)
+- „nepochopi uzivatel co to mesicne znamena“ – texty kalkulačky boli pre analytika, nie pre začiatočníka. [1db3f1b](https://github.com/simonslavik/etf-dvojcata/commit/1db3f1b)
+- „aby … ich AI nemali co vytknut“ – kontrola bezpečnosti našla 10 problémov, všetky sú opravené a otestované. [fc4fcf3](https://github.com/simonslavik/etf-dvojcata/commit/fc4fcf3)
+
+## Prompty, ktoré niečo rozhodli
+
+| Kedy | Prompt | Výsledok |
 |---|---|---|
-| „to preklikavanie neviem či si uživatel všimne“ | Claude navrhol prepínač dvoch nástrojov v hero. Návštevník z reklamy ho za pár sekúnd prehliadne | Jeden nástroj v hero, druhý vo vlastnej sekcii · [`f9a0577`](https://github.com/simonslavik/etf-dvojcata/commit/f9a0577) |
-| „Otevrit prehlad je potom prespamovane“ | Po odomknutí sa CTA opakovalo 6× a na stránke boli dva formuláre s rovnakým `id` | Jedno CTA, opravené id · [`97b7b90`](https://github.com/simonslavik/etf-dvojcata/commit/97b7b90) |
-| „klikne Jak Koupit a nie dvojcata“ | Claude chybu „opravil“ bez overenia. Pravidlo scrollspy bolo zlé a odstup sa počítal dvakrát | Overené automatickým testom, ktorý zostal v E2E · [`39b55da`](https://github.com/simonslavik/etf-dvojcata/commit/39b55da) |
-| „nepochopi uzivatel co to mesicne znamena“ | Texty kalkulačky písané pre analytika, nie pre začiatočníka | Popisy prepísané pre laika · [`1db3f1b`](https://github.com/simonslavik/etf-dvojcata/commit/1db3f1b) |
-| „aby … ich AI nemali co vytknut“ | Review našiel open redirect cez `//`, otvorený admin pri chýbajúcom `NODE_ENV` a ďalšie | 10 opráv s testami, overené v produkcii · [`fc4fcf3`](https://github.com/simonslavik/etf-dvojcata/commit/fc4fcf3) |
+| 22.&nbsp;10. | *(celé zadanie z e-mailu)* | Najprv plán, potom výskum dát tromi agentmi. [203c3be](https://github.com/simonslavik/etf-dvojcata/commit/203c3be) |
+| 22.&nbsp;10. | „ešte ten dizajn viacej vymakaj a malo by to mat aj nejaky stack ked tomu zadaniu rozumiem“ | AI sa spýtala, čo myslím stackom. Rozhodol som: technológie aj lead pipeline. [09c5505](https://github.com/simonslavik/etf-dvojcata/commit/09c5505) |
+| 22.&nbsp;10. | „FE chcem next a BE nest a DB postgres“ | Samostatný backend a databáza. [c996a39](https://github.com/simonslavik/etf-dvojcata/commit/c996a39) |
+| 22.&nbsp;10. | „este mozno to dockerizovat aby si to vedel kazdy spustit kto bude robit review“ | Celé riešenie sa spustí jedným príkazom. [c8f112e](https://github.com/simonslavik/etf-dvojcata/commit/c8f112e) |
+| 22.&nbsp;10. | „… header moze byt fixed aby bola ta moznost prihlasit sa stale na ociach … lebo cielom je ziskat leada predsa“ | Tlačidlo na e-mail je vždy na očiach. [44621c6](https://github.com/simonslavik/etf-dvojcata/commit/44621c6) |
+| 22.&nbsp;10. | „ešte niektore segmenty su priliš velké musi uživatel scrollovať veľa“ | Stránka na mobile z 8 na asi 5 obrazoviek. [e366dad](https://github.com/simonslavik/etf-dvojcata/commit/e366dad) |
+| 22.&nbsp;10. | „ale aj ta page by mala koncit niecim cim toho lead by sme mohli ziskat či ?“ | Stránka končí formulárom. [1ca6591](https://github.com/simonslavik/etf-dvojcata/commit/1ca6591) |
+| 23.&nbsp;10. | „skontroluj kod či niečo nieje redundant, chcem aby ma ten kod vedel naozaj predať aj ten technologický stack“ | Kontrola kódu agentom a upratanie. [35afee7](https://github.com/simonslavik/etf-dvojcata/commit/35afee7) |
+| 23.&nbsp;10. | „okej cize teraz to deployni na vercel“ | Stránka beží verejne. [63bcd60](https://github.com/simonslavik/etf-dvojcata/commit/63bcd60) |
 
-## Prompty po fázach
-
-### Kolo 1 – plán a prvá verzia
-
-| Kedy | Prompt | Výsledok | Commit |
-|---|---|---|---|
-| 22.&nbsp;10.&nbsp;12:06 | „*(zadanie z e-mailu vložené celé)*“ | Plán do [PLAN.md](../PLAN.md) pred kódom, výber zadania B, výskum dát tromi paralelnými agentmi | [`docs(plan)`](https://github.com/simonslavik/etf-dvojcata/commit/203c3be) [`feat(data)`](https://github.com/simonslavik/etf-dvojcata/commit/c7377f5) |
-| 22.&nbsp;10.&nbsp;12:51 | „rob commity ale ich este nepushuj prosim ale cele to implementuj a potom to pretestujem, čo najlepší dizajn a UX, takto vyzera ich stranka …“ | Implementácia po krokoch s commitmi, push až po mojom teste. Nezávislá kontrola dát a review kódu | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/c974286) [`fix(api)`](https://github.com/simonslavik/etf-dvojcata/commit/87b75e4) |
-
-### Kolo 2 a 3 – stack a lead pipeline
-
-| Kedy | Prompt | Výsledok | Commit |
-|---|---|---|---|
-| 22.&nbsp;10.&nbsp;13:26 | „ešte ten dizajn viacej vymakaj a malo by to mat aj nejaky stack ked tomu zadaniu rozumiem *(+ screenshoty clientelo.cz)*“ | Claude sa spýtal, čo myslím „stackom“. Rozhodol som: tech stack **aj** lead pipeline podľa lievika Clientela | [`docs(plan): v2`](https://github.com/simonslavik/etf-dvojcata/commit/0ce489b) [`refactor!`](https://github.com/simonslavik/etf-dvojcata/commit/09c5505) |
-| 22.&nbsp;10.&nbsp;14:07 | „este mozno to dockerizovat aby si to vedel kazdy spustit kto bude robit review“ | Reviewer spustí celé riešenie jedným príkazom, bez účtov a bez Node | [`build(docker)`](https://github.com/simonslavik/etf-dvojcata/commit/c8f112e) |
-| 22.&nbsp;10.&nbsp;14:10 | „aky je teraz stack implementovany? FE chcem next a BE nest a DB postgres“ | Oddelený backend v NestJS, monorepo, integračné testy proti Postgresu | [`docs(plan): v3`](https://github.com/simonslavik/etf-dvojcata/commit/19cc7f8) [`feat(api)`](https://github.com/simonslavik/etf-dvojcata/commit/c996a39) |
-
-### Konverzia – stránka z pohľadu návštevníka
-
-| Kedy | Prompt | Výsledok | Commit |
-|---|---|---|---|
-| 22.&nbsp;10.&nbsp;14:51 | „predtym nez to deployneme a pushneme chcem ten dizajn naozaj vymakat aj tu funkcionalitu aby to potencialne mohlo nabrat leadov …“ | Cieľ je kontakt, nie funkcie: kratšia stránka, jasnejšie CTA | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/d8f10e2) |
-| 22.&nbsp;10.&nbsp;14:59 | „… ten header moze byt fixed aby bola ta moznost prihlasit sa stale na ociach uzivatelovi … lebo cielom je ziskat leada predsa“ | Výzva k akcii vždy na očiach: lepkavý header s CTA | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/44621c6) |
-| 22.&nbsp;10.&nbsp;15:22 | „ešte niektore segmenty su priliš velké musi uživatel scrollovať veľa … len nevyhnutne informacie“ | Claude výšku sekcií najprv zmeral v obrazovkách. Mobil z 8 na 5,8, potom 4 sekcie | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/e366dad) [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/756aa10) |
-| 22.&nbsp;10.&nbsp;15:59 | „*(citácia zo zadania)* … čiže asi defaultne by to malo byt na najit dvojče to to preklikavanie neviem či si uživatel všimne zvažujem či ich nerozdelit na dve segmenty...“ | Námietka proti návrhu AI. Jeden nástroj v hero, druhý vo vlastnej sekcii | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/f9a0577) |
-| 22.&nbsp;10.&nbsp;16:18 | „ale aj ta page by mala koncit niecim cim toho lead by sme mohli ziskat či ?“ | Každý koniec stránky vedie ku kontaktu | [`feat(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/1ca6591) |
-| 22.&nbsp;10.&nbsp;16:31 | „nakoniec myslim že to je Otevrit prehlad je potom prespamovane v tom landing page“ | E2E potvrdilo 6× opakované CTA a duplicitné `id` | [`fix(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/97b7b90) |
-| 22.&nbsp;10.&nbsp;16:46 | „tu nepochopi uzivatel co to mesicne znamena: musi byt všetko jasne pre tych potencialnych leadov“ | Texty pre začiatočníka, nie pre analytika | [`fix(landing)`](https://github.com/simonslavik/etf-dvojcata/commit/1db3f1b) |
-| 23.&nbsp;10.&nbsp;09:52 | „ešte keď som scrollnuty dole a kliknem na dvojčata … tak to klikne Jak Koupit a nie dvojcata“ | Bug z ručného testu. Prvá oprava bez overenia nefungovala, automatický test ju odhalil a zostal v E2E | [`fix(report)`](https://github.com/simonslavik/etf-dvojcata/commit/39b55da) |
-| 23.&nbsp;10.&nbsp;15:26 | „ešte tieto karty by som vymakal: UI/UX“ | Kopírovanie ISIN už nerozbaľuje kartu, fakty o fonde a alternatívy s vlastným kopírovaním | [`feat(report)`](https://github.com/simonslavik/etf-dvojcata/commit/868040c) |
-
-### Kvalita, bezpečnosť a nasadenie
-
-| Kedy | Prompt | Výsledok | Commit |
-|---|---|---|---|
-| 23.&nbsp;10.&nbsp;10:42 | „splaňa to teda to zadanie? *(zadanie)* alebo by si ešte niečo zlepšíl?“ | Kontrola voči zadaniu bod po bode, Lighthouse 99/100/100/100 | [`perf(web)`](https://github.com/simonslavik/etf-dvojcata/commit/0078add) |
-| 23.&nbsp;10.&nbsp;11:34 | „ano ale predtym skontroluj kod či niečo nieje redundant, chcem aby ma ten kod vedel naozaj predať aj ten technologický stack“ | Review agent + knip, refaktor API a webu, ESLint, Prettier, `npm run check` | [`chore`](https://github.com/simonslavik/etf-dvojcata/commit/bfd8631) [`refactor(api)`](https://github.com/simonslavik/etf-dvojcata/commit/35afee7) |
-| 23.&nbsp;10.&nbsp;13:40 | „okej cize teraz to deployni na vercel“ | Dva projekty na Verceli + Neon. Chyba runtime (ESM) zachytená až v produkcii a opravená bundlom | [`build(vercel)`](https://github.com/simonslavik/etf-dvojcata/commit/63bcd60) |
-| 23.&nbsp;10.&nbsp;14:08 | „daj este pozor na security veci v repository celkovo aby ked to bude niekto prechadzat s AI cely codebase aby on alebo ich AI nemali co vytknut“ | Nezávislý bezpečnostný review, meranie IP na Verceli, 10 opráv s testami, [SECURITY.md](../SECURITY.md) | [`fix(security)`](https://github.com/simonslavik/etf-dvojcata/commit/fc4fcf3) |
-| 23.&nbsp;10.&nbsp;14:58 | „okej tak ešte tuto čast vymakaj prosim *(admin dashboard)*“ | Dashboard podľa krokov pipeline s konverziou medzi krokmi, čitateľný na mobile | [`feat(admin)`](https://github.com/simonslavik/etf-dvojcata/commit/8b6e9cc) |
 ## Zadania pre agentov
 
-Paralelné úlohy (výskum dát, nezávislé kontroly) Claude delegoval subagentom. **Zadania napísal Claude**. Ja som rozhodol, čo sa má zistiť a overiť (napríklad „skontroluj kod či niečo nieje redundant“ alebo „daj este pozor na security veci v repository“) a výsledky som posúdil. Každé zadanie má zúžený rozsah, požadovaný formát výstupu a pravidlo proti halucináciám. Texty sú doslovné.
+Výskum, kontroly dát a kontroly kódu robili samostatní agenti. Zadania im písal Claude, ja som určil, čo sa má zistiť a overiť. Kliknutím sa zadanie rozbalí.
 
 <details><summary><b>22. 10. 12:52 · Research US NYSE ETF data</b> – Každé číslo musí mať zdroj, inak `null`</summary>
 
@@ -202,9 +172,31 @@ Run `npx tsc --noEmit` in apps/web and apps/api if useful. Rank by how much each
 
 </details>
 
-## Ako by som zadal prvý prompt dnes
+<details><summary><b>23. 10. 14:08 · Security review of whole repo</b> – Pohľad AI recenzenta pred rozhodnutím o prijatí, iba report</summary>
 
-Spätne (nie je to prompt z konverzácie) by som do prvého pokynu dal mantinely, ktoré som dopĺňal postupne a ktoré stáli dve kolá prepisovania:
+```text
+You are a senior application-security reviewer. Review the ENTIRE monorepo at /Users/simon.slavik/clientelo-task as if an interviewer's AI were auditing it before a hiring decision. REPORT ONLY — do not edit files, commit, push, or run destructive commands. Do not print secret values you find; reference file:line and say what kind of secret it is.
+
+Context: Czech ETF lead-magnet landing page. npm workspaces: apps/web (Next.js 16 App Router, React 19, proxy.ts replaces middleware; /api/* is rewritten to the API; admin pages SSR forward the admin cookie to the API), apps/api (NestJS 12 ESM, Drizzle + pg, Zod, @nestjs/throttler in-memory, Resend REST e-mail, HMAC admin cookie, CronGuard with Bearer CRON_SECRET, OriginGuard for form POSTs, handoff webhook to a CRM with HMAC secret + idempotency key), packages/shared (pure TS). Deployed on Vercel (apps/api/src/serverless.ts, apps/api/vercel.json, apps/web/vercel.json) with Neon Postgres; locally docker-compose.yml with demo tokens (review-token) — demo values for local review are intentional but judge whether they could leak into production (e.g. defaults that silently apply when env is missing). scripts/ hold Puppeteer E2E/simulation. The public repo will be read by reviewers.
+
+Check thoroughly and concretely:
+1. AuthN/Z: admin login (timing-safe compare, cookie flags httpOnly/secure/sameSite/path/maxAge, HMAC derivation, logout), AdminGuard coverage of every /admin route in the API AND the Next admin pages/proxy.ts (any route reachable without the cookie? what happens when ADMIN_TOKEN is unset in production vs development), CronGuard behaviour when CRON_SECRET is unset in production.
+2. Input handling: every controller body/param/query through Zod; size limits; CSV export injection; HTML escaping in e-mail templates; open redirects in /r and anywhere else using URLs (sameOriginUrl); unsubscribe/qualify/call by token (token entropy, enumeration, IDOR on /admin/leads/:id).
+3. Abuse: /lead as e-mail relay, honeypot, OriginGuard (missing Origin, NODE_ENV dev bypass — could prod run with NODE_ENV unset/development on Vercel?), rate limits, daily caps, trust proxy + X-Forwarded-For spoofing affecting rate limiting.
+4. Privacy/GDPR: PII in logs (maskEmail use everywhere?), IP storage, consent recording, lead token exposure to client, what /track stores.
+5. Web: XSS (dangerouslySetInnerHTML, URL params rendered), security headers (CSP absent? HSTS, frame-ancestors/X-Frame-Options), external links rel, cookies set client-side, proxy.ts variant cookie.
+6. Supply chain/config: run `npm audit --omit=dev` and `npm audit` at repo root and summarise real issues; Dockerfiles (root user, secrets in build args/layers), docker-compose (ports bound to 0.0.0.0, default passwords), .env.example contents, .gitignore/.dockerignore/.vercelignore gaps, GitHub-facing files.
+7. Secrets: grep the working tree AND full git history (`git log -p --all` on branch main only: use `git log -p main`) for API keys, tokens, passwords, connection strings, private e-mails or phone numbers that should not be public. Exclude the intentional demo 'review-token' and local postgres://etfd:etfd@localhost dev URL but mention if they appear anywhere that matters.
+8. Anything else a security-minded AI reviewer would flag (e.g. missing SECURITY notes, error messages leaking stack traces, health endpoint info, CORS).
+
+Verify each finding by reading the code; drop speculation. For each: severity (high/medium/low/info), file:line, concrete exploit or failure scenario, minimal fix (1–2 sentences). Also list briefly the things you checked that are done well (so they need no change). Max ~20 findings, most severe first. Final answer = the report only.
+```
+
+</details>
+
+## Čo by som zadal inak
+
+Spätne by som všetky požiadavky dal hneď do prvého promptu. Takto som ich dopĺňal postupne a stálo ma to dve kolá prepisovania:
 
 ```text
 Zadanie B z e-mailu nižšie. Najprv plán do PLAN.md, kód až po mojom schválení.
