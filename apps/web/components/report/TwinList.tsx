@@ -3,17 +3,38 @@
 import { useMemo, useState } from 'react';
 import { data, fmtDate, formatPct, host, type Pair } from '@etfd/shared';
 import { CopyIsinButton } from '@/components/ui/CopyIsinButton';
-import { Search } from '@/components/ui/icons';
+import { ChevronDown, Search } from '@/components/ui/icons';
 
-const DIST: Record<string, string> = { Acc: 'akumulační – dividendy reinvestuje', Dist: 'distribuční – dividendy vyplácí' };
+const DIST: Record<string, string> = { Acc: 'Akumulační', Dist: 'Distribuční' };
+const DIST_HINT: Record<string, string> = { Acc: 'dividendy reinvestuje', Dist: 'dividendy vyplácí' };
 type Filter = 'all' | 'exact';
+
+const fundSize = (m: number | null) =>
+  m == null
+    ? '–'
+    : m >= 1000
+      ? `${(m / 1000).toLocaleString('cs-CZ', { maximumFractionDigits: 1 })} mld. €`
+      : `${m.toLocaleString('cs-CZ')} mil. €`;
+
+function Fact({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <div className="rounded-xl bg-paper px-3 py-2.5">
+      <dt className="text-[11.5px] text-muted">{label}</dt>
+      <dd className="mt-0.5 text-[14px] leading-snug font-semibold text-ink">
+        {value}
+        {hint && <span className="block text-[12px] font-normal text-muted">{hint}</span>}
+      </dd>
+    </div>
+  );
+}
 
 function Row({ p }: { p: Pair }) {
   const t = p.twin;
+  const sources = [...new Map([t.source_url, p.us.source_url].map((u) => [host(u), u])).entries()];
   return (
     <li>
-      <details className="smooth group rounded-2xl border border-line bg-white transition-colors open:border-teal-200 hover:border-teal-200">
-        <summary className="grid cursor-pointer list-none grid-cols-[1fr_auto] items-center gap-x-4 gap-y-2 p-4 sm:grid-cols-[minmax(0,1.4fr)_90px_minmax(0,1.1fr)_20px] sm:p-5 [&::-webkit-details-marker]:hidden">
+      <details className="smooth group rounded-2xl border border-line bg-white transition-[border-color,box-shadow] open:border-teal-200 open:shadow-card hover:border-teal-200">
+        <summary className="grid cursor-pointer list-none grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 rounded-2xl p-4 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-teal-500/50 sm:grid-cols-[minmax(0,1.4fr)_96px_minmax(0,1.15fr)_32px] sm:p-5 [&::-webkit-details-marker]:hidden">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="font-mono text-[14px] font-bold text-muted line-through decoration-brick/70">{p.us.ticker}</span>
@@ -33,70 +54,78 @@ function Row({ p }: { p: Pair }) {
           </div>
           <p className="num text-right text-[15px] font-bold text-ink sm:text-left">
             {formatPct(t.ter_pct)}
-            <span className="block text-[11px] font-normal text-muted">ročně</span>
+            <span className="block text-[11px] font-normal text-muted">poplatek ročně</span>
           </p>
           <div className="col-span-2 flex items-center justify-between gap-2 rounded-xl bg-paper py-1.5 pr-1.5 pl-3 sm:col-span-1">
-            <span className="font-mono text-[13.5px] font-bold tracking-wide text-ink">{t.isin}</span>
+            <span className="min-w-0">
+              <span className="block text-[10.5px] text-muted">ISIN</span>
+              <span className="font-mono text-[13.5px] font-bold tracking-wide text-ink">{t.isin}</span>
+            </span>
             <CopyIsinButton isin={t.isin} from="report" size="sm" />
           </div>
           <span
             aria-hidden="true"
-            className="hidden text-muted transition-transform duration-300 group-open:rotate-90 sm:block print:hidden"
+            className="col-span-2 flex items-center justify-center gap-1 text-[12.5px] font-medium text-teal-700 sm:col-span-1 sm:h-8 sm:w-8 sm:justify-self-end sm:rounded-full sm:border sm:border-line sm:text-muted sm:group-hover:border-teal-300 sm:group-hover:text-teal-700 print:hidden"
           >
-            ›
+            <span className="sm:hidden">
+              <span className="group-open:hidden">Zobrazit detaily</span>
+              <span className="hidden group-open:inline">Skrýt detaily</span>
+            </span>
+            <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open:rotate-180" />
           </span>
         </summary>
-        <div className="grid gap-x-8 gap-y-2 border-t border-line px-4 py-4 text-[13.5px] sm:grid-cols-2 sm:px-5">
-          <p>
-            <span className="text-muted">Index:</span> <span className="text-ink">{t.index}</span>
+
+        <div className="space-y-4 border-t border-line px-4 py-4 sm:px-5">
+          <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Fact label="Sleduje index" value={t.index} />
+            <Fact label="Typ fondu" value={`${t.form} · ${DIST[t.distribution] ?? 'bez výnosu'}`} hint={DIST_HINT[t.distribution]} />
+            <Fact label="Kde koupit" value={t.exchange} hint={t.aka ? `též ${t.aka}` : undefined} />
+            <Fact label="Velikost fondu" value={fundSize(t.size_eur_m)} hint={`sídlo ${t.domicile}`} />
+          </dl>
+
+          <p className="text-[13.5px] text-text">
+            <span className="text-muted">Místo:</span> <b className="font-mono text-ink">{p.us.ticker}</b> {p.us.name} · TER{' '}
+            {formatPct(p.us.ter_pct)} · {p.us.exchange}
           </p>
-          <p>
-            <span className="text-muted">Typ:</span>{' '}
-            <span className="text-ink">
-              {t.form} · {DIST[t.distribution] ?? 'bez výnosu'}
-            </span>
-          </p>
-          <p>
-            <span className="text-muted">Burza:</span>{' '}
-            <span className="text-ink">
-              {t.exchange}
-              {t.aka ? ` (též ${t.aka})` : ''}
-            </span>
-          </p>
-          <p>
-            <span className="text-muted">Americký originál:</span>{' '}
-            <span className="text-ink">
-              {p.us.name}, TER {formatPct(p.us.ter_pct)}
-            </span>
-          </p>
+
           {p.note && (
-            <p className="rounded-lg bg-paper px-3 py-2 text-text sm:col-span-2">
-              {p.match === 'exact' ? '' : 'Rozdíl: '}
+            <p className="rounded-xl border border-teal-100 bg-teal-50/60 px-3.5 py-2.5 text-[13.5px] leading-snug text-text">
+              {p.match === 'exact' ? '' : <b className="text-ink">Rozdíl: </b>}
               {p.note}
             </p>
           )}
+
           {p.alts.length > 0 && (
-            <p className="sm:col-span-2">
-              <span className="text-muted">Alternativy:</span>{' '}
-              {p.alts.map((a, i) => (
-                <span key={a.ticker}>
-                  {i > 0 && ' · '}
-                  <b className="font-mono text-ink">{a.ticker}</b> {formatPct(a.ter_pct)}{' '}
-                  <span className="font-mono text-muted">{a.isin}</span>
-                </span>
-              ))}
-            </p>
+            <div>
+              <p className="mb-1.5 text-[12px] font-semibold tracking-wide text-muted uppercase">Další možnosti</p>
+              <ul className="divide-y divide-line rounded-xl border border-line">
+                {p.alts.map((a) => (
+                  <li key={a.isin} className="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-3 py-2.5">
+                    <b className="font-mono text-[13.5px] text-ink sm:w-[92px] sm:flex-none">{a.ticker.replace(' / ', ' · ')}</b>
+                    <span className="hidden min-w-0 flex-1 truncate text-[13px] text-muted sm:block" title={a.name}>
+                      {a.name}
+                    </span>
+                    <span className="num ml-auto text-[13px] font-semibold text-ink sm:ml-0">{formatPct(a.ter_pct)}</span>
+                    <span className="flex w-full items-center justify-between gap-2 sm:w-auto">
+                      <span className="font-mono text-[12.5px] text-muted">{a.isin}</span>
+                      <CopyIsinButton isin={a.isin} from="report_alt" size="xs" />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
-          <p className="text-[12px] text-muted sm:col-span-2">
-            Zdroje:{' '}
-            <a className="src-link" href={t.source_url} target="_blank" rel="noopener">
-              {host(t.source_url)}
-            </a>
-            ,{' '}
-            <a className="src-link" href={p.us.source_url} target="_blank" rel="noopener">
-              {host(p.us.source_url)}
-            </a>{' '}
-            · {fmtDate(t.accessed)}
+
+          <p className="text-[12px] text-muted">
+            Ověřeno {fmtDate(t.accessed)} ·{' '}
+            {sources.map(([h, u], i) => (
+              <span key={u}>
+                {i > 0 && ', '}
+                <a className="src-link" href={u} target="_blank" rel="noopener">
+                  {h}
+                </a>
+              </span>
+            ))}
           </p>
         </div>
       </details>
@@ -159,7 +188,7 @@ export function TwinList() {
           Nic jsme nenašli. Zkuste jiný ticker – v přehledu jsou ETF z burzy NYSE.
         </p>
       )}
-      <p className="mt-3 text-[13px] text-muted">Klepnutím na řádek zobrazíte index, typ fondu, alternativy a zdroje.</p>
+      <p className="mt-3 text-[13px] text-muted">Klepnutím na kartu zobrazíte index, typ fondu, velikost, další možnosti a zdroje.</p>
     </div>
   );
 }
