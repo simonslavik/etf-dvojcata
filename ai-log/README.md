@@ -44,9 +44,9 @@ Prvé kolo bežalo v samostatnej konverzácii. Druhá konverzácia začína tým
 | E2E v prehliadači (Puppeteer) cez celý Docker stack | Fokus v sheete na zlom prvku, ochrana CSV, ktorá kazila telefónne čísla |
 | Screenshoty mobil/desktop, ktoré Claude prezeral | Široké medzery v nadpisoch (Lora `tnum`), pretečenie na mobile |
 | `curl` na každý endpoint | Open redirect, chýbajúci Origin, telefón bez súhlasu |
-| Nezávislý review agent (2×) | 14 a 13 nálezov, opravy sú v tabuľkách v [README](../README.md#10-ako-som-pracoval-s-ai) |
+| Nezávislý review agent (2×) | 14 a 13 nálezov, opravy sú v tabuľkách v [docs/ai-workflow.md](../docs/ai-workflow.md) |
 
-Úplný zoznam miest, kde sa AI pomýlila, je v [README, časť 10](../README.md#10-ako-som-pracoval-s-ai).
+Úplný zoznam miest, kde sa AI pomýlila, je v [docs/ai-workflow.md](../docs/ai-workflow.md).
 
 ## Poznámka k histórii commitov
 

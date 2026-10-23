@@ -1,323 +1,127 @@
-# ETF dvojčatá – konverzná landing page s lead pipeline (zadanie B)
+# ETF dvojčata
 
-Landing page pre českého drobného investora, ktorý prichádza z reklamy na mobile. Ukáže mu **európske (UCITS) „dvojčatá“ 12 ETF z NYSE Arca**, ktoré si v ČR naozaj kúpi, a spočíta, koľko ho stojí fond z banky. Výmenou za e-mail odomkne celý prehľad. Po odoslaní nasleduje kvalifikácia, voliteľné odovzdanie na telefonát a e-mailová starostlivosť. Celý lievik je viditeľný v admin dashboarde.
+Na YouTube niekto povie „kúp VOO“. Čech otvorí XTB alebo Trading 212 a fond tam nenájde, lebo americké ETF sa v EÚ drobným investorom predávať nesmú. Táto stránka mu za pár sekúnd ukáže európske „dvojča“, ktoré si kúpiť môže, aj s ISIN na skopírovanie. Za e-mail dostane prehľad všetkých 12 dvojčiat a návod na prvý nákup.
 
-- **Stránka:** **https://etfdvojcata.vercel.app** · varianty reklamy: [`/?ad=twin`](https://etfdvojcata.vercel.app/?ad=twin), [`/?ad=fees`](https://etfdvojcata.vercel.app/?ad=fees)
-- **Admin (pipeline):** `/admin` – v Dockeri token `review-token`, token pre nasadenú verziu pošlem zvlášť
-- **Reklamy:** [ads/README.md](ads/README.md) – 2 verzie, texty, UTM odkazy
-- **Dáta so zdrojom pri každom údaji:** [packages/shared/data/etfs.json](packages/shared/data/etfs.json)
-- **Plán:** [PLAN.md](PLAN.md) (v1 – v3) · **Export konverzácií s Claude Code:** [ai-log/](ai-log/)
+- **Reklama A:** https://etfdvojcata.vercel.app/?ad=twin
+- **Reklama B:** https://etfdvojcata.vercel.app/?ad=fees
+- **Admin:** https://etfdvojcata.vercel.app/admin (token pošlem zvlášť, lokálne v Dockeri `review-token`)
+- **Obe reklamy s textami:** [ads/README.md](ads/README.md)
 
-### Spustenie pre review (Docker, bez Node aj bez účtov)
-
-```bash
-docker compose up --build                           # web: http://localhost:3000  ·  admin: http://localhost:3000/admin (token: review-token)
-docker compose --profile demo run --rm demo-data    # voliteľne: 400 simulovaných návštev, aby dashboard nebol prázdny
-```
-
-Spustia sa tri služby: **Postgres 17**, **NestJS API** a **Next.js web**. API pri štarte samo spustí migrácie. E-maily sa bez `RESEND_API_KEY` iba označia ako preskočené. Iný port: `PORT=8080 docker compose up --build`. Zmazanie dát: `docker compose down -v`.
-
-| Mobil – varianta A | Mobil – varianta B | Po odoslaní | Admin |
+| Reklama A na mobile | Reklama B na mobile | Prehľad za e-mail | Admin |
 |---|---|---|---|
-| ![A](screenshots/mobile-a.png) | ![B](screenshots/mobile-b.png) | ![Sheet](screenshots/sheet-call.png) | ![Admin](screenshots/admin.png) |
+| ![A](screenshots/mobile-a.png) | ![B](screenshots/mobile-b.png) | ![Prehľad](screenshots/report.png) | ![Admin](screenshots/admin.png) |
 
-| Desktop – varianta A | Prehľad za e-mail (`/report`) |
+_Dáta v admine na screenshote sú simulované._
+
+## Pre koho
+
+Čech medzi 25 a 40 rokmi na mobile. Buď už investuje cez aplikáciu (XTB, Trading 212, Revolut) a pozná tickery z YouTube, alebo má peniaze v podielovom fonde z banky a netuší, koľko ho stojí.
+
+Väčšina českých stránok o ETF porovnáva americké fondy, ktoré si čitateľ aj tak nekúpi. Táto dá odpoveď, s ktorou sa dá hneď niečo urobiť: čo kúpiť, kde a za koľko.
+
+V prehľade je 12 ETF, lebo zadanie hovorí o fondoch z NYSE. Populárne QQQ, VXUS a BND sa obchodujú na Nasdaqu, preto som ich vyradil.
+
+## Čo návštevník dostane a kedy chcem e-mail
+
+- **Hneď a zadarmo:** vyhľadávač dvojčiat (vyberie VOO a vidí VUAA, poplatok, burzu a ISIN) a kalkulačku, ktorá ukáže, koľko ho stojí fond z banky oproti ETF.
+- **Za e-mail:** prehľad všetkých 12 dvojčiat s ISIN, návod na nákup v troch krokoch a dane v Česku zrozumiteľne.
+- **Kedy sa pýtam:** až keď už niečo dostal. Tlačidlo je hneď pod výsledkom vyhľadávača aj kalkulačky. Tlačidlo „Přehled zdarma“ je stále v hlavičke, aj keď človek scrolluje.
+- **Formulár:** jedno pole, e-mail.
+- **Po odoslaní:** prehľad sa hneď odomkne na stránke. Potom jedna nepovinná otázka („koľko mesačne investujete?“), nepovinná ponuka „pomôžeme s prvým nákupom, zavoláme vám“ a tri krátke e-maily počas deviatich dní.
+
+## Dve reklamy
+
+| | A – Dvojča | B – Poplatky |
+|---|---|---|
+| Komu | Kto už investuje a nenašiel VOO v aplikácii | Kto má peniaze vo fonde z banky |
+| Prísľub | „VOO si v Česku nekoupíte. Jeho dvojče ano.“ | „Fond z banky vs. ETF: 429 100 Kč rozdíl“ |
+| Prvá obrazovka | Vyhľadávač s predvoleným VOO, hneď vidno VUAA a ISIN | Kalkulačka s rovnakými číslami ako v reklame (3 000 Kč mesačne, 20 rokov) |
+
+Prvá obrazovka teda opakuje presne to, čo reklama sľúbila. Druhý nástroj je na stránke nižšie, pre tých, ktorých oslovil iný uhol.
+
+## Poradie sekcií
+
+1. **Sľub reklamy a jeden nástroj.** Návštevník z reklamy dá stránke pár sekúnd, preto hneď dostane to, kvôli čomu klikol, bez prepínania.
+2. **Prečo nám veriť:** štyri čísla a tri záruky, napríklad že každý údaj má zdroj. Vymyslené referencie nepoužívam.
+3. **Druhý nástroj** pre tých, na ktorých neplatil prvý uhol.
+4. **Ako to funguje v troch krokoch:** nájdi dvojča, skopíruj ISIN, kúp v aplikácii.
+5. **Ukážka prehľadu s formulárom:** päť riadkov tabuľky, z toho dva rozmazané, a pod nimi pole na e-mail.
+6. **Časté otázky:** prečo VOO v aplikácii nie je, dane, kde kúpiť.
+7. **Záverečná výzva.** Kto dočítal až sem, má námietky vyriešené, preto stránka končí formulárom.
+
+Všetko, čo nepomáhalo získať kontakt, som vyhodil: prepínač nástrojov, veľké karty dôvery a navigáciu, ktorá by viedla preč. Na mobile má stránka asi päť obrazoviek.
+
+## Dáta
+
+- **12 dvojíc** amerických ETF a ich európskych verzií, údaje k 22. 10. 2026. Pri každej je zdroj a dátum: stránky emitentov (Vanguard, iShares, SSGA) a justETF. Súbor: [packages/shared/data/etfs.json](packages/shared/data/etfs.json).
+- **Fond z banky v kalkulačke** je ČSOB Akciový podľa oficiálneho dokumentu KID: vstupný poplatok 3 % a 2,59 % ročne.
+- **Kontrola:** samostatný agent znovu otvoril všetky zdroje a porovnal 130 údajov. Všetkých 130 sedelo.
+
+## Meranie
+
+Meria sa každý krok od príchodu po odoslanie formulára: návšteva, použitie nástroja, klik na tlačidlo, otvorenie formulára, začatie písania a lead. Všetko je zvlášť pre reklamu A a B a podľa kreatívy. Lead potvrdzuje server, takže sa nedá podvrhnúť z prehliadača.
+
+V admine je celý lievik, porovnanie A a B s výpočtom, či je rozdiel štatisticky významný, a cena za lead, keď zadáte útratu za reklamu. Pri každom leade je jeho celá cesta po stránke.
+
+## Očakávaná konverzia
+
+| Krok | Odhad |
 |---|---|
-| ![Desktop](screenshots/desktop-a.png) | ![Report](screenshots/report.png) |
+| Použije nástroj | 45 – 60 % návštevníkov |
+| Klikne na tlačidlo | 20 – 30 % |
+| Odošle e-mail (z tých, čo klikli) | 45 – 60 % |
+| **Z návštevy lead** | **10 – 15 %, realisticky okolo 12 %** |
 
-_Dáta v adminu na screenshote sú simulované (`scripts/simulate.mjs` cez skutočné API)._
+Je to môj odhad po krokoch, nie overený benchmark. Reklama B bude mať podľa mňa menej leadov, ale kvalitnejších, lebo oslovuje ľudí s peniazmi vo fonde. Skutočné čísla budú po zhruba 1 000 návštevách na variant.
 
----
+## Tri A/B testy (od najväčšieho dopadu)
 
-## 1. Kľúčová myšlienka
+1. **Pole na e-mail priamo pod výsledkom** namiesto tlačidla, ktoré otvára formulár. Na mobile ubudne jeden krok. Čakám +20 až 30 % leadov.
+2. **Iný názov odmeny:** „Prehľad 12 dvojčiat“ oproti „Návod: prvé ETF za 15 minút“. Návod môže osloviť viac začiatočníkov. Čakám ±15 % a iný typ leadov.
+3. **Ponuka hovoru hneď po odoslaní** oproti ponuke až v poslednom e-maile. Ovplyvní, koľko ľudí odovzdáme na telefonát, nie počet leadov. Čakám ±30 %.
 
-Český investor vidí na YouTube a Reddite „kúp VOO“, otvorí XTB alebo Trading 212 a fond tam nenájde. Dôvodom je regulácia PRIIPs: fond predávaný retailu v EÚ musí mať dokument KID a americké ETF ho nemajú. Riešením je európska verzia (UCITS) so **rovnakým indexom**, ktorú si kúpi.
+## Ako som pracoval s AI
 
-Väčšina českých stránok o ETF porovnáva americké fondy, ktoré si čitateľ nekúpi. Táto stránka dá použiteľnú odpoveď hneď po prvom ťuknutí: ticker, ISIN na skopírovanie, poplatok a burzu.
+Pracoval som v Claude Code. Vždy najprv plán ([PLAN.md](PLAN.md)), potom kód po malých krokoch s commitmi a nakoniec kontrola. Stránku som prechádzal ako návštevník na mobile a posielal Claudovi screenshoty s krátkou spätnou väzbou, napríklad „príliš veľa textu“ alebo „toto užívateľ nepochopí“.
 
-**Prečo len 12 ETF:** zadanie hovorí o ETF obchodovaných na NYSE. Agent zistil, že QQQ, VXUS a BND sú na Nasdaqu, preto som ich vyradil. Výnimku pre populárne QQQ som zvážil, ale držal som sa zadania.
+**Pokyny pre agentov.** Výskum dát, kontrolu dát a kontrolu kódu robili samostatní agenti. Zadania im napísal Claude na môj pokyn. Hlavné pravidlá boli:
+- pri každom čísle zdroj a dátum, a radšej prázdne pole než odhad,
+- kontrolór má byť skeptický a hľadať chyby,
+- kontrola kódu iba hlási problémy, nič sama neopravuje.
 
-## 2. Cieľová skupina, hodnota, moment žiadosti
+**Ako som kontroloval výstup:**
+- automatické testy,
+- test celej cesty návštevníka v prehliadači,
+- screenshoty mobilu a desktopu po každej zmene,
+- Lighthouse (výkon 99, ostatné 100),
+- nezávislé kontroly kódu a bezpečnosti agentom, ktorý nevidel našu konverzáciu.
 
-| | |
-|---|---|
-| **Kto** | Čech 25 – 40 rokov na mobile. Už investuje alebo začína cez XTB, Trading 212 či Revolut, prípadne má peniaze v podielovom fonde z banky. Z YouTube pozná tickery, ale nevie, prečo ich nenájde v aplikácii. |
-| **Hodnota zadarmo** | Vyhľadávač dvojčiat (12 ETF → UCITS verzia + ISIN + TER + zdroj) a kalkulačka poplatkov (fond z banky vs. ETF). Celú hodnotu vidí ešte pred formulárom. Neznáme pojmy (UCITS, TER, ISIN, KID, PRIIPs) vysvetľuje slovníček priamo v texte. |
-| **Za e-mail** | Prehľad všetkých 12 dvojčiat (`/report`): zoznam s vyhľadávaním a filtrom „stejný index“, ISIN na skopírovanie pri každom riadku, detaily po rozbalení (index, typ, rozdiel, alternatívy, zdroje), návod na nákup v 3 krokoch a dane v ČR. Prilepená navigácia so zvýraznením sekcie, uloženie do PDF. Na konci ponuka pomoci s nákupom (odovzdanie). |
-| **Kedy žiadame** | Až po prvej interakcii: tlačidlo je priamo pod výsledkom vyhľadávača aj kalkulačky. Druhá príležitosť je náhľad tabuľky s rozmazanými riadkami a formulárom pod ním. Header s tlačidlom „Přehled zdarma“ je prilepený hore, takže výzva je na očiach počas celého scrollovania, na mobile aj na desktope. |
-| **Formulár** | **1 pole (e-mail)** v bottom sheete, fokus rovno v poli, `inputmode=email`. Súhlas je jedna veta pod tlačidlom. Proti botom chráni honeypot namiesto captchy. |
-| **Po odoslaní** | (1) prehľad sa hneď odomkne na stránke a príde e-mailom, (2) **nepovinná kvalifikačná otázka** „kolik měsíčně investujete?“ (1 ťuk), (3) **nepovinná ponuka „pomůžeme s prvním nákupem, zavoláme vám“** – telefón + výslovný súhlas → odovzdanie do CRM / call centra, (4) e-mailová sekvencia D2/D5/D9. |
+**Kde sa AI pomýlila (výber):**
+- Ako riešenie dĺžky stránky navrhla prepínač dvoch nástrojov. Namietol som, že ho človek z reklamy za pár sekúnd prehliadne. Rozdelili sme ich do dvoch sekcií.
+- Navigáciu v prehľade „opravila“ bez overenia a chyba zostala. Odhalil to až automatický test klikov, ktorý je teraz súčasťou testov.
+- Po odomknutí sa tlačidlo „Otevřít přehled“ opakovalo šesťkrát. Všimol som si to ja, test to potvrdil.
+- Výskumný agent označil fond ako „rovnaký index“, hoci v poznámke sám napísal, že index je iný.
+- Na Verceli API po nasadení padalo, hoci lokálne fungovalo. Claude chybu našiel v logoch a opravil.
 
-## 3. Poradie sekcií a prečo
+Kľúčové prompty doslovne, s odkazom na commit, ktorý z nich vznikol: [ai-log/prompts.md](ai-log/prompts.md). Všetky chyby a výsledky kontrol po kolách: [docs/ai-workflow.md](docs/ai-workflow.md). Export konverzácií: [ai-log/](ai-log/README.md).
 
-Stránka má **6 krátkych sekcií a záverečnú výzvu** a každá sa zmestí na jednu obrazovku (mobil asi 4,8 obrazovky spolu, desktop 3,9). Návštevník z reklamy jej venuje pár sekúnd, preto každá sekcia robí jednu vec.
+## Čo chýba pred ostrou kampaňou
 
-1. **Hero = sľub reklamy + jeden nástroj, bez prepínača.** Nadpis opakuje reklamu (message match) a hneď pod ním je nástroj, ktorý reklama sľúbila. Návštevník sa nemusí rozhodovať ani hľadať prepínač, čo je pri pár sekundách pozornosti dôležité.
-   - `ad=twin` (aj bez parametra): „VOO si v Česku nekoupíte. Jeho dvojče ano.“ + vyhľadávač
-   - `ad=fees`: „Fond z banky si bere až 2,6 % ročně. ETF jen 0,07 %.“ + kalkulačka
-2. **Dôkaz a dôvera v jednom páse:** štyri čísla (12 dvojčiat, 5 s rovnakým indexom, TER od 0,03 %, 34 zdrojov) a tri záruky. Referencie nepoužívam, pri novom produkte by boli vymyslené.
-3. **Druhý nástroj ako vlastná kompaktná sekcia** s úvodom podľa variantu: „Máte peníze ve fondu z banky?“ (kalkulačka) alebo „Chtěli jste VOO nebo SPY?“ (vyhľadávač). Kto nereagoval na prvý uhol, dostane druhý. Každý nástroj má vlastnú výzvu, takže v meraní vidno, ktorý prináša viac leadov.
-4. **Jak to funguje (3 kroky):** Najděte dvojče → Zkopírujte ISIN → Kupte v aplikaci. Odpovedá na otázku „a čo s tým urobím?“.
-5. **Lead magnet a formulár:** „Přehled 12 dvojčat + návod na první nákup“ s obálkou dokumentu, piatimi riadkami tabuľky (3 čitateľné, 2 rozmazané) a formulárom priamo pod nimi. Po odomknutí sa tabuľka nerozrastie, zobrazí sa „+ 7 dalších v přehledu“.
-6. **FAQ** (4 zbalené otázky): prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť.
-7. **Kompaktná záverečná výzva:** jedna karta s formulárom. Kto dočítal FAQ, má námietky vyriešené a je najbližšie k rozhodnutiu, preto stránka končí formulárom, nie pätičkou. Po odomknutí ponúkne ďalší krok lievika (pomoc s nákupom po telefóne) a kto o hovor už požiadal, záver neuvidí.
+- **Odosielanie e-mailov:** je hotové, chýba len overená odosielacia doména (Resend). Kým nie je, prehľad sa ukáže iba na stránke.
+- **Právne veci:** doplniť prevádzkovateľa na stránke o ochrane údajov a nechať posúdiť súhlasy aj porovnanie s konkrétnym fondom v reklame B.
+- **Ochrana proti botom:** captcha pred väčším rozpočtom. Teraz chráni skryté pole pre boty, kontrola pôvodu formulára a denný limit na IP.
+- **Aktualizácia dát:** údaje sú k 22. 10. 2026. V produkcii by ich mal raz mesačne overiť agent.
+- **Prehľad je zamknutý len mäkko:** kto pozná adresu `/report`, otvorí ho aj bez e-mailu.
 
-**Po odomknutí sa výzvy neopakujú:** „Otevřít přehled“ zostane len v headeri a v sekcii prehľadu. Pod nástrojmi je nenápadný textový odkaz.
+Úplný zoznam: [docs/technical.md](docs/technical.md#úplný-zoznam-toho-čo-chýba-pred-kampaňou).
 
-**Čo som vedome vynechal:** prepínač nástrojov v hero (návštevník na pár sekúnd by ho prehliadol), veľké karty dôvery a veľké záverečné CTA (zostala kompaktná verzia). Výzva „Přehled zdarma“ je navyše stále v **lepkavom headeri**. Podrobnosti (výpočet kalkulačky, alternatívne fondy, všetky zdroje) sú v rozbaľovacích prvkoch alebo v prehľade za e-mailom.
-
-**Výzvy sú personalizované:** „Poslat VUAA + 11 dalších“ po výbere ETF, „Chci ušetřit 429 100 Kč“ po výpočte.
-
-**Animácie sú jemné a vysvetľujú:** americký ticker sa prečiarkne a dvojča sa vysunie, suma úspory sa plynulo dopočíta, čísla sa pri zobrazení dopočítajú od nuly, sekcie pod prvou obrazovkou sa jemne vynoria, po odoslaní sa vykreslí fajka s krátkou oslavou vo farbách značky. Čo je vidno hneď po načítaní, sa nikdy neskryje. Všetko rešpektuje nastavenie „obmedziť pohyb“.
-
-**Výkon (Lighthouse, mobil, reálne spomalenie siete a CPU, produkčný build):** výkon **99** (LCP 1,6 – 1,7 s, CLS 0), prístupnosť **100**, best practices **100**, SEO **100**, pre oba varianty. Simulovaný režim Lighthouse proti lokálnemu serveru ukazuje 92 (LCP 3,2 s): simulácia započíta do kritickej cesty aj JS a písma, ktoré sa na lokálnom serveri stihnú stiahnuť pred vykreslením, hoci nadpis je vykreslený na serveri a na ne nečaká.
-
-Navigácia ani odkazy, ktoré by viedli preč, na stránke nie sú. Jediný cieľ je kontakt.
-
-**Dizajn** vychádza z vizuálneho jazyka clientelo.cz: serifové nadpisy (Lora) + Lexend, tmavá petrolejová a tehlová, eyebrow nadpisy s rozšíreným prestrihom, ikony v tónovaných štvorcoch, náhľad prehľadu v rámčeku „okna aplikácie“, slovníček s otáznikom pri pojme a reťazec krokov ako v ukážke dashboardu. Značka zostáva vlastná („ETF dvojčata“). Stránka by tak zapadla do portfólia Clientela, a pritom sa za Clientelo nevydáva.
-
-## 4. Stack a architektúra
-
-Monorepo (npm workspaces): **FE Next.js · BE NestJS · DB Postgres**, spustené cez Docker Compose.
-
-| Vrstva | Voľba | Prečo |
-|---|---|---|
-| **FE** – [apps/web](apps/web) | **Next.js 16** (App Router), React 19, TypeScript, **Tailwind CSS 4** | Obe varianty reklamy sú staticky predrenderované (rýchle LCP na mobile), interaktívne časti sú klientske „ostrovčeky“. Tokeny dizajnu sú v [globals.css](apps/web/app/globals.css) |
-| Varianty | **`proxy.ts`** (v Next 16 nahrádza middleware) | `/?ad=fees` → interný rewrite na `/v/fees`, varianta sa drží v cookie |
-| FE ↔ BE | **rewrite `/api/*` → NestJS** | Prehliadač komunikuje s jednou doménou: bez CORS a admin cookie zostáva first-party. Admin stránky sa renderujú na serveri z JSON-u z API |
-| **BE** – [apps/api](apps/api) | **NestJS 12** (ESM), moduly `Database`, `Tracking`, `Pipeline`, `Email`, `Admin`, `Health` | Každá fáza lievika má svoju službu. Guardy: `OriginGuard` (formuláre), `AdminGuard` (podpísaná cookie s expiráciou),  `CronGuard` (Bearer secret), `ThrottlerGuard` (limity na IP per route). Tajomstvá sa porovnávajú v konštantnom čase. Validácia cez Zod (`ZodPipe`), env sa validuje pri štarte (`@nestjs/config`). Dotazy pre dashboard sú v injektovateľnej `StatsService` |
-| Plánovač | **`@nestjs/schedule`** (denne 7:00, Europe/Prague) + chránený `GET /cron/emails` | Kroky sekvencie D2/D5/D9 a opakovanie neúspešných odovzdaní |
-| **DB** | **Postgres 17** + **Drizzle ORM** (`pg` Pool) | Schéma v TypeScripte, migrácie generuje `drizzle-kit` a API ich pri štarte spustí v transakcii ([apps/api/drizzle](apps/api/drizzle)) |
-| Zdieľané – [packages/shared](packages/shared) | čisté TS bez frameworku | Dáta ETF, kalkulačka, pravidlá skóre, sekvencia, súhlasy, udalosti. FE aj BE počítajú rovnako |
-| E-maily | **Resend** (REST) | Okamžitý e-mail + sekvencia, one-click odhlásenie (RFC 8058), atomické „zabratie“ jobu, retry |
-| Beh lokálne | **Docker Compose**: `db` + `api` + `web` (+ `demo-data`) | Reviewer spustí všetko jedným príkazom. Image sú multi-stage, bežia pod neprivilegovaným používateľom a majú health checky |
-| Produkcia | **Vercel** (2 projekty, región Frankfurt) + **Neon Postgres** | Web je Next.js projekt, API beží ako Vercel Function: tsc výstup zabalený cez esbuild do jedného ESM súboru ([bundle.mjs](apps/api/bundle.mjs)). Migrácie bežia raz pri builde, denný beh spúšťa Vercel Cron s `CRON_SECRET`. Kód je rovnaký ako v Dockeri, líši sa len vstupný bod ([serverless.ts](apps/api/src/serverless.ts) vs. [main.ts](apps/api/src/main.ts)) |
-| Testy | **Vitest** (25 shared + 31 API proti reálnemu Postgresu cez supertest) + **Puppeteer E2E** | E2E prejde celú cestu v oboch variantoch cez celý stack až po žiadosť o hovor, vrátane navigácie v prehľade |
-| Kvalita kódu | **ESLint** (Next core-web-vitals + typescript-eslint), **Prettier** (+ triedenie Tailwind tried), **knip** (mŕtvy kód a závislosti), striktný TypeScript | `npm run check` spustí typecheck, lint, formát, knip aj testy jedným príkazom |
-
-```
-Prehliadač ──▶ web (Next.js :3000)
-  /?ad=twin|fees ─ proxy.ts ─▶ /v/twin | /v/fees (statické HTML)
-  /api/* ─────── rewrite ────▶ api (NestJS :4000) ──▶ db (Postgres)
-      POST /track     → TrackingService          → events
-      POST /lead      → LeadsService.capture     → leads + email_jobs → EmailService (Resend, D0)
-      POST /qualify   → LeadsService.qualify     → ScoringService.rescore
-      POST /call      → LeadsService.requestCall → HandoffService → HANDOFF_WEBHOOK_URL (CRM / call centrum)
-      GET  /r, /unsubscribe → LinksController (klik v e-maile, odhlásenie)
-      /admin/*        → AdminGuard → dashboard, lead, export, útrata, ručné odovzdanie
-  /admin (SSR) ── fetch s cookie ──▶ api /admin/dashboard …
-PipelineScheduler (@nestjs/schedule, denne) → SequenceService.runDue (D2/D5/D9) + HandoffService.retryFailed
-```
-
-## 5. Lead pipeline (podľa lievika Clientela)
-
-`Reklama → Návštěva → Lead → Kvalifikace → Předání → Péče`
-
-| Fáza | Čo sa deje | Kde |
-|---|---|---|
-| **Návštěva** | Udalosti bez cookies (anonymné ID relácie v `sessionStorage`): príchod, interakcia, CTA, formulár… | `events` |
-| **Lead** | E-mail → upsert (opakované odoslanie neprepíše pôvodný zdroj), naplánovanie sekvencie, okamžitý e-mail | `leads`, `email_jobs` |
-| **Kvalifikace** | Skóre z odpovede a zo správania. Hranica pre „kvalifikovaný“ je 35 bodov | [packages/shared/src/score.ts](packages/shared/src/score.ts) |
-| **Předání** | Iba s **telefónom a výslovným súhlasom**: webhook do CRM. Bez webhooku je lead vo fronte a v adminu sa dá odovzdať ručne | [apps/api/src/pipeline](apps/api/src/pipeline) |
-| **Péče** | D0 prehľad · D2 ako kúpiť · D5 dane · D9 „už máte prvé ETF?“ + ponuka pomoci (→ späť do odovzdania) | [apps/api/src/email](apps/api/src/email) |
-
-**Skóre leadu:** e-mail +10 · investuje do 2 tis. +10 / 2 – 10 tis. +25 / nad 10 tis. +40 · počítal poplatky +5 · skopíroval ISIN +10 · otvoril prehľad +5 · klikol v e-maile +10 · chce hovor +30. Dashboard pri každom leade ukazuje rozpis, takže obchodník vidí, prečo je lead „horúci“.
-
-**Admin** (`/admin`, `ADMIN_TOKEN`): pipeline s počtami, KPI (leady, **náklad na lead** z útraty zadanej ku kreatíve, kvalifikovaní, odovzdaní), lievik návštevníka, leady za 14 dní, tabuľka A/B, kampane podľa `utm_content`, štatistiky sekvencie, posledné leady, detail leadu s celou cestou relácie, náhľad e-mailov a CSV export. Postrehy počíta jednoduché pravidlo, nie LLM: najväčší únik pred leadom a z-test konverzie A vs. B.
-
-## 6. Dáta a zdroje
-
-- **12 párov US ETF → UCITS dvojča**, údaje k 22. 10. 2026. Pri každom páre je `source_url` a dátum. Americké fondy sú overené na stránkach emitentov (Vanguard, iShares, SSGA), UCITS fondy na justETF a SSGA. Pri SCHD blokoval web Schwab automatický prístup, preto je zdrojom stockanalysis.com (v dátach je to poznamenané).
-- **5 dvojčiat má rovnaký index** (VOO, SPY, IVV, IWM, GLD). Ostatné sú najbližšie alternatívy a stránka vždy uvádza, v čom sa líšia.
-- **Fond z banky v kalkulačke:** ČSOB Akciový podľa KID k 1. 6. 2026: vstupný poplatok 3 %, priebežné náklady 2,59 % ročne. Transakčné náklady 0,39 % zámerne nepočítam, aby porovnanie nebolo nadsadené.
-- **České pravidlá:** PRIIPs (nariadenie 1286/2014), MiFID II (profesionálny klient), zákon o daniach z príjmov § 4 ods. 1 písm. t) a u), zrušenie stropu 40 mil. Kč od roku 2026, zmluva USA–ČR (15 % z dividend).
-- **Overenie:** tretí agent nezávisle znovu načítal zdroje a skontroloval všetkých 12 párov: **130 zo 130 polí bolo správnych**. Obmedzenie: kontroloval tie isté URL, nie druhý nezávislý zdroj.
-
-## 7. Meranie celej cesty
-
-| Krok lievika (dashboard) | Udalosti |
-|---|---|
-| Návštěva (+ UTM, variant, zariadenie) | `page_view` |
-| Interakce s nástrojem | `finder_select`, `calc_change`, `isin_copy` |
-| Klik na CTA | `cta_click` (zdroj: finder / calc / header) |
-| Viděl formulář → Začal psát | `form_view` → `form_start` (+ `form_error`, `form_submit`) |
-| **Lead** | `lead_ok` – zapisuje **server**, z prehliadača sa nedá podvrhnúť |
-| Kvalifikace → Předání | `qualify` → `call_request` → `handoff` (server) |
-| Péče | `email_click`, `unsubscribe` (server), stavy v `email_jobs` |
-| Ostatné | `scroll` 25/50/75/100, `faq_open`, `term_open`, `report_open/view` |
-
-Lievik počíta **unikátne relácie** v každom kroku, zvlášť pre každú variantu. Pri leade sa ukladá zdroj, UTM, variant, ticker, o ktorý mal záujem, a suma z kalkulačky. Voliteľne sa dá pripojiť PostHog (`NEXT_PUBLIC_POSTHOG_KEY`, bez cookies) kvôli heatmapám a záznamom relácií.
-
-## 8. Očakávaná konverzia
-
-Odhad pre studenú návštevnosť z Mety na mobile:
-
-| Krok | Odhad | Prečo |
-|---|---|---|
-| Interakcia s nástrojom | 45 – 60 % | Nástroj je v prvej obrazovke a stačí jeden ťuk |
-| Klik na CTA | 20 – 30 % | CTA je hneď pod výsledkom a v lepkavom headeri je stále po ruke |
-| Odoslanie formulára (z tých, čo klikli) | 45 – 60 % | 1 pole, fokus v poli, hodnotu už pozná |
-| **Návšteva → lead** | **≈ 10 – 15 %** (realisticky okolo 12 %) | |
-| Lead → kvalifikovaný (≥ 35 bodov) | 25 – 40 % | Varianta B viac (ľudia s peniazmi v bankovom fonde) |
-| Lead → žiadosť o hovor | 5 – 15 % | Nepovinné, až po získaní hodnoty |
-
-Odhad vychádza z mojej úvahy o jednotlivých krokoch, nie z overeného benchmarku. Varianta B (poplatky) bude mať podľa mňa nižšiu konverziu na lead, ale kvalitnejšie leady, ktoré sú pre klientov Clientela hodnotnejšie. Preto dashboard ukazuje okrem konverzie aj podiel kvalifikovaných a náklad na lead podľa kreatívy. Skutočné čísla budú po prvých zhruba 1 000 návštevách na variant.
-
-## 9. Tri hypotézy na A/B test (podľa očakávaného dopadu)
-
-1. **E-mailové pole priamo v karte dvojčaťa namiesto tlačidla, ktoré otvára bottom sheet.** Ubudne jeden krok (klik → sheet), čo je na mobile najväčší únik. *Očakávanie:* +20 – 30 % relatívne na návšteva → lead. *Riziko:* stránka pôsobí ako brána ešte pred ochutnávkou. *Metrika:* `lead / visit`.
-2. **Formulácia lead magnetu: „přehled 12 dvojčat“ vs. „Návod: první ETF za 15 minut (PDF)“.** Prehľad osloví toho, kto už vie, čo chce. Návod osloví začiatočníkov, ktorých je na Mete viac. *Očakávanie:* ±15 %, mení sa aj profil leadov. *Metriky:* `lead / cta` a podiel kvalifikovaných.
-3. **Ponuka hovoru hneď v kroku „hotovo“ vs. až v e-maile D9.** Skoršia ponuka zachytí najviac motivovaných, neskoršia nepôsobí dotieravo a príde po troch hodnotných e-mailoch. *Očakávanie:* ±30 % na počet odovzdaných leadov, bez vplyvu na samotný lead. *Metrika:* `handoff / lead`.
-
-Varianty `twin` vs. `fees` sú test na úrovni reklamy, preto ich medzi hypotézy stránky nepočítam. Infraštruktúra (parameter `ad=`, lievik a skóre podľa variantu, z-test v dashboarde) je na ne pripravená.
-
-## 10. Ako som pracoval s AI
-
-Pracoval som v Claude Code v troch kolách a potom v sérii UX iterácií podľa mojej spätnej väzby. Vždy platilo: **najprv plán** ([PLAN.md](PLAN.md)), potom implementácia po krokoch s commitmi a nakoniec kontroly (unit testy, E2E v prehliadači, screenshoty, nezávislý review agent).
-
-**Prompty a inštrukcie pre agentov:** doslovný výber mojich promptov s rozhodnutím a commitom, ktorý z nich vznikol, a všetkých 7 zadaní, ktoré Claude na môj pokyn napísal výskumným, kontrolným a review agentom, je v [ai-log/prompts.md](ai-log/prompts.md). Surové exporty konverzácií a časová os sú v [ai-log/](ai-log/README.md).
-
-### Kolo 1 – statická stránka (Vite)
-
-| Agent | Zadanie od Clauda (skrátene) | Ako som kontroloval výstup |
-|---|---|---|
-| **Výskum US ETF** | 15 ETF: TER, burza, index, AUM, *zdroj a dátum pri každej hodnote*, primárne weby emitentov, „null namiesto odhadu“, na konci zoznam neoverených vecí | Krížová kontrola tretím agentom, ručná kontrola niekoľkých hodnôt |
-| **Výskum UCITS dvojčiat** | Ku každému US ETF UCITS ekvivalent: ISIN, tickery, TER, Acc/Dist, veľkosť, „exact/close“ s vysvetlením | To isté + kontrola logiky „exact“ (musí byť doslova rovnaký index) |
-| **Výskum ČR** | PRIIPs, dane (paragrafy), poplatky bankových fondov z KID, dostupnosť u brokerov, *pri každom tvrdení zdroj a istota* | Na stránku išli len tvrdenia s vysokou istotou |
-| **Nezávislý kontrolór** | „Buď skeptický, hľadaj chyby“: znovu načítať zdroje, vrátiť OK / WRONG / UNVERIFIABLE | Výsledok 130/130 |
-| **Code review** | Bugy v API, formulároch, trackingu, prístupnosti; iba report | 14 nálezov, 13 opravených |
-
-### Kolo 2 – stack, pipeline, dizajn
-
-Po prvej verzii som dal spätnú väzbu: stránka má mať skutočný stack a dizajn má byť bližšie ku Clientelu (poslal som screenshoty clientelo.cz). Claude najprv položil otázku, čo myslím „stackom“ (tech stack vs. lead pipeline). Odpovedal som „oboje“. Potom doplnil plán v2 a postupoval v commitoch: backend pipeline → stránka v Reacte → admin → reklamy → review.
-
-- **Overovanie:** po každom kroku `tsc`, unit testy, `curl` na API (vrátane pokusov o open redirect, chybného JSON-u a telefónu bez súhlasu) a screenshoty mobilu aj desktopu, ktoré si Claude sám prezeral. E2E test prejde v prehliadači celú cestu oboch variantov a nakoniec cez admin API overí lievik aj uložený lead.
-- **Dokumentácia namiesto pamäti:** Next.js 16 má zmeny (middleware → `proxy.ts`, Turbopack), preto Claude pred písaním kódu čítal dokumentáciu priamo v `node_modules/next/dist/docs`.
-- **Grafy v dashboarde:** farby variantov A/B overil validátor palety (CVD ΔE 15,6, kontrast ≥ 3:1). Pôvodná dvojica petrolejová/tehlová neprešla, lebo ju ľudia s protanopiou ťažko rozlíšia.
-
-### Kde sa AI pomýlila (a ako som to zachytil)
-
-**Kolo 1**
-- Agent pre UCITS označil VXUS ako „exact“, hoci v poznámke sám napísal, že index je iný.
-- Agent pre ČR uviedol neaktuálny TER fondu VWCE (0,22 % namiesto 0,14 %). Rozpor som riešil podľa primárneho zdroja.
-- Hlavný agent tvrdil, že strop 40 mil. Kč pri časovom teste platí. Výskumný agent zistil, že pre cenné papiere bol od roku 2026 zrušený.
-- Text „XTB ani Trading 212 vám VOO neprodá“ som stiahol, lebo bol overený len u brokera Lynx.
-
-**Kolo 2** (všetko zachytené screenshotmi, testami alebo čítaním výstupu, nie až používateľom)
-- **Široké medzery v nadpisoch:** `tabular-nums` na `body` zapol v písme Lora funkciu `tnum`, ktorá nahrádza aj medzeru širokou „číselnou“ medzerou (37 px namiesto 16 px). Claude to najprv hľadal v `text-wrap: balance`, potom zmeral šírku medzery v prehliadači a príčinu našiel. Opravené: `tnum` je len na číslach.
-- **Pretečenie na mobile:** riadok tickerov s `overflow-x: auto` roztiahol stĺpec gridu (chýbalo `minmax(0, 1fr)`).
-- **PGlite padal** pri prvom dotaze, lebo nevytvorí rodičovský priečinok.
-- **Fokus v sheete:** `showModal()` presunul fokus na zatváracie tlačidlo namiesto e-mailového poľa, takže na iOS by sa neotvorila klávesnica. Zachytil to E2E.
-- **Ochrana proti CSV injection** pokazila telefónne čísla (`'+420…`). Zachytil to E2E.
-- **Zavádzajúci postreh v dashboarde:** „najväčší únik: kvalifikácia → odovzdanie 100 %“. Odovzdanie je nepovinný krok, preto sa únik teraz hľadá len po lead.
-- **Texty v rozpore so správaním:** karta dôvery sľubovala „žádné předávání dál“, hoci existuje odovzdanie na hovor (so súhlasom). CTA „Poslat výpočet do e-mailu“ sľubovalo niečo, čo e-mail neobsahuje. Obe opravené.
-
-### Výsledok review (kolo 2)
-
-Review agent dostal kód bez kontextu konverzácie a jediný pokyn: „iba reportuj, nič neupravuj, každý nález over v kóde“. Našiel 13 problémov. Všetky som posúdil ako reálne a opravil som 11. Opravy overujú nové testy (`tests/security.test.ts`), E2E a `curl` proti produkčnému buildu (`next start`).
-
-| Závažnosť | Problém | Oprava |
-|---|---|---|
-| **Vysoká** | **Open redirect** v `/api/r`: `?to=/%09/evil.com` prešiel kontrolou `startsWith('/')`, lebo URL parser tabulátor zahodí | Cieľ sa parsuje rovnako ako v prehliadači a musí mať náš origin. Test so 7 variantmi útoku |
-| **Vysoká** | `/api/lead` bez hlavičky `Origin` (curl) = **relay na posielanie e-mailov** na cudzie adresy. Navyše minie denný limit, takže skutoční ľudia nedostanú prehľad | Mimo `next dev` sa požiadavka bez Originu odmietne. Okamžitý e-mail (D0) a sekvencia majú oddelené denné limity |
-| Stredná | Neúspešný e-mail (429/5xx) sa už nikdy nepošle, cron posiela bez odstupov, chýba timeout | Pokusy s počítadlom (max. 3), odstup 550 ms, timeout 8 s |
-| Stredná | Migrácie pri prvom requeste cez neon-http (bez transakcie, súbeh pri studenom štarte) | Neon sa migruje pri `npm run build` v transakcii (`scripts/migrate.mjs`), PGlite za behu |
-| Stredná | Produkcia bez `DATABASE_URL` by potichu bežala na PGlite v `/tmp` (každá inštancia má vlastnú DB) | V produkcii hlasitá chyba. `SITE_URL` má fallback na produkčnú doménu Vercelu |
-| Stredná | Admin a cron bez tokenu boli otvorené na preview deployoch aj pri self-hostingu (`VERCEL_ENV` ≠ production) | Fail closed všade okrem `next dev` |
-| Stredná | Opakované odoslanie telefónu = **duplicitný lead v CRM**, neúspešné odovzdanie sa neopakuje | Už odovzdaný lead sa neposiela znovu, webhook má `idempotency_key`, cron opakuje neúspešné odovzdania |
-| Nízka | Login do adminu bez limitu pokusov, porovnanie tokenu `!==` | 10 pokusov / 15 min na IP, porovnanie v konštantnom čase |
-| Nízka | Text súhlasu posielal klient, takže sa dal podvrhnúť | Klient posiela iba ID verzie (`email_v1`, `call_v1`), server ukladá kanonické znenie ([packages/shared/src/consent.ts](packages/shared/src/consent.ts)) |
-| Nízka | `/api/track` bez limitu, klient mohol posielať aj `qualify` a `call_request` | 600 udalostí / 10 min na IP. Kvalifikáciu a hovor zapisuje iba server |
-| Nízka | Cron a odoslanie formulára mohli poslať ten istý e-mail dvakrát | Job sa pred odoslaním atomicky „zaberie“ (`scheduled → sending`) a odhlásenie sa kontroluje až po zabratí |
-| Nízka | Čítačka obrazovky neoznámila nové dvojča (live region sa pri každej zmene vymenil) | Live region zostáva v DOM, tlačidlá tickerov majú `aria-pressed` |
-
-**Vedome neopravené** (v časti 11): captcha / Turnstile proti botom (potrebuje účet, zatiaľ stačí honeypot + Origin + limity) a skenery odkazov v e-mailoch (Outlook Safe Links), ktoré môžu nafúknuť skóre o +10 za „klik“.
-
-_Pozn.: review z kola 2 sa týka ešte full-stack Next.js verzie. Opravy (Origin guard, retry, atomické zabratie jobu, idempotentné odovzdanie, súhlasy podľa verzie…) som v kole 3 preniesol do NestJS a pokrývajú ich integračné testy API._
-
-### Kolo 3 – oddelený backend (NestJS) a Postgres
-
-Zadanie od používateľa: „FE Next, BE Nest, DB Postgres“, nasadenie zatiaľ iba cez Docker. Claude najprv vysvetlil, aký stack je teraz, navrhol štruktúru monorepa a položil jednu otázku (kde má Nest bežať v produkcii, lebo od toho závisí plánovač). Potom doplnil [plán v3](PLAN.md) a postupoval v commitoch: monorepo + `shared` → NestJS API → prepojenie webu → Docker + testy. Logika pipeline sa nepísala odznova: služby v Neste prebrali kód z kola 2 vrátane opráv z review.
-
-**Overovanie:** `curl` na každý endpoint hneď po prvom spustení API, 30 integračných testov API proti reálnemu Postgresu, E2E cez celý Docker stack, reštart kontajnerov (dáta zostanú) a screenshot dashboardu.
-
-**Kde sa AI pomýlila v kole 3:**
-- **NestJS 12 je čisto ESM.** Claude to zistil až z `package.json` po inštalácii, nie z pamäti. Preto prešiel na ESM aj `shared` balík, aby sa nemiešali CJS a ESM.
-- **Chybný DI token:** prvá verzia `RateLimitService` injektovala `Symbol.for('etfd.db')`, ktorý sa nezhodoval s tokenom `DB`. Claude to zachytil pri čítaní vlastného kódu ešte pred spustením. Token je teraz v samostatnom súbore.
-- **Commit zahŕňal viac, než hovoril jeho popis:** do commitu „Add NestJS API“ sa dostali aj predtým pripravené mazania vo webe. Commit som rozdelil, kým bol iba lokálny.
-- **Build výstup `dist/`** sa omylom dostal do commitu. Odstránený a pridaný do `.gitignore`.
-- **Kolízia Docker volume:** nový Postgres by sa pripojil na volume `pgdata`, v ktorom zostali súbory PGlite z predošlej Docker verzie, a neinicializoval by sa. Volume je premenovaný.
-- **Demo služba** po premenovaní `app` → `web` padala na kontrole hostiteľa v simulačnom skripte.
-- **Test open redirectu** hodnotu zakódoval dvakrát, takže netestoval skutočný útok. Opravené na `'/\t/evil.com'`.
-
-### UX iterácie (po kole 3)
-
-Stránku som potom prechádzal ako návštevník a posielal Claudovi screenshoty s krátkou spätnou väzbou, napríklad „príliš overwhelming“, „užívateľ nepochopí, čo znamená ‚měsíčně‘“, „Otevřít přehled je prespamované“ alebo „pri kliknutí na Dvojčata sa zvýrazní Jak koupit“. Claude najprv zmeral, čo je zle (výška sekcií v obrazovkách, poloha výzvy, počet tlačidiel), a až potom upravoval. Pri každej zmene urobil screenshot mobilu aj desktopu a pustil E2E. Mobil sa skrátil z 8 na asi 4,8 obrazovky, hero aj prehľad s formulárom sa zmestia na jednu obrazovku a texty kalkulačky sú napísané pre začiatočníka.
-
-**Kde sa AI v tejto fáze pomýlila:**
-- **Lepkavé CTA na mobile zakrylo ISIN,** teda práve tú hodnotu, ktorá má presvedčiť. Zachytil to screenshot. Neskôr ho nahradil lepkavý header.
-- **Prepínač nástrojov v hero** navrhol Claude ako riešenie dĺžky stránky. Až pri mojej námietke uznal, že návštevník na pár sekúnd ho prehliadne, a nástroje rozdelil do dvoch sekcií.
-- **Animácia viazaná na scroll** nechávala obsah pri spodnej hrane obrazovky polopriehľadný, kým užívateľ nezačal scrollovať. Lighthouse to nahlásil ako kontrast 1,85 : 1. Opravené na reveal, ktorý skrýva len prvky pod prvou obrazovkou.
-- **Po odomknutí sa „Otevřít přehled“ opakoval šesťkrát** a na stránke boli dva formuláre na hovor s rovnakým `id`. Zachytil to E2E pri overovaní mojej námietky.
-- **Navigácia v prehľade** zvýrazňovala zlú sekciu. Pravidlo „najvyššia viditeľná sekcia“ bolo zlé a odstup pri skoku na kotvu sa počítal dvakrát. Claude to najprv „opravil“ bez overenia. Až automatický test kliknutí zo spodku stránky ukázal, že chyba pretrváva. Test je teraz súčasťou E2E.
-- **Drobnosti zo screenshotov:** medzera pred „zdarma“ v tlačidle (flex gap), `\u2011` v JSX texte, ktorý by sa zobrazil doslova, a výška sekcie s prehľadom, ktorá po odomknutí narástla na 12 riadkov.
-
-### Code review pred odovzdaním
-
-Na záver som Clauda požiadal o revíziu redundancie a idiomatickosti. Výsledok: zdieľané konštanty (cookies, regex e-mailu, obdobia dashboardu) presunuté do `packages/shared`, dashboardové dotazy ako injektovateľná `StatsService`, cron za vlastným `CronGuard`, validácia celých tiel cez Zod namiesto ručného orezávania, porovnanie tajomstiev v konštantnom čase. Na FE stav z `localStorage` a `matchMedia` cez `useSyncExternalStore` (žiadny `setState` v efekte), duplicitné tlačidlá kopírovania ISIN zlúčené do jedného komponentu, animácie ako tokeny v `@theme`. Pribudli ESLint, Prettier a knip a `npm run check`, ktorý ich spustí spolu s testmi. Každý krok som overil testami a E2E.
-
-### Bezpečnostný review pred zverejnením
-
-Pred pushom do verejného repozitára som nechal nezávislého review agenta prejsť celý repozitár s pokynom pozerať sa naň ako AI recenzent pred rozhodnutím o prijatí. Paralelne som prešiel celú históriu commitov kvôli tajomstvám (žiadne nenašiel) a zmeral na Verceli, akú IP adresu API skutočne vidí. Opravené:
-
-| Závažnosť | Nález | Oprava |
-|---|---|---|
-| Stredná | `/r?to=/.//evil.com` prešiel kontrolou originu, ale do `Location` išla cesta `//evil.com`, teda cudzia doména | Cesta nesmie začínať `//`, test pre obe varianty |
-| Stredná | Chýbajúci `NODE_ENV` = development, takže admin, cron aj kontrola Originu by boli otvorené | Predvolene `production`. Na verejnom webe (https) API odmietne štart s tokenmi kratšími ako 24 znakov a s webhookom bez https a podpisu |
-| Stredná | `/lead` sa dal skriptom zneužiť na posielanie reportu na cudzie adresy a minutie denného limitu | Denný strop 50 leadov na IP v Postgrese (platí naprieč inštanciami na Verceli). Ukladá sa iba otisk IP |
-| Nízka | Pri chybe DB šiel do logu celý e-mail | Maskovaný e-mail ako všade inde |
-| Nízka | Admin cookie platila natrvalo, `maxAge` stráži iba prehliadač | Cookie nesie podpísanú expiráciu, ktorú overuje server |
-| Nízka | Webhook do CRM posielal tajomstvo v hlavičke | HMAC podpis tela s časovou pečiatkou (ochrana proti replay) |
-| Nízka | E-mailový súhlas nebol na serveri povinný, `consent_id: "toString"` prešiel | Povinný `email_v1`, `Object.hasOwn` |
-| Nízka | Chýbali CSP, `frame-ancestors`, HSTS | Doplnené v [next.config.ts](apps/web/next.config.ts) |
-| Nízka | Docker vystavoval web na `0.0.0.0` s verejným demo tokenom | Iba `127.0.0.1` |
-| Info | Odhlásenie hlásilo úspech aj pri neplatnom odkaze | Rozhoduje telo odpovede |
-
-Zámerne neriešené (popísané v [SECURITY.md](SECURITY.md) a v časti 11): captcha, retencia `events`, limity throttlera v pamäti inštancie a dev závislosti s `npm audit` nálezmi (do runtime sa nedostanú, `npm audit --omit=dev` = 0).
-
-## 11. Čo v riešení chýba / pred spustením reklamy
-
-- [x] **Verejný hosting:** Vercel (Hobby) + Neon (free), E2E prechádza proti produkcii. Bez Resend kľúča sa e-maily iba logujú. Pred kampaňou doplniť `RESEND_API_KEY` + overenú doménu a vlastnú doménu namiesto `*.vercel.app`. Vercel Cron na pláne Hobby beží raz denne s presnosťou ±1 h, čo pre sekvenciu D2/D5/D9 stačí.
-- [ ] **Produkčné env:** silné `ADMIN_TOKEN` a `CRON_SECRET` (v compose sú len demo hodnoty), `SITE_URL` s HTTPS, `RESEND_API_KEY` + `RESEND_FROM` (overená doména), voliteľne `HANDOFF_WEBHOOK_URL`. Zálohy Postgresu.
-- [ ] **Právne:** prevádzkovateľ v `/privacy`, kto volá (vlastný tým alebo partner), posúdenie súhlasov, srovnávacia reklama s konkrétnym fondom (reklama B), Meta „special ad category“.
-- [ ] **Prehľad je „mäkko“ zamknutý:** `/report` je dostupný aj bez e-mailu (noindex). Kto ho hľadá cez URL, by e-mail aj tak nezadal.
-- [ ] **PDF** je zatiaľ „uložiť ako PDF“ cez tlač, nie generovaný súbor.
-- [ ] **Dostupnosť u brokerov** je overená iba pre XTB.
-- [ ] **Aktualizácia dát:** TER a veľkosti fondov sú snímka k 22. 10. 2026. Pre produkciu by bol potrebný mesačný job s výskumným a kontrolným agentom.
-- [ ] **Limity na IP** (`@nestjs/throttler`) sú v pamäti procesu. Na Verceli má každá inštancia funkcie vlastné počítadlo, takže limit je len približný. Pred kampaňou s väčším rozpočtom treba Redis storage (napr. Upstash). Denné stropy e-mailov sú v Postgrese.
-- [ ] **Turnstile / captcha** pred ostrou kampaňou. Teraz chráni honeypot, kontrola Origin, limity na IP a denný strop 50 leadov na IP v Postgrese.
-- [ ] **Retencia dát:** tabuľka `events` sa zatiaľ nečistí a výmaz leadu na žiadosť je ručný SQL. Pred kampaňou pridať úlohu na výmaz po 3 rokoch a výmaz z adminu.
-- [ ] **Skenery odkazov** (Outlook Safe Links) môžu zaznamenať „klik v e-maile“. Riešením je počítať klik až z beaconu na cieľovej stránke.
-- [ ] **Double opt-in** e-mailu, ak to bude vyžadovať právny posudok.
-
-## 12. Spustenie
-
-Najrýchlejšie cez Docker (pozri [úvod](#spustenie-pre-review-docker-bez-node-aj-bez-účtov)). Pre vývoj bez kontajnerov pre API a web:
+## Spustenie
 
 ```bash
-npm install
-cp .env.example .env             # DATABASE_URL na Postgres z docker compose
-npm run db                       # iba Postgres v Dockeri (localhost:5544, + testovacia DB etfd_test)
-npm run dev:api                  # NestJS na :4000 (watch)
-npm run dev:web                  # Next.js na :3000, /api/* → :4000
-npm test                         # 25 testov shared + 31 integračných testov API proti Postgresu
-npm run check                    # typecheck + lint + prettier + knip + testy
-npm run format                   # Prettier na celý repozitár
-npm run e2e -- http://localhost:3000                              # celá cesta v prehliadači (vývoj: admin otvorený)
-ADMIN_TOKEN=review-token npm run e2e -- http://localhost:3000     # to isté proti Docker stacku
-npm run simulate -- http://localhost:3000 400                     # simulovaná návštevnosť do dashboardu
-npm run ads                      # vyrenderuje reklamy a OG obrázok
-npm run shots -- http://localhost:3000 review-token   # screenshoty do README
+docker compose up --build                          # web a admin na http://localhost:3000 (token review-token)
+docker compose --profile demo run --rm demo-data   # voliteľne simulované návštevy, aby admin nebol prázdny
 ```
 
-**Štruktúra:** `apps/web` (Next.js: `app/` stránky + admin UI, `components/` po oblastiach `landing/`, `report/`, `lead/`, `admin/`, `ui/`, `hooks/` (stav prehliadača cez `useSyncExternalStore`, animované čísla), `lib/` (klient API, tracking, úložisko), `proxy.ts`) · `apps/api` (NestJS: `src/<modul>/`, `drizzle/` migrácie, `test/`) · `packages/shared` (dáta a pravidlá, `test/`) · `ads/` · `scripts/` (E2E, simulácia, screenshoty, reklamy) · `docker-compose.yml`
+Netreba Node ani žiadne účty. Spustí sa databáza Postgres, API v NestJS a web v Next.js.
+
+Technické detaily (architektúra, meranie udalostí, bezpečnosť, príkazy pre vývoj): [docs/technical.md](docs/technical.md) a [SECURITY.md](SECURITY.md).
