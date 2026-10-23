@@ -85,7 +85,7 @@ Monorepo (npm workspaces): **FE Next.js · BE NestJS · DB Postgres**, spustené
 | **FE** – [apps/web](apps/web) | **Next.js 16** (App Router), React 19, TypeScript, **Tailwind CSS 4** | Obe varianty reklamy sú staticky predrenderované (rýchle LCP na mobile), interaktívne časti sú klientske „ostrovčeky“. Tokeny dizajnu sú v [globals.css](apps/web/app/globals.css) |
 | Varianty | **`proxy.ts`** (v Next 16 nahrádza middleware) | `/?ad=fees` → interný rewrite na `/v/fees`, varianta sa drží v cookie |
 | FE ↔ BE | **rewrite `/api/*` → NestJS** | Prehliadač komunikuje s jednou doménou: bez CORS a admin cookie zostáva first-party. Admin stránky sa renderujú na serveri z JSON-u z API |
-| **BE** – [apps/api](apps/api) | **NestJS 12** (ESM), moduly `Database`, `Tracking`, `Pipeline`, `Email`, `Admin`, `Health` | Každá fáza lievika má svoju službu. Guardy: `OriginGuard` (formuláre), `AdminGuard` (HMAC cookie), `CronGuard` (Bearer secret), `ThrottlerGuard` (limity na IP per route). Tajomstvá sa porovnávajú v konštantnom čase. Validácia cez Zod (`ZodPipe`), env sa validuje pri štarte (`@nestjs/config`). Dotazy pre dashboard sú v injektovateľnej `StatsService` |
+| **BE** – [apps/api](apps/api) | **NestJS 12** (ESM), moduly `Database`, `Tracking`, `Pipeline`, `Email`, `Admin`, `Health` | Každá fáza lievika má svoju službu. Guardy: `OriginGuard` (formuláre), `AdminGuard` (podpísaná cookie s expiráciou),  `CronGuard` (Bearer secret), `ThrottlerGuard` (limity na IP per route). Tajomstvá sa porovnávajú v konštantnom čase. Validácia cez Zod (`ZodPipe`), env sa validuje pri štarte (`@nestjs/config`). Dotazy pre dashboard sú v injektovateľnej `StatsService` |
 | Plánovač | **`@nestjs/schedule`** (denne 7:00, Europe/Prague) + chránený `GET /cron/emails` | Kroky sekvencie D2/D5/D9 a opakovanie neúspešných odovzdaní |
 | **DB** | **Postgres 17** + **Drizzle ORM** (`pg` Pool) | Schéma v TypeScripte, migrácie generuje `drizzle-kit` a API ich pri štarte spustí v transakcii ([apps/api/drizzle](apps/api/drizzle)) |
 | Zdieľané – [packages/shared](packages/shared) | čisté TS bez frameworku | Dáta ETF, kalkulačka, pravidlá skóre, sekvencia, súhlasy, udalosti. FE aj BE počítajú rovnako |
@@ -266,6 +266,25 @@ Stránku som potom prechádzal ako návštevník a posielal Claudovi screenshoty
 
 Na záver som Clauda požiadal o revíziu redundancie a idiomatickosti. Výsledok: zdieľané konštanty (cookies, regex e-mailu, obdobia dashboardu) presunuté do `packages/shared`, dashboardové dotazy ako injektovateľná `StatsService`, cron za vlastným `CronGuard`, validácia celých tiel cez Zod namiesto ručného orezávania, porovnanie tajomstiev v konštantnom čase. Na FE stav z `localStorage` a `matchMedia` cez `useSyncExternalStore` (žiadny `setState` v efekte), duplicitné tlačidlá kopírovania ISIN zlúčené do jedného komponentu, animácie ako tokeny v `@theme`. Pribudli ESLint, Prettier a knip a `npm run check`, ktorý ich spustí spolu s testmi. Každý krok som overil testami a E2E.
 
+### Bezpečnostný review pred zverejnením
+
+Pred pushom do verejného repozitára som pustil nezávislého review agenta na celý repozitár, so zadaním pozerať sa naň ako AI recenzenta pred rozhodnutím o prijatí. Paralelne som prešiel celú históriu commitov kvôli tajomstvám (žiadne nenašiel) a zmeral na Verceli, akú IP adresu API skutočne vidí. Opravené:
+
+| Závažnosť | Nález | Oprava |
+|---|---|---|
+| Stredná | `/r?to=/.//evil.com` prešiel kontrolou originu, ale do `Location` išla cesta `//evil.com`, teda cudzia doména | Cesta nesmie začínať `//`, test pre obe varianty |
+| Stredná | Chýbajúci `NODE_ENV` = development, takže admin, cron aj kontrola Originu by boli otvorené | Predvolene `production`. Na verejnom webe (https) API odmietne štart s tokenmi kratšími ako 24 znakov a s webhookom bez https a podpisu |
+| Stredná | `/lead` sa dal skriptom zneužiť na posielanie reportu na cudzie adresy a minutie denného limitu | Denný strop 50 leadov na IP v Postgrese (platí naprieč inštanciami na Verceli). Ukladá sa iba otisk IP |
+| Nízka | Pri chybe DB šiel do logu celý e-mail | Maskovaný e-mail ako všade inde |
+| Nízka | Admin cookie platila natrvalo, `maxAge` stráži iba prehliadač | Cookie nesie podpísanú expiráciu, ktorú overuje server |
+| Nízka | Webhook do CRM posielal tajomstvo v hlavičke | HMAC podpis tela s časovou pečiatkou (ochrana proti replay) |
+| Nízka | E-mailový súhlas nebol na serveri povinný, `consent_id: "toString"` prešiel | Povinný `email_v1`, `Object.hasOwn` |
+| Nízka | Chýbali CSP, `frame-ancestors`, HSTS | Doplnené v [next.config.ts](apps/web/next.config.ts) |
+| Nízka | Docker vystavoval web na `0.0.0.0` s verejným demo tokenom | Iba `127.0.0.1` |
+| Info | Odhlásenie hlásilo úspech aj pri neplatnom odkaze | Rozhoduje telo odpovede |
+
+Zámerne neriešené (popísané v [SECURITY.md](SECURITY.md) a v časti 11): captcha, retencia `events`, limity throttlera v pamäti inštancie a dev závislosti s `npm audit` nálezmi (do runtime sa nedostanú, `npm audit --omit=dev` = 0).
+
 ## 11. Čo v riešení chýba / pred spustením reklamy
 
 - [x] **Verejný hosting:** Vercel (Hobby) + Neon (free), E2E prechádza proti produkcii. Bez Resend kľúča sa e-maily iba logujú. Pred kampaňou doplniť `RESEND_API_KEY` + overenú doménu a vlastnú doménu namiesto `*.vercel.app`. Vercel Cron na pláne Hobby beží raz denne s presnosťou ±1 h, čo pre sekvenciu D2/D5/D9 stačí.
@@ -276,7 +295,8 @@ Na záver som Clauda požiadal o revíziu redundancie a idiomatickosti. Výsledo
 - [ ] **Dostupnosť u brokerov** je overená iba pre XTB.
 - [ ] **Aktualizácia dát:** TER a veľkosti fondov sú snímka k 22. 10. 2026. Pre produkciu by bol potrebný mesačný job s výskumným a kontrolným agentom.
 - [ ] **Limity na IP** (`@nestjs/throttler`) sú v pamäti procesu. Na Verceli má každá inštancia funkcie vlastné počítadlo, takže limit je len približný. Pred kampaňou s väčším rozpočtom treba Redis storage (napr. Upstash). Denné stropy e-mailov sú v Postgrese.
-- [ ] **Turnstile / captcha** pred ostrou kampaňou. Teraz chráni honeypot, kontrola Origin a limity na IP.
+- [ ] **Turnstile / captcha** pred ostrou kampaňou. Teraz chráni honeypot, kontrola Origin, limity na IP a denný strop 50 leadov na IP v Postgrese.
+- [ ] **Retencia dát:** tabuľka `events` sa zatiaľ nečistí a výmaz leadu na žiadosť je ručný SQL. Pred kampaňou pridať úlohu na výmaz po 3 rokoch a výmaz z adminu.
 - [ ] **Skenery odkazov** (Outlook Safe Links) môžu zaznamenať „klik v e-maile“. Riešením je počítať klik až z beaconu na cieľovej stránke.
 - [ ] **Double opt-in** e-mailu, ak to bude vyžadovať právny posudok.
 
