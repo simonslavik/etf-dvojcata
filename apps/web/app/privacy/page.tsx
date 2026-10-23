@@ -36,8 +36,27 @@ export default function PrivacyPage() {
           </li>
           <li>Abychom vám zavolali, pokud o to požádáte (souhlas). Kontakt pro hovor předáváme jen [doplnit – vlastní tým / partner].</li>
         </ul>
+        <h2>Kdo údaje zpracovává za nás</h2>
+        <ul>
+          <li>
+            <b>Vercel</b> (hosting webu a API, region Frankfurt) a <b>Neon</b> (databáze, region Frankfurt).
+          </li>
+          <li>
+            <b>Resend</b> – odesílání e-mailů.
+          </li>
+          <li>
+            <b>PostHog</b> (EU) – jen pokud je měření zapnuté, bez cookies.
+          </li>
+        </ul>
+        <p>
+          IP adresu k vašim údajům neukládáme. Proti zneužití formuláře si na 24 hodin pamatujeme jen její nevratný otisk (limit registrací
+          za den).
+        </p>
         <h2>Jak dlouho</h2>
-        <p>Do odhlášení, nejdéle 3 roky od posledního kontaktu. Anonymní statistiky průběžně agregujeme.</p>
+        <p>
+          Do odhlášení, nejdéle 3 roky od posledního kontaktu. Anonymní statistiky průběžně agregujeme. O výmaz nebo kopii údajů požádejte
+          e-mailem správce – vyřídíme do 30 dnů.
+        </p>
         <h2>Vaše práva</h2>
         <p>
           Máte právo na přístup, opravu, výmaz, omezení zpracování, přenositelnost a vznést námitku. Stížnost můžete podat u Úřadu pro

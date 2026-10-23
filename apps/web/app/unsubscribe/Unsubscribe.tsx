@@ -14,7 +14,9 @@ export function Unsubscribe({ token }: { token: string }) {
         disabled={!token}
         onClick={async () => {
           const r = await fetch(`/api/unsubscribe?t=${encodeURIComponent(token)}`, { method: 'POST' }).catch(() => null);
-          setState(r?.ok ? 'done' : 'error');
+          // API vrací 200 i pro neznámý token ({ ok: false }) – rozhoduje tělo odpovědi
+          const body = r?.ok ? ((await r.json().catch(() => null)) as { ok?: boolean } | null) : null;
+          setState(body?.ok ? 'done' : 'error');
         }}
       >
         Odhlásit se

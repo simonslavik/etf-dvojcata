@@ -32,7 +32,8 @@ services:
   web:
     build: { context: ., dockerfile: apps/web/Dockerfile, args: { API_URL: http://api:4000, SITE_URL: 'http://localhost:${PORT:-3000}' } }
     environment: { API_URL: http://api:4000 }
-    ports: ['${PORT:-3000}:3000']
+    # jen localhost: demo token review-token je veřejný v README – na serveru dát před web reverse proxy s HTTPS a vlastním tokenem
+    ports: ['127.0.0.1:${PORT:-3000}:3000']
     depends_on: { api: { condition: service_healthy } }
     restart: unless-stopped
 
