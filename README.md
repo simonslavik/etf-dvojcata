@@ -3,7 +3,7 @@
 Landing page pre českého drobného investora, ktorý prichádza z reklamy na mobile. Ukáže mu **európske (UCITS) „dvojčatá“ 12 ETF z NYSE Arca**, ktoré si v ČR naozaj kúpi, a spočíta, koľko ho stojí fond z banky. Výmenou za e-mail odomkne celý prehľad. Po odoslaní nasleduje kvalifikácia, voliteľné odovzdanie na telefonát a e-mailová starostlivosť. Celý lievik je viditeľný v admin dashboarde.
 
 - **Stránka:** _doplniť URL po nasadení_ · varianty reklamy: `/?ad=twin`, `/?ad=fees`
-- **Admin (pipeline):** `/admin` (token pošlem zvlášť)
+- **Admin (pipeline):** `/admin` – v Dockeri token `review-token`, token pre nasadenú verziu pošlem zvlášť
 - **Reklamy:** [ads/README.md](ads/README.md) – 2 verzie, texty, UTM odkazy
 - **Dáta so zdrojom pri každom údaji:** [packages/shared/data/etfs.json](packages/shared/data/etfs.json)
 - **Plán:** [PLAN.md](PLAN.md) (v1 – v3) · **Export konverzácií s Claude Code:** [ai-log/](ai-log/)
@@ -288,7 +288,7 @@ npm run e2e -- http://localhost:3000                              # celá cesta 
 ADMIN_TOKEN=review-token npm run e2e -- http://localhost:3000     # to isté proti Docker stacku
 npm run simulate -- http://localhost:3000 400                     # simulovaná návštevnosť do dashboardu
 npm run ads                      # vyrenderuje reklamy a OG obrázok
-node scripts/readme-shots.mjs http://localhost:3000 review-token  # screenshoty do README
+npm run shots -- http://localhost:3000 review-token   # screenshoty do README
 ```
 
 **Štruktúra:** `apps/web` (Next.js: `app/` stránky + admin UI, `components/`, `lib/api.ts` klient API, `proxy.ts`) · `apps/api` (NestJS: `src/<modul>/`, `drizzle/` migrácie, `test/`) · `packages/shared` (dáta a pravidlá, `test/`) · `ads/` · `scripts/` (E2E, simulácia, screenshoty, reklamy) · `docker-compose.yml`

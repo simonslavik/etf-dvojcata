@@ -1,8 +1,8 @@
 import path from 'node:path';
 import type { NextConfig } from 'next';
+import { API_URL } from './lib/config';
 
-/** NestJS API (apps/api). Rewrity se vyhodnocují při buildu – v Dockeru se předává jako build arg. */
-const API_URL = process.env.API_URL || 'http://localhost:4000';
+// API_URL: rewrity se vyhodnocují při buildu – v Dockeru se předává jako build arg
 
 const config: NextConfig = {
   // Docker image (NEXT_OUTPUT=standalone) – minimální server.js bez celého node_modules

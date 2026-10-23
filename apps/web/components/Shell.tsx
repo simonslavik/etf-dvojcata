@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Logo } from '@/components/landing/Sections';
+import { Logo } from '@/components/ui/Logo';
 
 /** Rám podstránek (přehled, soukromí, odhlášení…) */
 export function Shell({ children, action, narrow = false }: { children: ReactNode; action?: ReactNode; narrow?: boolean }) {

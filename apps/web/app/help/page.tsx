@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { Shell } from '@/components/Shell';
-import { CallRequest } from '@/components/landing/CallRequest';
+import { CallRequest } from '@/components/lead/CallRequest';
 
 export const metadata: Metadata = { title: 'Pomoc s prvním nákupem – ETF dvojčata', robots: { index: false } };
 
 /** Cíl posledního e-mailu sekvence (D9): z péče zpět do předání */
-export default async function Page({ searchParams }: { searchParams: Promise<{ t?: string }> }) {
+export default async function HelpPage({ searchParams }: { searchParams: Promise<{ t?: string }> }) {
   const { t } = await searchParams;
   return (
     <Shell narrow>

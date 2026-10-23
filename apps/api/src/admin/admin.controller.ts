@@ -87,6 +87,6 @@ export class AdminController {
     const csv = [EXPORT_COLS.join(','), ...rows.map((r) => EXPORT_COLS.map((c) => csvCell(r[toCamel(c) as keyof typeof r])).join(','))].join('\n');
     res.setHeader('content-type', 'text/csv; charset=utf-8');
     res.setHeader('content-disposition', `attachment; filename="leady-${new Date().toISOString().slice(0, 10)}.csv"`);
-    res.send(`﻿${csv}`);
+    res.send(`\uFEFF${csv}`); // BOM – Excel pak správně načte diakritiku
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import { useId, useState } from 'react';
+import Link from 'next/link';
+import { useId, useState, type FormEvent } from 'react';
 import { CALL_CONSENT, CONSENTS } from '@etfd/shared';
 import { Check, Phone } from '@/components/ui/icons';
 
@@ -10,7 +11,7 @@ export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?:
   const [error, setError] = useState<string | null>(null);
   const phoneId = `${useId()}-phone`; // formulář může být na stránce víckrát (sheet, závěr)
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = e.currentTarget;
     const consent = (f.elements.namedItem('consent') as HTMLInputElement).checked;
@@ -51,7 +52,7 @@ export function CallRequest({ token, onDone, onSkip }: { token: string; onDone?:
       <input id={phoneId} name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="777 123 456" className="input mt-3" aria-invalid={error ? true : undefined} onInput={() => setError(null)} />
       <label className="mt-3 flex items-start gap-2.5 text-[13px] leading-snug text-muted">
         <input name="consent" type="checkbox" className="mt-0.5 h-5 w-5 flex-none accent-brick" />
-        <span>{CONSENTS[CALL_CONSENT]} <a href="/privacy" className="src-link">Ochrana údajů</a></span>
+        <span>{CONSENTS[CALL_CONSENT]} <Link href="/privacy" className="src-link">Ochrana údajů</Link></span>
       </label>
       {error && <p role="alert" className="mt-2 text-[14px] font-medium text-brick">{error}</p>}
       <div className="mt-3 flex gap-2">

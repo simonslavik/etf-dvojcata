@@ -2,10 +2,10 @@ node_modules
 .next
 next-env.d.ts
 *.tsbuildinfo
-.data
-.vercel
+AGENTS.md
 .env*
 !.env.example
 .DS_Store
 screenshots/tmp
 dist
+.data

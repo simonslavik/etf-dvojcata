@@ -1,11 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { data } from '@etfd/shared';
-import { MONTHLY_BANDS, type MonthlyBand } from '@etfd/shared';
+import { data, MONTHLY_BANDS, type MonthlyBand } from '@etfd/shared';
 import { track } from '@/lib/track';
 import { ArrowRight, Check, X } from '@/components/ui/icons';
-import { CallRequest } from './CallRequest';
+import { CallRequest } from '@/components/lead/CallRequest';
 import { LeadForm } from './LeadForm';
 import { useLead } from './LeadProvider';
 import { ReportCover } from './ReportCover';
@@ -52,7 +52,7 @@ export function LeadSheet() {
       onClose={closeSheet}
       onClick={(e) => { if (e.target === ref.current) closeSheet(); }}
       aria-labelledby="sheet-title"
-      className="fixed inset-x-0 top-auto bottom-[var(--kb,0px)] m-0 max-h-[92dvh] w-full max-w-none overflow-y-auto rounded-t-[28px] bg-white p-0 text-text shadow-2xl backdrop:bg-teal-950/55 backdrop:backdrop-blur-[2px] open:[animation:sheet-in_.32s_var(--ease-out-soft)_both] sm:inset-auto sm:top-1/2 sm:left-1/2 sm:max-w-[520px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:open:[animation:fade-in_.2s_both]"
+      className="fixed inset-x-0 top-auto bottom-[var(--kb,0px)] m-0 max-h-[92dvh] w-full max-w-none overflow-y-auto rounded-t-[28px] bg-white p-0 text-text shadow-2xl backdrop:bg-teal-950/55 backdrop:backdrop-blur-[2px] open:animate-sheet-in sm:inset-auto sm:top-1/2 sm:left-1/2 sm:max-w-[520px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px] sm:open:animate-fade-in"
     >
       <div className="relative px-5 pt-3 pb-[max(20px,env(safe-area-inset-bottom))] sm:p-8">
         <span className="mx-auto mb-4 block h-1.5 w-10 rounded-full bg-line sm:hidden" aria-hidden="true" />
@@ -81,9 +81,9 @@ export function LeadSheet() {
             <p className="mt-1.5 text-[15px] text-muted">
               {emailSent ? 'Najdete ho níže na stránce a poslali jsme ho i na váš e-mail.' : 'Najdete ho níže na stránce – můžete ho rovnou otevřít.'}
             </p>
-            <a href="/report" className="btn btn-primary mt-5 w-full" onClick={() => track('report_open')} data-open-report>
+            <Link href="/report" className="btn btn-primary mt-5 w-full" onClick={() => track('report_open')} data-open-report>
               Otevřít celý přehled <ArrowRight />
-            </a>
+            </Link>
 
             {token && !band && (
               <div className="mt-6 border-t border-line pt-5" data-qualify>

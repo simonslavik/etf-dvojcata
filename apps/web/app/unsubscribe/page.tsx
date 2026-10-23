@@ -4,7 +4,7 @@ import { Unsubscribe } from './Unsubscribe';
 
 export const metadata: Metadata = { title: 'Odhlášení – ETF dvojčata', robots: { index: false } };
 
-export default async function Page({ searchParams }: { searchParams: Promise<{ t?: string }> }) {
+export default async function UnsubscribePage({ searchParams }: { searchParams: Promise<{ t?: string }> }) {
   const { t } = await searchParams;
   return (
     <Shell narrow>

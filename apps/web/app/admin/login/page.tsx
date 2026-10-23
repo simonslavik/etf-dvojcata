@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { Logo } from '@/components/landing/Sections';
+import { Logo } from '@/components/ui/Logo';
 
 export const metadata: Metadata = { title: 'Admin – ETF dvojčata', robots: { index: false } };
 
 /** Obyčejný POST formulář → NestJS (/api/admin/login) nastaví httpOnly cookie a přesměruje zpět (bez JS) */
-export default async function Login({ searchParams }: { searchParams: Promise<{ e?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ e?: string }> }) {
   const { e } = await searchParams;
   return (
     <main className="grid min-h-dvh place-items-center bg-paper px-4">

@@ -1,21 +1,22 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import Link from 'next/link';
+import { useRef, useState, type FormEvent } from 'react';
 import { CONSENTS, EMAIL_CONSENT } from '@etfd/shared';
 import { track } from '@/lib/track';
 import { useLead } from './LeadProvider';
 
 /** E-mailový formulář s jedním polem. Použitý v sheetu, pod náhledem přehledu i v závěrečném CTA. */
-export function LeadForm({ name, cta, tone = 'light', stacked = false, autoFocus = false, id }: {
-  name: string; cta: string; tone?: 'light' | 'dark'; stacked?: boolean; autoFocus?: boolean; id?: string;
+export function LeadForm({ name, cta, tone = 'light', stacked = false }: {
+  name: string; cta: string; tone?: 'light' | 'dark'; stacked?: boolean;
 }) {
   const { submitLead } = useLead();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const started = useRef(false);
-  const inputId = id ?? `email-${name}`;
+  const inputId = `email-${name}`;
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = e.currentTarget;
     setBusy(true);
@@ -39,7 +40,6 @@ export function LeadForm({ name, cta, tone = 'light', stacked = false, autoFocus
       <div className={`flex gap-2 ${stacked ? 'flex-col' : 'flex-col sm:flex-row'}`}>
         <input
           id={inputId} name="email" type="email" inputMode="email" autoComplete="email" placeholder="vas@email.cz" required
-          autoFocus={autoFocus}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${inputId}-err` : undefined}
           onInput={() => {
@@ -56,7 +56,7 @@ export function LeadForm({ name, cta, tone = 'light', stacked = false, autoFocus
       <input className="hidden" type="text" name="hp_f7" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       {error && <p id={`${inputId}-err`} role="alert" className={`mt-2 text-[14px] font-medium ${dark ? 'text-[#f3b2aa]' : 'text-brick'}`}>{error}</p>}
       <p className={`mt-2.5 text-[12.5px] ${dark ? 'text-white/60' : 'text-muted'}`}>
-        {CONSENTS[EMAIL_CONSENT]} <a href="/privacy" className="src-link">Ochrana údajů</a>
+        {CONSENTS[EMAIL_CONSENT]} <Link href="/privacy" className="src-link">Ochrana údajů</Link>
       </p>
     </form>
   );

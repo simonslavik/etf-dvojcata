@@ -1,33 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { useCountUpOnView } from '@/hooks/useCountUp';
 
-/** Velké číslo, které se při prvním zobrazení dopočítá od nuly (jednou, ~1 s, ease-out) */
-export function StatCard({ value, decimals = 0, prefix = '', suffix = '', label, icon }: {
-  value: number; decimals?: number; prefix?: string; suffix?: string; label: string; icon: ReactNode;
+/** Velké číslo, které se při prvním zobrazení dopočítá od nuly */
+export function StatCard({ value, decimals = 0, suffix = '', label, icon }: {
+  value: number; decimals?: number; suffix?: string; label: string; icon: ReactNode;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(value);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    setShown(0);
-    let raf = 0;
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      const start = performance.now();
-      const tick = (now: number) => {
-        const t = Math.min(1, (now - start) / 1000);
-        setShown(value * (1 - Math.pow(1 - t, 3)));
-        if (t < 1) raf = requestAnimationFrame(tick);
-      };
-      raf = requestAnimationFrame(tick);
-    }, { threshold: 0.4 });
-    io.observe(el);
-    return () => { io.disconnect(); cancelAnimationFrame(raf); };
-  }, [value]);
+  const [ref, shown] = useCountUpOnView<HTMLDivElement>(value);
 
   const text = shown.toLocaleString('cs-CZ', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   return (
@@ -35,7 +15,7 @@ export function StatCard({ value, decimals = 0, prefix = '', suffix = '', label,
       <span className="icon-tile hidden transition-colors duration-300 group-hover:bg-teal-800 group-hover:text-white sm:grid">{icon}</span>
       <div className="min-w-0">
         <p className="num font-display text-[26px] leading-none font-bold text-ink sm:text-[32px]">
-          {prefix}{text}{suffix}
+          {text}{suffix}
         </p>
         <p className="mt-1 text-[12.5px] leading-tight text-muted sm:text-[14px]">{label}</p>
       </div>

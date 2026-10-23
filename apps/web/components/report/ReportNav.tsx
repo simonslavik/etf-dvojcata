@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Download } from '@/components/ui/icons';
+import { LogoMark } from '@/components/ui/Logo';
 
 const ITEMS = [
   { id: 'navod', label: 'Jak koupit' },
@@ -11,7 +11,7 @@ const ITEMS = [
 
 /**
  * Přilepená navigace přehledu: po přilepení plná bílá „pilulka“ se stínem a mini logem,
- * aktivní sekce podle scrollu (posuvné zvýraznění) a tenký ukazatel přečtení.
+ * aktivní sekce podle scrollu (posuvné zvýraznění) a tenký ukazatel přečtení. PDF je v hlavičce stránky.
  */
 export function ReportNav() {
   const sentinel = useRef<HTMLDivElement>(null);
@@ -56,7 +56,7 @@ export function ReportNav() {
         <div className="flex items-center gap-2">
           {/* mini logo – jen když je navigace přilepená */}
           <span aria-hidden="true" className="ml-1 hidden w-0 overflow-hidden opacity-0 transition-[width,opacity] duration-300 group-data-[stuck]:w-7 group-data-[stuck]:opacity-100 sm:block">
-            <svg viewBox="0 0 32 32" className="h-7 w-7"><rect x="3" y="6" width="17" height="17" rx="5" fill="var(--color-teal-800)" /><rect x="12" y="10" width="17" height="17" rx="5" fill="var(--color-brick)" fillOpacity=".92" /></svg>
+            <LogoMark className="h-7 w-7" />
           </span>
           <ul className="relative grid flex-1 grid-cols-3 sm:flex sm:flex-none">
             {/* posuvné zvýraznění aktivní položky */}
@@ -78,9 +78,6 @@ export function ReportNav() {
               </li>
             ))}
           </ul>
-          <button onClick={() => print()} className="ml-auto hidden min-h-10 items-center gap-1.5 rounded-xl px-3 text-[13.5px] font-semibold text-teal-700 transition-colors hover:bg-teal-50 sm:inline-flex">
-            <Download className="h-4 w-4" /> PDF
-          </button>
         </div>
         {/* ukazatel přečtení */}
         <span aria-hidden="true" className="absolute inset-x-3 -bottom-px h-[2px] overflow-hidden rounded-full">

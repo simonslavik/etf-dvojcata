@@ -9,7 +9,9 @@ COPY packages/shared packages/shared
 COPY apps/web apps/web
 # Rewrity /api/* → API se zapisují při buildu, proto build arg
 ARG API_URL=http://api:4000
-ENV API_URL=$API_URL NEXT_OUTPUT=standalone NEXT_TELEMETRY_DISABLED=1
+# SITE_URL: absolutní URL pro OG obrázek a metadata (stránky jsou statické → potřeba při buildu)
+ARG SITE_URL=http://localhost:3000
+ENV API_URL=$API_URL SITE_URL=$SITE_URL NEXT_OUTPUT=standalone NEXT_TELEMETRY_DISABLED=1
 RUN npm run build -w @etfd/shared && npm run build -w @etfd/web
 
 FROM node:22-alpine

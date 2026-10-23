@@ -1,9 +1,10 @@
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import { Shell } from '@/components/Shell';
 
 export const metadata: Metadata = { title: 'Ochrana osobních údajů – ETF dvojčata', robots: { index: false } };
 
-export default function Privacy() {
+export default function PrivacyPage() {
   return (
     <Shell narrow>
       <article className="space-y-4 text-[16px] leading-relaxed text-text [&_h2]:mt-8 [&_h2]:text-[20px] [&_h2]:font-bold [&_h2]:text-ink [&_li]:ml-5 [&_li]:list-disc">
@@ -26,7 +27,7 @@ export default function Privacy() {
         <p>Do odhlášení, nejdéle 3 roky od posledního kontaktu. Anonymní statistiky průběžně agregujeme.</p>
         <h2>Vaše práva</h2>
         <p>Máte právo na přístup, opravu, výmaz, omezení zpracování, přenositelnost a vznést námitku. Stížnost můžete podat u Úřadu pro ochranu osobních údajů (uoou.gov.cz).</p>
-        <p><a className="src-link" href="/">← Zpět na přehled ETF dvojčat</a></p>
+        <p><Link className="src-link" href="/">← Zpět na přehled ETF dvojčat</Link></p>
       </article>
     </Shell>
   );

@@ -1,10 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { compare, data, formatInt, formatKc, formatPct, yearsLabel } from '@etfd/shared';
 import { ArrowRight } from '@/components/ui/icons';
 import { Term } from '@/components/ui/Term';
 import { track } from '@/lib/track';
-import { useCountUp } from '@/lib/useCountUp';
+import { useCountUp } from '@/hooks/useCountUp';
 import { useLead } from './LeadProvider';
 
 const { bank, etf, annual_return: annualReturn } = data.calc;
@@ -80,9 +81,9 @@ export function FeeCalculator() {
         </div>
 
         {unlocked ? (
-          <a href="/report#dvojcata" onClick={() => track('report_open', { from: 'calc' })} className="group mt-4 flex min-h-11 items-center justify-center gap-1.5 text-[14px] font-semibold text-teal-700 hover:text-teal-900">
+          <Link href="/report#dvojcata" onClick={() => track('report_open', { from: 'calc' })} className="group mt-4 flex min-h-11 items-center justify-center gap-1.5 text-[14px] font-semibold text-teal-700 hover:text-teal-900">
             Levná ETF dvojčata najdete v přehledu <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </a>
+          </Link>
         ) : (
           <button className="btn btn-primary mt-4 w-full" onClick={() => openSheet('calc')} data-cta="calc">
             Chci ušetřit {formatKc(v.saved)}

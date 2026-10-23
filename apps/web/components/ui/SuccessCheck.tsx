@@ -12,7 +12,7 @@ export function SuccessCheck() {
       {PARTICLES.map((p, i) => (
         <i
           key={i}
-          className="absolute top-1/2 left-1/2 -mt-1 -ml-1 rounded-full opacity-0 [animation:burst_.7s_var(--ease-out-soft)_.2s_both]"
+          className="absolute top-1/2 left-1/2 -mt-1 -ml-1 rounded-full animate-burst opacity-0"
           style={{ width: p.s, height: p.s, background: p.c, ['--x' as string]: `${p.x}px`, ['--y' as string]: `${p.y}px`, ['--r' as string]: `${p.r}deg` }}
         />
       ))}

@@ -1,6 +1,6 @@
+import { ADMIN_COOKIE, VARIANT_COOKIE } from '@etfd/shared';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const VARIANT_COOKIE = 'etfd_v';
 
 /** ?ad=fees | ?ad=b | utm_content=ad_b → varianta B (poplatky), jinak A (dvojče) */
 function variantFromQuery(sp: URLSearchParams) {
@@ -23,7 +23,7 @@ export function proxy(req: NextRequest) {
   }
 
   // Admin: bez cookie rovnou na přihlášení. Platnost cookie ověřuje API (AdminGuard) – stránky při 401 také přesměrují.
-  if (pathname.startsWith('/admin/login') || req.cookies.has('etfd_admin') || process.env.NODE_ENV === 'development') return NextResponse.next();
+  if (pathname.startsWith('/admin/login') || req.cookies.has(ADMIN_COOKIE) || process.env.NODE_ENV === 'development') return NextResponse.next();
   return NextResponse.redirect(new URL('/admin/login', req.url));
 }
 

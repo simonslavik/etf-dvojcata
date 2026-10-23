@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
 import { data, formatPct, host, pairByTicker } from '@etfd/shared';
 import { track } from '@/lib/track';
-import { ArrowRight, Check, Copy } from '@/components/ui/icons';
+import { CopyIsinButton } from '@/components/ui/CopyIsinButton';
+import { ArrowRight, Check } from '@/components/ui/icons';
 import { Term } from '@/components/ui/Term';
 import { useLead } from './LeadProvider';
 
@@ -15,14 +16,6 @@ export function TwinFinder() {
   const { selected, select, openSheet, unlocked } = useLead();
   const p = pairByTicker(selected)!;
   const t = p.twin;
-  const [copied, setCopied] = useState(false);
-
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(t.isin); } catch { /* starší prohlížeče: ISIN je vidět vedle */ }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
-    track('isin_copy', { isin: t.isin });
-  };
 
   return (
     <div className="card overflow-hidden" data-module="finder">
@@ -36,7 +29,11 @@ export function TwinFinder() {
               aria-pressed={x.us.ticker === selected}
               aria-controls="twin-result"
               className="chip flex-none !min-h-10 !px-3.5"
-              onClick={() => select(x.us.ticker)}
+              onClick={() => {
+                if (x.us.ticker === selected) return;
+                track('finder_select', { ticker: x.us.ticker });
+                select(x.us.ticker);
+              }}
               data-ticker={x.us.ticker}
             >
               {x.us.ticker}
@@ -67,18 +64,16 @@ export function TwinFinder() {
                 <span className="block text-[11px] text-muted"><Term k="ISIN" /> – vložte do vyhledávání v aplikaci</span>
                 <span className="font-mono text-[15px] font-bold tracking-wide text-ink">{t.isin}</span>
               </div>
-              <button type="button" onClick={copy} data-copy-isin className="inline-flex min-h-10 flex-none items-center gap-1.5 rounded-lg bg-teal-900 px-3 text-[13px] font-semibold text-white transition-colors hover:bg-teal-700 data-[copied]:bg-ok" data-copied={copied || undefined}>
-                {copied ? <span className="animate-pop inline-flex items-center gap-1.5"><Check className="h-4 w-4" /> Zkopírováno</span> : <><Copy className="h-4 w-4" /> Kopírovat</>}
-              </button>
+              <CopyIsinButton isin={t.isin} from="finder" />
             </div>
           </div>
         </div>
 
         {/* Po odemčení už žádné další velké tlačítko – jen nenápadný odkaz (hlavní vstup je v headeru a v sekci přehledu) */}
         {unlocked ? (
-          <a href="/report#dvojcata" onClick={() => track('report_open', { from: 'finder' })} className="group mt-3 flex min-h-11 items-center justify-center gap-1.5 text-[14px] font-semibold text-teal-700 hover:text-teal-900">
+          <Link href="/report#dvojcata" onClick={() => track('report_open', { from: 'finder' })} className="group mt-3 flex min-h-11 items-center justify-center gap-1.5 text-[14px] font-semibold text-teal-700 hover:text-teal-900">
             {t.ticker} a dalších {data.pairs.length - 1} najdete v přehledu <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </a>
+          </Link>
         ) : (
           <button className="btn btn-primary mt-3 w-full" onClick={() => openSheet('finder')} data-cta="finder">
             <span>Poslat {t.ticker} + {data.pairs.length - 1} dalších<span className="hidden sm:inline">&nbsp;zdarma</span></span>

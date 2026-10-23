@@ -1,13 +1,13 @@
 /* Stavební kameny dashboardu – vizuálně podle ukázky „dashboard klienta“ na clientelo.cz */
 import type { ReactNode } from 'react';
-import { STAGE_LABEL, type Stage } from '@etfd/shared';
-import { formatInt } from '@etfd/shared';
+import { formatInt, formatKcExact, formatShare, STAGE_LABEL, VARIANT_LABEL, VARIANTS, type Stage } from '@etfd/shared';
 
 /** Barvy variant A/B – ověřené validátorem (CVD ΔE 15,6, kontrast ≥ 3:1); text nikdy nenese barvu série */
 export const SERIES = { twin: '#2a7fa8', fees: '#c2553f' } as const;
 
-export const pct = (a: number, b: number) => (b ? `${((a / b) * 100).toLocaleString('cs-CZ', { maximumFractionDigits: 1 })} %` : '–');
-export const kc = (n: number | null) => (n == null ? '–' : `${formatInt(Math.round(n))} Kč`);
+/** Podíl a/b pro dashboard („–“, když základ je nula) */
+export const pct = (a: number, b: number) => (b ? formatShare(a / b) : '–');
+export const kc = (n: number | null) => (n == null ? '–' : formatKcExact(n));
 
 export function Panel({ title, children, action, className = '' }: { title: string; children: ReactNode; action?: ReactNode; className?: string }) {
   return (
@@ -79,8 +79,9 @@ export function Columns({ data }: { data: { label: string; value: number; title:
 export function Legend() {
   return (
     <span className="flex gap-4 text-[12.5px] text-muted">
-      <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-[3px]" style={{ background: SERIES.twin }} />A · Dvojče</span>
-      <span className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-[3px]" style={{ background: SERIES.fees }} />B · Poplatky</span>
+      {VARIANTS.map((v) => (
+        <span key={v} className="flex items-center gap-1.5"><i className="h-2.5 w-2.5 rounded-[3px]" style={{ background: SERIES[v] }} />{VARIANT_LABEL[v]}</span>
+      ))}
     </span>
   );
 }

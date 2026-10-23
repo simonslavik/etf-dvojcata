@@ -31,6 +31,22 @@
   --shadow-card: 0 1px 0 rgb(22 59 59 / 0.04), 0 18px 40px -22px rgb(22 59 59 / 0.28);
   --shadow-float: 0 30px 60px -30px rgb(15 44 44 / 0.45);
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Animace jako theme tokeny → utility animate-rise, animate-pop… (žádné [animation:…] v markupu) */
+  --animate-rise: rise .45s var(--ease-out-soft) both;
+  --animate-rise-late: rise .5s var(--ease-out-soft) .12s both;
+  --animate-pop: pop .35s var(--ease-out-soft) both;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-fade-in: fade-in .2s both;
+  --animate-sheet-in: sheet-in .32s var(--ease-out-soft) both;
+  --animate-burst: burst .7s var(--ease-out-soft) .2s both;
+
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes pop { 0% { transform: scale(.92); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+  @keyframes float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(-1deg); } }
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+  @keyframes burst { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.4) rotate(var(--r)); } }
 }
 
 @layer base {
@@ -42,6 +58,7 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
+  :root { interpolate-size: allow-keywords; }
   ::selection { background: var(--color-brick-100); }
   :focus-visible { outline: 3px solid color-mix(in srgb, var(--color-brick) 55%, transparent); outline-offset: 2px; border-radius: 6px; }
   button { cursor: pointer; }
@@ -72,12 +89,22 @@
     transition: transform .15s var(--ease-out-soft), background-color .15s, box-shadow .15s; text-align: center;
   }
   .btn:active { transform: translateY(1px) scale(.99); }
-  .btn-primary { background: var(--color-brick); color: #fff; box-shadow: 0 10px 24px -12px rgb(166 61 54 / .7), inset 0 -2px 0 rgb(0 0 0 / .14); }
+  .btn-primary { position: relative; overflow: hidden; background: var(--color-brick); color: #fff; box-shadow: 0 10px 24px -12px rgb(166 61 54 / .7), inset 0 -2px 0 rgb(0 0 0 / .14); }
+  /* jemné nadzvednutí a jeden „lesk“ při najetí */
+  .btn-primary::after {
+    content: ''; position: absolute; inset: 0; width: 40%; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / .22), transparent); transform: translateX(-120%) skewX(-20deg);
+  }
+  @media (hover: hover) {
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 28px -14px rgb(166 61 54 / .8), inset 0 -2px 0 rgb(0 0 0 / .14); }
+    .btn-primary:hover::after { animation: shine .8s ease-out; }
+    .btn-primary:hover svg { transform: translateX(2px); }
+  }
   .btn-primary:hover { background: var(--color-brick-700); }
   .btn-primary:disabled { opacity: .7; cursor: progress; }
   .btn-ghost { background: #fff; color: var(--color-ink); border: 1.5px solid var(--color-line); }
   .btn-ghost:hover { border-color: var(--color-teal-500); }
-  .btn svg { width: 18px; height: 18px; flex: none; }
+  .btn svg { width: 18px; height: 18px; flex: none; transition: transform .2s var(--ease-out-soft); }
 
   .chip {
     min-height: 42px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--color-line); background: #fff;
@@ -85,6 +112,7 @@
     transition: background-color .15s, border-color .15s, color .15s, transform .15s var(--ease-out-soft);
   }
   .chip:hover { border-color: var(--color-teal-500); }
+  .chip[aria-pressed='true'] { animation: pop .3s var(--ease-out-soft); }
   .chip[aria-selected='true'], .chip[aria-pressed='true'] { background: var(--color-teal-800); border-color: var(--color-teal-800); color: #fff; }
 
   /* Ikona v tónovaném čtverci (jako karty na clientelo.cz) */
@@ -121,66 +149,40 @@
   .facets::after { width: 40%; height: 120%; right: -8%; top: 20%; transform: skewX(-28deg); background: rgb(255 255 255 / .03); }
 }
 
-@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@layer components {
+  /* Přeškrtnutí amerického tickeru se „nakreslí“ (místo statického line-through) */
+  .strike { position: relative; display: inline-block; }
+  .strike::after {
+    content: ''; position: absolute; left: -2px; right: -2px; top: 52%; height: 2.5px; border-radius: 2px;
+    background: var(--color-brick); transform-origin: left; animation: strike .45s var(--ease-out-soft) .15s both;
+  }
+
+  /* Fajka po odeslání se vykreslí tahem */
+  .draw-check path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw .45s var(--ease-out-soft) .1s forwards; }
+
+  /* Karty: jemné nadzvednutí při najetí */
+  .lift { transition: transform .3s var(--ease-out-soft), box-shadow .3s var(--ease-out-soft), border-color .3s; }
+  @media (hover: hover) {
+    .lift:hover { transform: translateY(-4px); box-shadow: 0 24px 44px -26px rgb(22 59 59 / .45); border-color: var(--color-teal-200); }
+  }
+
+  /* Vynoření při scrollu řídí RevealOnScroll (JS): skrývá jen prvky pod první obrazovkou */
+  .pre-reveal { opacity: 0; transform: translateY(14px); }
+  .revealed { opacity: 1; transform: none; transition: opacity .55s var(--ease-out-soft) var(--reveal-delay, 0ms), transform .55s var(--ease-out-soft) var(--reveal-delay, 0ms); }
+
+  /* Spojnice kroků „Jak to funguje“ se při scrollu nakreslí (kde prohlížeč umí scroll-driven animace) */
+  @supports (animation-timeline: view()) {
+    .how-line { animation: strike linear both; animation-timeline: view(); animation-range: entry 40px cover 40%; }
+  }
+
+  /* FAQ a detaily v přehledu se rozbalí plynule (kde prohlížeč umí ::details-content) */
+  details.smooth::details-content { height: 0; overflow: clip; transition: height .3s var(--ease-out-soft), content-visibility .3s allow-discrete; }
+  details.smooth[open]::details-content { height: auto; }
+}
+
 @keyframes strike { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-@keyframes nudge { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(4px); } 70% { transform: translateY(-1px); } }
-@keyframes pop { 0% { transform: scale(.92); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
-@keyframes float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(-1deg); } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
-@keyframes burst { 0% { opacity: 1; transform: translate(0, 0) scale(1); } 100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(.4) rotate(var(--r)); } }
 @keyframes shine { from { transform: translateX(-120%) skewX(-20deg); } to { transform: translateX(220%) skewX(-20deg); } }
-
-.animate-rise { animation: rise .45s var(--ease-out-soft) both; }
-.animate-rise-late { animation: rise .5s var(--ease-out-soft) .12s both; }
-.animate-nudge { animation: nudge .9s var(--ease-out-soft) .35s both; }
-.animate-pop { animation: pop .35s var(--ease-out-soft) both; }
-.animate-float { animation: float 6s ease-in-out infinite; }
-
-/* Přeškrtnutí amerického tickeru se „nakreslí“ (místo statického line-through) */
-.strike { position: relative; display: inline-block; }
-.strike::after {
-  content: ''; position: absolute; left: -2px; right: -2px; top: 52%; height: 2.5px; border-radius: 2px;
-  background: var(--color-brick); transform-origin: left; animation: strike .45s var(--ease-out-soft) .15s both;
-}
-
-/* Fajka po odeslání se vykreslí tahem */
-.draw-check path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw .45s var(--ease-out-soft) .1s forwards; }
-
-/* Tlačítko: jemné nadzvednutí a jeden „lesk“ při najetí */
-.btn-primary { position: relative; overflow: hidden; }
-.btn-primary::after {
-  content: ''; position: absolute; inset: 0; width: 40%; pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .22), transparent); transform: translateX(-120%) skewX(-20deg);
-}
-@media (hover: hover) {
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 28px -14px rgb(166 61 54 / .8), inset 0 -2px 0 rgb(0 0 0 / .14); }
-  .btn-primary:hover::after { animation: shine .8s ease-out; }
-  .btn-primary:hover svg { transform: translateX(2px); }
-}
-.btn svg { transition: transform .2s var(--ease-out-soft); }
-.chip[aria-pressed='true'] { animation: pop .3s var(--ease-out-soft); }
-
-/* Vynoření při scrollu řídí RevealOnScroll (JS): skrývá jen prvky pod první obrazovkou */
-.pre-reveal { opacity: 0; transform: translateY(14px); }
-.revealed { opacity: 1; transform: none; transition: opacity .55s var(--ease-out-soft) var(--reveal-delay, 0ms), transform .55s var(--ease-out-soft) var(--reveal-delay, 0ms); }
-
-/* Karty: jemné nadzvednutí při najetí */
-.lift { transition: transform .3s var(--ease-out-soft), box-shadow .3s var(--ease-out-soft), border-color .3s; }
-@media (hover: hover) {
-  .lift:hover { transform: translateY(-4px); box-shadow: 0 24px 44px -26px rgb(22 59 59 / .45); border-color: var(--color-teal-200); }
-}
-
-/* Spojnice kroků „Jak to funguje“ se při scrollu nakreslí */
-@supports (animation-timeline: view()) {
-  .how-line { animation: strike linear both; animation-timeline: view(); animation-range: entry 40px cover 40%; }
-}
-
-/* FAQ se rozbalí plynule (kde prohlížeč umí ::details-content) */
-:root { interpolate-size: allow-keywords; }
-details.smooth::details-content { height: 0; overflow: clip; transition: height .3s var(--ease-out-soft), content-visibility .3s allow-discrete; }
-details.smooth[open]::details-content { height: auto; }
 
 /* Tisk / „Uložit jako PDF“: bez ovládacích prvků, všechny detaily rozbalené, bez stínů */
 @media print {

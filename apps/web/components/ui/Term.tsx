@@ -14,7 +14,7 @@ const GLOSSARY = {
 } as const;
 type GlossaryKey = keyof typeof GLOSSARY;
 
-export function Term({ k, children, tone = 'light' }: { k: GlossaryKey; children?: ReactNode; tone?: 'light' | 'dark' }) {
+export function Term({ k, children }: { k: GlossaryKey; children?: ReactNode }) {
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const btn = useRef<HTMLButtonElement>(null);
   const id = useId();
@@ -45,7 +45,7 @@ export function Term({ k, children, tone = 'light' }: { k: GlossaryKey; children
         onClick={toggle}
         aria-expanded={Boolean(pos)}
         aria-describedby={pos ? id : undefined}
-        className={`inline cursor-help border-b border-dotted font-[inherit] ${tone === 'dark' ? 'border-white/50' : 'border-current/50'}`}
+        className="inline cursor-help border-b border-dotted border-current/50 font-[inherit]"
       >
         {children ?? k}
         <sup className="ml-px text-[0.6em] font-semibold opacity-60">?</sup>
@@ -55,7 +55,7 @@ export function Term({ k, children, tone = 'light' }: { k: GlossaryKey; children
           id={id}
           role="tooltip"
           style={{ top: pos.top, left: pos.left, width: Math.min(300, innerWidth - 24) }}
-          className="fixed z-50 rounded-2xl bg-teal-900 p-4 text-left font-sans text-[14px] leading-snug font-normal tracking-normal text-white normal-case shadow-xl [animation:fade-in_.15s_both]"
+          className="fixed z-50 rounded-2xl bg-teal-900 p-4 text-left font-sans text-[14px] leading-snug font-normal tracking-normal text-white normal-case shadow-xl animate-fade-in"
         >
           <b className="mb-1 block text-[13px] font-semibold text-[#e9a9a2]">{k}</b>
           {GLOSSARY[k]}

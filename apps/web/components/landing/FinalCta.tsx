@@ -1,7 +1,7 @@
 'use client';
 
 import { data } from '@etfd/shared';
-import { CallRequest } from './CallRequest';
+import { CallRequest } from '@/components/lead/CallRequest';
 import { LeadForm } from './LeadForm';
 import { useLead } from './LeadProvider';
 import { ReportCover } from './ReportCover';

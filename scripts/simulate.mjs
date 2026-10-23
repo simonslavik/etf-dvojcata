@@ -26,7 +26,7 @@ for (let i = 0; i < sessions; i++) {
   await ev(variant === 'twin' ? 'finder_select' : 'calc_change', { ticker: pick(['SPY', 'VT', 'VTI', 'SCHD']) });
   if (rnd() < 0.3) await ev('isin_copy');
   if (rnd() > p.cta) continue;
-  await ev('cta_click', { source: pick(['finder', 'calc', 'sticky']) });
+  await ev('cta_click', { source: pick(['finder', 'calc', 'header']) });
   await ev('form_view', { form: 'sheet' });
   if (rnd() > p.start) continue;
   await ev('form_start', { form: 'sheet' });

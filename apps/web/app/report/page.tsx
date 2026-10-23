@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { data, exactTickers, fmtDate, formatPct } from '@etfd/shared';
 import { HOW_TO_BUY, Src } from '@/lib/content';
 import { Shell } from '@/components/Shell';
-import { PrintButton } from '@/components/PrintButton';
+import { PrintButton } from '@/components/ui/PrintButton';
 import { TrackView } from '@/components/TrackView';
 import { CallOffer } from '@/components/report/CallOffer';
 import { ReportNav } from '@/components/report/ReportNav';
@@ -23,8 +23,7 @@ const TAX = [
   { big: 'Acc', t: 'Dividendy', d: f.dividends.cs, f: f.dividends },
 ];
 
-
-export default function Report() {
+export default function ReportPage() {
   return (
     <Shell action={<PrintButton />}>
       <TrackView event="report_view" />

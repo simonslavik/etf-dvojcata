@@ -1,24 +1,15 @@
+import type { ReactNode } from 'react';
+import Link from 'next/link';
 /* Serverové sekce landing page. Interaktivní části (nástroje, formuláře) jsou klientské ostrůvky. */
 import { data, exactTickers, fmtDate, formatPct, host, type Variant } from '@etfd/shared';
 import { FAQ } from '@/lib/content';
-import { Chart, Check, Copy, Layers, Link, Mail, Pointer, Search, ShieldCheck, Target } from '@/components/ui/icons';
+import { Chart, Check, Copy, Layers, LinkIcon, Mail, Pointer, Search, ShieldCheck, Target } from '@/components/ui/icons';
+import { Logo } from '@/components/ui/Logo';
 import { Term } from '@/components/ui/Term';
 import { FaqList } from './FaqList';
 import { StatCard } from './StatCard';
 
-export function Logo() {
-  return (
-    <a href="/" className="inline-flex items-center gap-2.5 text-[19px] font-bold tracking-tight text-ink">
-      <svg viewBox="0 0 32 32" className="h-8 w-8" aria-hidden="true">
-        <rect x="3" y="6" width="17" height="17" rx="5" fill="var(--color-teal-800)" />
-        <rect x="12" y="10" width="17" height="17" rx="5" fill="var(--color-brick)" fillOpacity=".92" />
-      </svg>
-      <span>ETF <span className="text-teal-600">dvojčata</span></span>
-    </a>
-  );
-}
-
-const HERO: Record<Variant, { eyebrow: string; title: [string, string]; lead: React.ReactNode; short: React.ReactNode }> = {
+const HERO: Record<Variant, { eyebrow: string; title: [string, string]; lead: ReactNode; short: ReactNode }> = {
   twin: {
     eyebrow: 'ETF · UCITS · pro investory z Česka',
     title: ['VOO si v Česku nekoupíte.', 'Jeho dvojče ano.'],
@@ -33,7 +24,7 @@ const HERO: Record<Variant, { eyebrow: string; title: [string, string]; lead: Re
   },
 };
 
-export function Hero({ variant, tool }: { variant: Variant; tool: React.ReactNode }) {
+export function Hero({ variant, tool }: { variant: Variant; tool: ReactNode }) {
   const h = HERO[variant];
   return (
     <section data-hero aria-labelledby="hero-title" className="relative overflow-hidden bg-gradient-to-b from-white to-paper">
@@ -71,13 +62,13 @@ export function ProofStrip() {
           <StatCard icon={<Layers />} value={data.pairs.length} label="ETF dvojčat" />
           <StatCard icon={<Target />} value={exactTickers.length} label="se stejným indexem" />
           <StatCard icon={<Chart />} value={minTer} decimals={2} suffix={'\u00a0%'} label="nejnižší poplatek" />
-          <StatCard icon={<Link />} value={data.sources.length} label="ověřených zdrojů" />
+          <StatCard icon={<LinkIcon />} value={data.sources.length} label="ověřených zdrojů" />
         </div>
         <ul className="reveal mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[13.5px] text-text sm:text-[14.5px]">
           {[
             [<ShieldCheck key="s" />, 'Nejsme broker, nebereme provize'],
             [<Mail key="m" />, 'Žádný spam, odhlášení 1 klikem'],
-            [<Link key="l" />, `Zdroje: Vanguard, iShares, SPDR, justETF, zákony ČR · k ${fmtDate(data.as_of)}`],
+            [<LinkIcon key="l" />, `Zdroje: Vanguard, iShares, SPDR, justETF, zákony ČR · k ${fmtDate(data.as_of)}`],
           ].map(([icon, t]) => (
             <li key={String(t)} className="flex items-center gap-2 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:flex-none [&_svg]:text-teal-600">{icon}{t}</li>
           ))}
@@ -94,7 +85,7 @@ const SECOND: Record<Variant, { eyebrow: string; title: string; lead: string }> 
 };
 
 /** Druhý nástroj jako vlastní kompaktní sekce – v hero je vždy jen jeden (podle reklamy), bez přepínače */
-export function SecondTool({ variant, tool }: { variant: Variant; tool: React.ReactNode }) {
+export function SecondTool({ variant, tool }: { variant: Variant; tool: ReactNode }) {
   const s = SECOND[variant];
   return (
     <section id="tool-2" aria-labelledby="second-title" className="relative overflow-hidden bg-teal-900 py-10 text-white sm:py-14">
@@ -175,7 +166,7 @@ export function Footer() {
             ))}
           </ul>
         </details>
-        <p><a className="src-link" href="/privacy">Ochrana osobních údajů</a></p>
+        <p><Link className="src-link" href="/privacy">Ochrana osobních údajů</Link></p>
       </div>
     </footer>
   );

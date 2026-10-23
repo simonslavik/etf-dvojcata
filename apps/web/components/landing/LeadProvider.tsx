@@ -1,14 +1,11 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { data } from '@etfd/shared';
-import type { Variant } from '@etfd/shared';
+import { data, EMAIL_RE, pairByTicker, type Variant } from '@etfd/shared';
+import { useRouter } from 'next/navigation';
+import { useSearchParam, useStoredValue } from '@/hooks/useBrowserState';
+import { KEYS, storage } from '@/lib/storage';
 import { initPosthog, initTracking, track, trackContext, trackScrollDepth } from '@/lib/track';
-
-const UNLOCK_KEY = 'etfd_unlocked';
-const TOKEN_KEY = 'etfd_lead';
-const CALLED_KEY = 'etfd_called';
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 type SheetStep = 'form' | 'done';
 interface SubmitResult { ok: boolean; message?: string }
@@ -31,6 +28,10 @@ interface LeadState {
   submitLead: (email: string, opts: { form: string; consentId: string; hp: string }) => Promise<SubmitResult>;
 }
 
+/** Explicitní volba návštěvníka > ticker z reklamy > první pár */
+const resolveTicker = (picked: string | null, adTicker: string | undefined) =>
+  picked ?? (adTicker && pairByTicker(adTicker) ? adTicker : data.pairs[0].us.ticker);
+
 const Ctx = createContext<LeadState | null>(null);
 export const useLead = () => {
   const v = useContext(Ctx);
@@ -38,40 +39,29 @@ export const useLead = () => {
   return v;
 };
 
-const store = {
-  get: (k: string) => { try { return sessionStorage.getItem(k) ?? localStorage.getItem(k); } catch { return null; } },
-  set: (k: string, v: string, persist = false) => { try { (persist ? localStorage : sessionStorage).setItem(k, v); } catch { /* bez storage OK */ } },
-};
-
 export function LeadProvider({ variant, children }: { variant: Variant; children: ReactNode }) {
-  const [selected, setSelected] = useState(data.pairs[0].us.ticker);
+  // Reklama může poslat konkrétní ticker (?utm_content=VT); explicitní volba návštěvníka má přednost
+  const adTicker = useSearchParam('utm_content')?.toUpperCase();
+  const [picked, setPicked] = useState<string | null>(null);
+  const selected = resolveTicker(picked, adTicker);
   const [calc, setCalcState] = useState({ monthly: 3000, years: 20 });
   const calcTouched = useRef(false);
   const calcDebounce = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const [unlocked, setUnlocked] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [called, setCalled] = useState(false);
+  const unlocked = useStoredValue(KEYS.unlocked) === '1';
+  const token = useStoredValue(KEYS.leadToken);
+  const called = useStoredValue(KEYS.called) === '1';
+  const router = useRouter();
   const [emailSent, setEmailSent] = useState(false);
   const [sheet, setSheet] = useState<{ open: boolean; step: SheetStep; source: string }>({ open: false, step: 'form', source: '' });
 
   useEffect(() => {
-    const ctx = initTracking(variant);
-    if (store.get(UNLOCK_KEY) === '1') setUnlocked(true);
-    setToken(store.get(TOKEN_KEY));
-    setCalled(store.get(CALLED_KEY) === '1');
-    // Reklama může poslat konkrétní ticker: ?utm_content=VT
-    const fromAd = ctx.utm_content?.toUpperCase();
-    if (fromAd && data.pairs.some((p) => p.us.ticker === fromAd)) setSelected(fromAd);
+    initTracking(variant);
     track('page_view', { path: location.pathname });
     initPosthog();
     return trackScrollDepth();
   }, [variant]);
 
-  const select = useCallback((ticker: string) => {
-    if (ticker === selected) return;
-    track('finder_select', { ticker });
-    setSelected(ticker);
-  }, [selected]);
+  const select = setPicked;
 
   const setCalc = useCallback((c: { monthly: number; years: number }) => {
     setCalcState(c);
@@ -82,17 +72,16 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
 
   const openSheet = useCallback((source: string) => {
     track('cta_click', { source });
-    if (store.get(UNLOCK_KEY) === '1') {
-      location.href = '/report';
+    if (storage.get(KEYS.unlocked) === '1') {
+      router.push('/report');
       return;
     }
     setSheet({ open: true, step: 'form', source });
     track('form_view', { form: 'sheet', source });
-  }, []);
+  }, [router]);
 
   const markCalled = useCallback(() => {
-    setCalled(true);
-    store.set(CALLED_KEY, '1');
+    storage.set(KEYS.called, '1');
   }, []);
 
   const closeSheet = useCallback(() => setSheet((s) => ({ ...s, open: false })), []);
@@ -118,13 +107,9 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
       });
       const res = await r.json().catch(() => ({}));
       if (!r.ok) return fail(res.message || 'Něco se pokazilo. Zkuste to prosím znovu.', `http_${r.status}`);
-      setUnlocked(true);
-      store.set(UNLOCK_KEY, '1', true);
+      storage.set(KEYS.unlocked, '1', { persist: true });
       setEmailSent(Boolean(res.emailSent));
-      if (res.token) {
-        setToken(res.token);
-        store.set(TOKEN_KEY, res.token);
-      }
+      if (res.token) storage.set(KEYS.leadToken, res.token);
       // Po odeslání vždy sheet s poděkováním + kvalifikací (i když se odesílalo z formuláře na stránce)
       setSheet({ open: true, step: 'done', source });
       return { ok: true };

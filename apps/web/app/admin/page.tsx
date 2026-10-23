@@ -1,19 +1,19 @@
+import Link from 'next/link';
 import type { Metadata } from 'next';
-import { FUNNEL, fmtDate, isMonthlyBand, MONTHLY_BANDS, SEQUENCE, VARIANT_LABEL, VARIANTS } from '@etfd/shared';
+import { ADMIN_PERIODS, DEFAULT_PERIOD, FUNNEL, fmtDate, isMonthlyBand, MONTHLY_BANDS, SEQUENCE, VARIANT_LABEL, VARIANTS } from '@etfd/shared';
 import { apiGet, type DashboardDto } from '@/lib/api';
 import { Columns, HBars, Kpi, Legend, Panel, SERIES, StageChip, kc, pct } from '@/components/admin/ui';
 import { ArrowRight } from '@/components/ui/icons';
-import { Logo } from '@/components/landing/Sections';
+import { Logo } from '@/components/ui/Logo';
 
 export const metadata: Metadata = { title: 'Pipeline – ETF dvojčata', robots: { index: false } };
 export const dynamic = 'force-dynamic';
 
-const PERIODS = [7, 30, 90];
 
-export default async function Admin({ searchParams }: { searchParams: Promise<{ d?: string }> }) {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ d?: string }> }) {
   const requested = Number((await searchParams).d);
   const { days, funnel: f, stages, campaigns: camps, daily, sequence: seq, latest, insights: notes, emailEnabled } =
-    await apiGet<DashboardDto>(`/admin/dashboard?d=${PERIODS.includes(requested) ? requested : 30}`);
+    await apiGet<DashboardDto>(`/admin/dashboard?d=${(ADMIN_PERIODS as readonly number[]).includes(requested) ? requested : DEFAULT_PERIOD}`);
 
   const leadsN = Object.values(stages.all).reduce((a, b) => a + b, 0);
   const qualifiedN = stages.all.qualified + stages.all.handed_over;
@@ -37,7 +37,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
           <div className="flex items-center gap-3"><Logo /><span className="rounded-full bg-teal-800 px-2.5 py-0.5 text-[12px] font-semibold text-white">Admin</span></div>
           <div className="flex items-center gap-2 text-[14px]">
             <nav className="flex rounded-xl border border-line p-0.5" aria-label="Období">
-              {PERIODS.map((p) => <a key={p} href={`/admin?d=${p}`} aria-current={p === days ? 'page' : undefined} className="rounded-lg px-3 py-1.5 text-muted aria-[current=page]:bg-teal-800 aria-[current=page]:text-white">{p} dní</a>)}
+              {ADMIN_PERIODS.map((p) => <Link key={p} href={`/admin?d=${p}`} aria-current={p === days ? 'page' : undefined} className="rounded-lg px-3 py-1.5 text-muted aria-[current=page]:bg-teal-800 aria-[current=page]:text-white">{p} dní</Link>)}
             </nav>
             <a href="/api/admin/export" className="btn btn-ghost !min-h-10 !px-3.5 !text-[14px]">CSV</a>
             <form action="/api/admin/logout" method="post"><button className="btn btn-ghost !min-h-10 !px-3.5 !text-[14px]">Odhlásit</button></form>
@@ -158,7 +158,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                 return (
                   <li key={s.step} className="rounded-xl border border-line p-3">
                     <div className="flex items-baseline justify-between gap-2">
-                      <a href={`/admin/email/${s.step}`} className="font-medium text-ink hover:underline">Den {s.day}: {s.subject}</a>
+                      <Link href={`/admin/email/${s.step}`} className="font-medium text-ink hover:underline">Den {s.day}: {s.subject}</Link>
                     </div>
                     <p className="num mt-1 text-[12.5px] text-muted">odesláno <b className="text-ink">{by('sent')}</b> · čeká {by('scheduled')} · přeskočeno {by('skipped')} · chyba {by('failed')} · zrušeno {by('cancelled')} · kliky <b className="text-ink">{seq.clicks[s.step] ?? 0}</b></p>
                   </li>
@@ -177,11 +177,11 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                 {latest.map((l) => (
                   <tr key={l.id} className="border-t border-line hover:bg-paper">
                     <td className="num py-2.5 text-muted">{new Date(l.createdAt).toLocaleString('cs-CZ', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
-                    <td><a href={`/admin/lead/${l.id}`} className="font-medium text-ink hover:underline">{l.email}</a>{l.phone && <span className="ml-1.5 text-[12px] text-muted">☎</span>}</td>
+                    <td><Link href={`/admin/lead/${l.id}`} className="font-medium text-ink hover:underline">{l.email}</Link>{l.phone && <span className="ml-1.5 text-[12px] text-muted">☎</span>}</td>
                     <td><StageChip stage={l.stage} /></td>
                     <td className="num font-semibold text-ink">{l.score}</td>
                     <td className="text-muted">{isMonthlyBand(l.monthlyBand) ? MONTHLY_BANDS[l.monthlyBand].label : '–'}</td>
-                    <td className="text-muted"><span className="mr-1 inline-block h-2 w-2 rounded-full" style={{ background: SERIES[l.variant as 'twin' | 'fees'] ?? '#999' }} />{l.variant === 'fees' ? 'B' : 'A'} · {l.utmSource ?? '–'}</td>
+                    <td className="text-muted"><span className="mr-1 inline-block h-2 w-2 rounded-full" style={{ background: SERIES[l.variant] }} />{VARIANT_LABEL[l.variant].slice(0, 1)} · {l.utmSource ?? '–'}</td>
                     <td className="font-mono text-[13px] text-muted">{l.interest ?? '–'}</td>
                     <td className="text-[12.5px] text-muted">{l.handoffStatus ?? '–'}</td>
                   </tr>

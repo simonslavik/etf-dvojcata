@@ -2,31 +2,11 @@
 
 import { useMemo, useState } from 'react';
 import { data, fmtDate, formatPct, host, type Pair } from '@etfd/shared';
-import { track } from '@/lib/track';
-import { Check, Copy, Search } from '@/components/ui/icons';
+import { CopyIsinButton } from '@/components/ui/CopyIsinButton';
+import { Search } from '@/components/ui/icons';
 
 const DIST: Record<string, string> = { Acc: 'akumulační – dividendy reinvestuje', Dist: 'distribuční – dividendy vyplácí' };
 type Filter = 'all' | 'exact';
-
-function CopyIsin({ isin }: { isin: string }) {
-  const [done, setDone] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        try { await navigator.clipboard.writeText(isin); } catch { /* ISIN je vidět vedle */ }
-        setDone(true);
-        setTimeout(() => setDone(false), 1600);
-        track('isin_copy', { isin, from: 'report' });
-      }}
-      className="inline-flex min-h-9 flex-none items-center gap-1.5 rounded-lg bg-teal-900 px-2.5 text-[12.5px] font-semibold text-white transition-colors hover:bg-teal-700 data-[done]:bg-ok print:hidden"
-      data-done={done || undefined}
-      aria-label={`Kopírovat ISIN ${isin}`}
-    >
-      {done ? <><Check className="h-3.5 w-3.5" /> Hotovo</> : <><Copy className="h-3.5 w-3.5" /> Kopírovat</>}
-    </button>
-  );
-}
 
 function Row({ p }: { p: Pair }) {
   const t = p.twin;
@@ -48,7 +28,7 @@ function Row({ p }: { p: Pair }) {
           </p>
           <div className="col-span-2 flex items-center justify-between gap-2 rounded-xl bg-paper py-1.5 pr-1.5 pl-3 sm:col-span-1">
             <span className="font-mono text-[13.5px] font-bold tracking-wide text-ink">{t.isin}</span>
-            <CopyIsin isin={t.isin} />
+            <CopyIsinButton isin={t.isin} from="report" size="sm" />
           </div>
           <span aria-hidden="true" className="hidden text-muted transition-transform duration-300 group-open:rotate-90 sm:block print:hidden">›</span>
         </summary>

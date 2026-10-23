@@ -3,6 +3,7 @@
  * události jdou přes sendBeacon na /api/track a volitelně do PostHogu.
  */
 import type { EventName, Variant } from '@etfd/shared';
+import { KEYS } from './storage';
 
 interface TrackContext {
   sid: string; variant: Variant; utm_source: string; utm_campaign: string | null; utm_content: string | null; device: 'mobile' | 'desktop';
@@ -15,10 +16,10 @@ let t0 = 0;
 
 function sid() {
   try {
-    let id = sessionStorage.getItem('etfd_sid');
+    let id = sessionStorage.getItem(KEYS.sid);
     if (!id) {
       id = crypto.randomUUID?.() || String(Math.random()).slice(2);
-      sessionStorage.setItem('etfd_sid', id);
+      sessionStorage.setItem(KEYS.sid, id);
     }
     return id;
   } catch {

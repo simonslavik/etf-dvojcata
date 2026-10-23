@@ -1,4 +1,4 @@
-# docker compose up --build        → web http://localhost:3000 · admin http://localhost:3000/admin (token: review)
+# docker compose up --build        → web http://localhost:3000 · admin http://localhost:3000/admin (token: review-token)
 # docker compose --profile demo run --rm demo-data   → 400 simulovaných návštěv do dashboardu
 # jiný port: PORT=8080 docker compose up --build
 services:
@@ -7,7 +7,8 @@ services:
     environment: { POSTGRES_USER: etfd, POSTGRES_PASSWORD: etfd, POSTGRES_DB: etfd }
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./apps/api/test/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
+      # při prvním startu vytvoří navíc prázdnou DB etfd_test pro integrační testy API (npm test)
+      - ./docker/postgres/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql:ro
     # jen na localhost – pro integrační testy API z hostitele
     ports: ["127.0.0.1:${DB_PORT:-5544}:5432"]
     healthcheck: { test: ["CMD-SHELL", "pg_isready -U etfd -d etfd"], interval: 5s, timeout: 3s, retries: 20 }
@@ -29,7 +30,7 @@ services:
     restart: unless-stopped
 
   web:
-    build: { context: ., dockerfile: apps/web/Dockerfile, args: { API_URL: http://api:4000 } }
+    build: { context: ., dockerfile: apps/web/Dockerfile, args: { API_URL: http://api:4000, SITE_URL: "http://localhost:${PORT:-3000}" } }
     environment: { API_URL: http://api:4000 }
     ports: ["${PORT:-3000}:3000"]
     depends_on: { api: { condition: service_healthy } }

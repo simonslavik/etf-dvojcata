@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight } from '@/components/ui/icons';
 import { useLead } from './LeadProvider';
-import { Logo } from './Sections';
+import { Logo } from '@/components/ui/Logo';
 
 /**
  * Lepkavý header: výzva „Přehled zdarma“ je na očích po celou dobu scrollování (i na mobilu).

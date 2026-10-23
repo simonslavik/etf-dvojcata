@@ -1,8 +1,9 @@
-import { notFound } from 'next/navigation';
+import type { ReactNode } from 'react';
+import Link from 'next/link';
 import { apiGet, type LeadDetailDto } from '@/lib/api';
-import { MONTHLY_BANDS, isMonthlyBand } from '@etfd/shared';
+import { isMonthlyBand, MONTHLY_BANDS, VARIANT_LABEL } from '@etfd/shared';
 import { Panel, StageChip } from '@/components/admin/ui';
-import { Logo } from '@/components/landing/Sections';
+import { Logo } from '@/components/ui/Logo';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false } };
@@ -11,12 +12,11 @@ const fmt = (d: string | Date) => new Date(d).toLocaleString('cs-CZ', { day: 'nu
 
 export default async function LeadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
   const { lead, journey, jobs } = await apiGet<LeadDetailDto>(`/admin/leads/${id}`);
   const t0 = new Date(journey[0]?.createdAt ?? lead.createdAt).getTime();
-  const facts: [string, React.ReactNode][] = [
+  const facts: [string, ReactNode][] = [
     ['Vytvořen', fmt(lead.createdAt)],
-    ['Varianta / zdroj', `${lead.variant === 'fees' ? 'B · Poplatky' : 'A · Dvojče'} · ${lead.utmSource ?? '–'} / ${lead.utmCampaign ?? '–'} / ${lead.utmContent ?? '–'}`],
+    ['Varianta / zdroj', `${VARIANT_LABEL[lead.variant]} · ${lead.utmSource ?? '–'} / ${lead.utmCampaign ?? '–'} / ${lead.utmContent ?? '–'}`],
     ['Formulář', lead.source ?? '–'],
     ['Zařízení', lead.device ?? '–'],
     ['Zájem (ticker)', lead.interest ?? '–'],
@@ -31,7 +31,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="min-h-dvh bg-paper">
-      <header className="border-b border-line bg-white"><div className="wrap flex h-16 items-center gap-4"><Logo /><a href="/admin" className="text-[14px] text-teal-700 hover:underline">← Pipeline</a></div></header>
+      <header className="border-b border-line bg-white"><div className="wrap flex h-16 items-center gap-4"><Logo /><Link href="/admin" className="text-[14px] text-teal-700 hover:underline">← Pipeline</Link></div></header>
       <main className="wrap space-y-5 py-6">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-[24px] font-bold text-ink">{lead.email}</h1>

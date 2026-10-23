@@ -1,7 +1,7 @@
 'use client';
 
-import { data } from '@etfd/shared';
-import { formatPct } from '@etfd/shared';
+import Link from 'next/link';
+import { data, formatPct } from '@etfd/shared';
 import { ArrowRight, Check, Lock } from '@/components/ui/icons';
 import { LeadForm } from './LeadForm';
 import { ReportCover } from './ReportCover';
@@ -69,7 +69,7 @@ export function MagnetPreview() {
             {unlocked ? (
               <div className="border-t border-line p-4 sm:p-5">
                 <p className="mb-3 text-center text-[13px] text-muted">+ {data.pairs.length - PREVIEW_ROWS} dalších dvojčat, návod a daně v přehledu</p>
-                <a href="/report" className="btn btn-primary w-full" data-open-report>Otevřít celý přehled <ArrowRight /></a>
+                <Link href="/report" className="btn btn-primary w-full" data-open-report>Otevřít celý přehled <ArrowRight /></Link>
               </div>
             ) : (
               <div className="relative -mt-20 bg-gradient-to-t from-white from-55% to-white/0 px-4 pt-14 pb-5 sm:px-6">

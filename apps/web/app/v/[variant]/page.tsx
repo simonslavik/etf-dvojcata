@@ -7,7 +7,7 @@ export const dynamicParams = false;
 export const generateStaticParams = () => VARIANTS.map((variant) => ({ variant }));
 export const metadata = { alternates: { canonical: '/' } };
 
-export default async function Page({ params }: { params: Promise<{ variant: string }> }) {
+export default async function VariantPage({ params }: { params: Promise<{ variant: string }> }) {
   const { variant } = await params;
   if (!isVariant(variant)) notFound();
   return <Landing variant={variant} />;
