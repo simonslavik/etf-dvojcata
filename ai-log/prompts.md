@@ -1,13 +1,13 @@
 # Ako pracujem s AI – kľúčové prompty
 
-Výber mojich promptov a všetkých zadaní pre agentov z oboch konverzácií. Prompty sú **doslovné** (aj s preklepmi), skrátené sú len vložené texty a obrázky. Úplný kontext je v [surových exportoch](README.md). Každý riadok vedie na commit, ktorý z promptu vznikol. Časy sú miestne (SELČ).
+Výber mojich promptov z oboch konverzácií a všetkých zadaní, ktoré Claude napísal agentom. Prompty sú **doslovné** (aj s preklepmi), skrátené sú len vložené texty a obrázky. Úplný kontext je v [surových exportoch](README.md). Každý riadok vedie na commit, ktorý z promptu vznikol. Časy sú miestne (SELČ).
 
 ## V skratke
 
 - **Plán pred kódom.** Každé kolo začalo zápisom do [PLAN.md](../PLAN.md) (v1 → v3), až potom implementácia.
 - **Stránku testujem ako návštevník.** Väčšinu iterácií riadili moje screenshoty s krátkou spätnou väzbou („overwhelming“, „nepochopí“, „prespamované“). Claude najprv zmeral problém a až potom upravoval.
 - **AI nepreberám bez kontroly.** Keď návrh nesedel na cieľ (lead z mobilu za pár sekúnd), zamietol som ho. Prehľad je nižšie.
-- **Úzke zadania pre agentov.** Výskum dát, kontrola dát a review kódu robili samostatní agenti s pravidlom „zdroj pri každej hodnote, radšej null než odhad“ a „iba reportuj, nič neupravuj“.
+- **Práca rozdelená na agentov.** Výskum dát, kontrolu dát a review kódu nechal Claude robiť samostatným agentom. Zadania im napísal sám, s pravidlami „zdroj pri každej hodnote, radšej null než odhad“ a „iba reportuj, nič neupravuj“. Ja som určil, čo sa má overiť, a ich výstupy som posudzoval.
 - **Hotovo = overené.** Testy (25 + 39), E2E cez celý stack, screenshoty mobilu aj desktopu, Lighthouse a nezávislý review pred každým zverejnením.
 
 ## Kde som AI opravil
@@ -62,7 +62,7 @@ Výber mojich promptov a všetkých zadaní pre agentov z oboch konverzácií. P
 | 23.&nbsp;10.&nbsp;14:58 | „okej tak ešte tuto čast vymakaj prosim *(admin dashboard)*“ | Dashboard podľa krokov pipeline s konverziou medzi krokmi, čitateľný na mobile | [`feat(admin)`](https://github.com/simonslavik/etf-dvojcata/commit/8b6e9cc) |
 ## Zadania pre agentov
 
-Paralelné úlohy (výskum dát, nezávislé kontroly) Claude delegoval subagentom. Každé zadanie má zúžený rozsah, požadovaný formát výstupu a pravidlo proti halucináciám. Texty sú doslovné.
+Paralelné úlohy (výskum dát, nezávislé kontroly) Claude delegoval subagentom. **Zadania napísal Claude**. Ja som rozhodol, čo sa má zistiť a overiť (napríklad „skontroluj kód, či niečo nie je redundantné“ alebo „daj pozor na security, aby nám AI recenzenta nemala čo vytknúť“) a výsledky som posúdil. Každé zadanie má zúžený rozsah, požadovaný formát výstupu a pravidlo proti halucináciám. Texty sú doslovné.
 
 <details><summary><b>22. 10. 12:52 · Research US NYSE ETF data</b> – Každé číslo musí mať zdroj, inak `null`</summary>
 

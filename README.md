@@ -175,11 +175,11 @@ Varianty `twin` vs. `fees` sú test na úrovni reklamy, preto ich medzi hypotéz
 
 Pracoval som v Claude Code v troch kolách a potom v sérii UX iterácií podľa mojej spätnej väzby. Vždy platilo: **najprv plán** ([PLAN.md](PLAN.md)), potom implementácia po krokoch s commitmi a nakoniec kontroly (unit testy, E2E v prehliadači, screenshoty, nezávislý review agent).
 
-**Prompty a inštrukcie pre agentov:** doslovný výber mojich promptov s rozhodnutím a commitom, ktorý z nich vznikol, a všetkých 7 zadaní pre výskumných, kontrolných a review agentov je v [ai-log/prompts.md](ai-log/prompts.md). Surové exporty konverzácií a časová os sú v [ai-log/](ai-log/README.md).
+**Prompty a inštrukcie pre agentov:** doslovný výber mojich promptov s rozhodnutím a commitom, ktorý z nich vznikol, a všetkých 7 zadaní, ktoré Claude na môj pokyn napísal výskumným, kontrolným a review agentom, je v [ai-log/prompts.md](ai-log/prompts.md). Surové exporty konverzácií a časová os sú v [ai-log/](ai-log/README.md).
 
 ### Kolo 1 – statická stránka (Vite)
 
-| Agent | Zadanie (skrátene) | Ako som kontroloval výstup |
+| Agent | Zadanie od Clauda (skrátene) | Ako som kontroloval výstup |
 |---|---|---|
 | **Výskum US ETF** | 15 ETF: TER, burza, index, AUM, *zdroj a dátum pri každej hodnote*, primárne weby emitentov, „null namiesto odhadu“, na konci zoznam neoverených vecí | Krížová kontrola tretím agentom, ručná kontrola niekoľkých hodnôt |
 | **Výskum UCITS dvojčiat** | Ku každému US ETF UCITS ekvivalent: ISIN, tickery, TER, Acc/Dist, veľkosť, „exact/close“ s vysvetlením | To isté + kontrola logiky „exact“ (musí byť doslova rovnaký index) |
@@ -268,7 +268,7 @@ Na záver som Clauda požiadal o revíziu redundancie a idiomatickosti. Výsledo
 
 ### Bezpečnostný review pred zverejnením
 
-Pred pushom do verejného repozitára som pustil nezávislého review agenta na celý repozitár, so zadaním pozerať sa naň ako AI recenzenta pred rozhodnutím o prijatí. Paralelne som prešiel celú históriu commitov kvôli tajomstvám (žiadne nenašiel) a zmeral na Verceli, akú IP adresu API skutočne vidí. Opravené:
+Pred pushom do verejného repozitára som nechal nezávislého review agenta prejsť celý repozitár s pokynom pozerať sa naň ako AI recenzent pred rozhodnutím o prijatí. Paralelne som prešiel celú históriu commitov kvôli tajomstvám (žiadne nenašiel) a zmeral na Verceli, akú IP adresu API skutočne vidí. Opravené:
 
 | Závažnosť | Nález | Oprava |
 |---|---|---|

@@ -6,7 +6,7 @@ Tento priečinok obsahuje **neupravené exporty konverzácií s Claude Code** (p
 |---|---|
 | `01-kolo-1.md` | Kolo 1: plán, výskum dát agentmi, statická stránka (Vite), reklamy, review |
 | `02-kolo-2-3.md` | Kolá 2 a 3: Next.js a lead pipeline, dizajn podľa Clientela, review, Docker, NestJS + Postgres, UX iterácie, code review |
-| [prompts.md](prompts.md) | **Začnite tu.** Ako pracujem s AI v piatich bodoch, kde som AI opravil, 20 kľúčových promptov doslovne s odkazom na commit a všetkých 7 zadaní pre agentov |
+| [prompts.md](prompts.md) | **Začnite tu.** Ako pracujem s AI v piatich bodoch, kde som AI opravil, 20 kľúčových promptov doslovne s odkazom na commit a všetkých 7 zadaní, ktoré Claude napísal agentom |
 
 Prvé kolo bežalo v samostatnej konverzácii. Druhá konverzácia začína tým, že Claude najprv zistil stav projektu z repozitára (git log, README, PLAN.md) a až potom pokračoval.
 
@@ -32,7 +32,7 @@ Prvé kolo bežalo v samostatnej konverzácii. Druhá konverzácia začína tým
 
 - **Najprv plán, potom kód.** Každé kolo začína zápisom do [PLAN.md](../PLAN.md) (v1, v2, v3), až potom nasleduje implementácia.
 - **Otázky namiesto domnienok.** Pri nejasnom pokyne („nejaký stack“) alebo rozhodnutí s dôsledkami (hosting backendu) sa Claude spýtal a ponúkol možnosti s kompromismi. Rozhodnutie zostalo na mne.
-- **Agenti so zúženým zadaním.** Výskumní agenti mali za úlohu „zdroj a dátum pri každej hodnote, radšej null než odhad“. Kontrolór dostal pokyn „buď skeptický, hľadaj chyby“. Review agent dostal kód bez kontextu konverzácie a pokyn „iba reportuj, nič neupravuj“.
+- **Agenti so zúženým zadaním.** Claude rozdelil prácu na agentov a napísal im zadania, ja som určil, čo sa má overiť. Výskumní agenti mali za úlohu „zdroj a dátum pri každej hodnote, radšej null než odhad“. Kontrolór dostal pokyn „buď skeptický, hľadaj chyby“. Review agent dostal kód bez kontextu konverzácie a pokyn „iba reportuj, nič neupravuj“.
 - **Malé kroky s commitom.** Každý commit je jeden logický krok a pred ďalším krokom prebehla kontrola.
 
 ## Ako som kontroloval výstupy
