@@ -81,7 +81,7 @@ export function TwinFinder() {
           </a>
         ) : (
           <button className="btn btn-primary mt-3 w-full" onClick={() => openSheet('finder')} data-cta="finder">
-            <>Poslat {t.ticker} + {data.pairs.length - 1} dalších<span className="hidden sm:inline">&nbsp;zdarma</span></>
+            <span>Poslat {t.ticker} + {data.pairs.length - 1} dalších<span className="hidden sm:inline">&nbsp;zdarma</span></span>
             <ArrowRight />
           </button>
         )}

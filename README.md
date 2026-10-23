@@ -21,6 +21,10 @@ Spustia sa tri služby: **Postgres 17**, **NestJS API** a **Next.js web**. API p
 |---|---|---|---|
 | ![A](screenshots/mobile-a.png) | ![B](screenshots/mobile-b.png) | ![Sheet](screenshots/sheet-call.png) | ![Admin](screenshots/admin.png) |
 
+| Desktop – varianta A | Prehľad za e-mail (`/report`) |
+|---|---|
+| ![Desktop](screenshots/desktop-a.png) | ![Report](screenshots/report.png) |
+
 _Dáta v adminu na screenshote sú simulované (`scripts/simulate.mjs` cez skutočné API)._
 
 ---
@@ -39,7 +43,7 @@ Väčšina českých stránok o ETF porovnáva americké fondy, ktoré si čitat
 |---|---|
 | **Kto** | Čech 25 – 40 rokov na mobile. Už investuje alebo začína cez XTB, Trading 212 či Revolut, prípadne má peniaze v podielovom fonde z banky. Z YouTube pozná tickery, ale nevie, prečo ich nenájde v aplikácii. |
 | **Hodnota zadarmo** | Vyhľadávač dvojčiat (12 ETF → UCITS verzia + ISIN + TER + zdroj) a kalkulačka poplatkov (fond z banky vs. ETF). Celú hodnotu vidí ešte pred formulárom. Neznáme pojmy (UCITS, TER, ISIN, KID, PRIIPs) vysvetľuje slovníček priamo v texte. |
-| **Za e-mail** | Prehľad všetkých 12 dvojčiat na jednej stránke (ISIN, typ, rozdiely v indexe, alternatívy), návod na nákup a daňové pravidlá v ČR. |
+| **Za e-mail** | Prehľad všetkých 12 dvojčiat (`/report`): zoznam s vyhľadávaním a filtrom „stejný index“, ISIN na skopírovanie pri každom riadku, detaily po rozbalení (index, typ, rozdiel, alternatívy, zdroje), návod na nákup v 3 krokoch a dane v ČR. Prilepená navigácia so zvýraznením sekcie, uloženie do PDF. Na konci ponuka pomoci s nákupom (odovzdanie). |
 | **Kedy žiadame** | Až po prvej interakcii: tlačidlo je priamo pod výsledkom vyhľadávača aj kalkulačky. Druhá príležitosť je náhľad tabuľky s rozmazanými riadkami a formulárom pod ním. Header s tlačidlom „Přehled zdarma“ je prilepený hore, takže výzva je na očiach počas celého scrollovania, na mobile aj na desktope. |
 | **Formulár** | **1 pole (e-mail)** v bottom sheete, fokus rovno v poli, `inputmode=email`. Súhlas je jedna veta pod tlačidlom. Proti botom chráni honeypot namiesto captchy. |
 | **Po odoslaní** | (1) prehľad sa hneď odomkne na stránke a príde e-mailom, (2) **nepovinná kvalifikačná otázka** „kolik měsíčně investujete?“ (1 ťuk), (3) **nepovinná ponuka „pomůžeme s prvním nákupem, zavoláme vám“** – telefón + výslovný súhlas → odovzdanie do CRM / call centra, (4) e-mailová sekvencia D2/D5/D9. |
@@ -56,17 +60,21 @@ Stránka má **6 krátkych sekcií a záverečnú výzvu** a každá sa zmestí 
 4. **Jak to funguje (3 kroky):** Najděte dvojče → Zkopírujte ISIN → Kupte v aplikaci. Odpovedá na otázku „a čo s tým urobím?“.
 5. **Lead magnet a formulár:** „Přehled 12 dvojčat + návod na první nákup“ s obálkou dokumentu, piatimi riadkami tabuľky (3 čitateľné, 2 rozmazané) a formulárom priamo pod nimi. Po odomknutí sa tabuľka nerozrastie, zobrazí sa „+ 7 dalších v přehledu“.
 6. **FAQ** (4 zbalené otázky): prečo to v aplikácii nenájdu (PRIIPs), rozdiel medzi dvojčatami, dane, kde kúpiť.
-7. **Kompaktná záverečná výzva:** jedna karta s formulárom. Kto dočítal FAQ, má námietky vyriešené a je najbližšie k rozhodnutiu, preto stránka končí formulárom, nie pätičkou. Po odomknutí sa namiesto formulára zobrazí odkaz na prehľad.
+7. **Kompaktná záverečná výzva:** jedna karta s formulárom. Kto dočítal FAQ, má námietky vyriešené a je najbližšie k rozhodnutiu, preto stránka končí formulárom, nie pätičkou. Po odomknutí ponúkne ďalší krok lievika (pomoc s nákupom po telefóne) a kto o hovor už požiadal, záver neuvidí.
+
+**Po odomknutí sa výzvy neopakujú:** „Otevřít přehled“ zostane len v headeri a v sekcii prehľadu. Pod nástrojmi je nenápadný textový odkaz.
 
 **Čo som vedome vynechal:** prepínač nástrojov v hero (návštevník na pár sekúnd by ho prehliadol), veľké karty dôvery a veľké záverečné CTA (zostala kompaktná verzia). Výzva „Přehled zdarma“ je navyše stále v **lepkavom headeri**. Podrobnosti (výpočet kalkulačky, alternatívne fondy, všetky zdroje) sú v rozbaľovacích prvkoch alebo v prehľade za e-mailom.
 
 **Výzvy sú personalizované:** „Poslat VUAA + 11 dalších“ po výbere ETF, „Chci ušetřit 429 100 Kč“ po výpočte.
 
-**Animácie sú jemné a vysvetľujú:** americký ticker sa prečiarkne a dvojča sa vysunie, suma úspory sa plynulo dopočíta, čísla sa pri zobrazení dopočítajú od nuly, po odoslaní sa vykreslí fajka s krátkou oslavou vo farbách značky. Všetko rešpektuje nastavenie „obmedziť pohyb“.
+**Animácie sú jemné a vysvetľujú:** americký ticker sa prečiarkne a dvojča sa vysunie, suma úspory sa plynulo dopočíta, čísla sa pri zobrazení dopočítajú od nuly, sekcie pod prvou obrazovkou sa jemne vynoria, po odoslaní sa vykreslí fajka s krátkou oslavou vo farbách značky. Čo je vidno hneď po načítaní, sa nikdy neskryje. Všetko rešpektuje nastavenie „obmedziť pohyb“.
+
+**Výkon (Lighthouse, mobil, reálne spomalenie siete a CPU, produkčný build):** výkon **99** (LCP 1,6 – 1,7 s, CLS 0), prístupnosť **100**, best practices **100**, SEO **100**, pre oba varianty. Simulovaný režim Lighthouse proti lokálnemu serveru ukazuje 92 (LCP 3,2 s): simulácia započíta do kritickej cesty aj JS a písma, ktoré sa na lokálnom serveri stihnú stiahnuť pred vykreslením, hoci nadpis je vykreslený na serveri a na ne nečaká.
 
 Navigácia ani odkazy, ktoré by viedli preč, na stránke nie sú. Jediný cieľ je kontakt.
 
-**Dizajn** vychádza z vizuálneho jazyka clientelo.cz: serifové nadpisy (Lora) + Lexend, tmavá petrolejová a tehlová, eyebrow nadpisy s rozšíreným prestrihom, ikony v tónovaných štvorcoch, nástroje v rámčeku „okna aplikácie“, slovníček s otáznikom pri pojme a reťazec krokov ako v ukážke dashboardu. Značka zostáva vlastná („ETF dvojčata“). Stránka by tak zapadla do portfólia Clientela, a pritom sa za Clientelo nevydáva.
+**Dizajn** vychádza z vizuálneho jazyka clientelo.cz: serifové nadpisy (Lora) + Lexend, tmavá petrolejová a tehlová, eyebrow nadpisy s rozšíreným prestrihom, ikony v tónovaných štvorcoch, náhľad prehľadu v rámčeku „okna aplikácie“, slovníček s otáznikom pri pojme a reťazec krokov ako v ukážke dashboardu. Značka zostáva vlastná („ETF dvojčata“). Stránka by tak zapadla do portfólia Clientela, a pritom sa za Clientelo nevydáva.
 
 ## 4. Stack a architektúra
 
@@ -129,12 +137,12 @@ PipelineScheduler (@nestjs/schedule, denne) → SequenceService.runDue (D2/D5/D9
 |---|---|
 | Návštěva (+ UTM, variant, zariadenie) | `page_view` |
 | Interakce s nástrojem | `finder_select`, `calc_change`, `isin_copy` |
-| Klik na CTA | `cta_click` (zdroj: finder / calc / sticky / header) |
+| Klik na CTA | `cta_click` (zdroj: finder / calc / header) |
 | Viděl formulář → Začal psát | `form_view` → `form_start` (+ `form_error`, `form_submit`) |
 | **Lead** | `lead_ok` – zapisuje **server**, z prehliadača sa nedá podvrhnúť |
 | Kvalifikace → Předání | `qualify` → `call_request` → `handoff` (server) |
 | Péče | `email_click`, `unsubscribe` (server), stavy v `email_jobs` |
-| Ostatné | `scroll` 25/50/75/100, `faq_open`, `term_open`, `sticky_view`, `report_open/view` |
+| Ostatné | `scroll` 25/50/75/100, `faq_open`, `term_open`, `report_open/view` |
 
 Lievik počíta **unikátne relácie** v každom kroku, zvlášť pre každú variantu. Pri leade sa ukladá zdroj, UTM, variant, ticker, o ktorý mal záujem, a suma z kalkulačky. Voliteľne sa dá pripojiť PostHog (`NEXT_PUBLIC_POSTHOG_KEY`, bez cookies) kvôli heatmapám a záznamom relácií.
 
@@ -145,7 +153,7 @@ Odhad pre studenú návštevnosť z Mety na mobile:
 | Krok | Odhad | Prečo |
 |---|---|---|
 | Interakcia s nástrojom | 45 – 60 % | Nástroj je v prvej obrazovke a stačí jeden ťuk |
-| Klik na CTA | 20 – 30 % | CTA je hneď pod výsledkom, lepkavé tlačidlo je stále po ruke |
+| Klik na CTA | 20 – 30 % | CTA je hneď pod výsledkom a v lepkavom headeri je stále po ruke |
 | Odoslanie formulára (z tých, čo klikli) | 45 – 60 % | 1 pole, fokus v poli, hodnotu už pozná |
 | **Návšteva → lead** | **≈ 10 – 15 %** (realisticky okolo 12 %) | |
 | Lead → kvalifikovaný (≥ 35 bodov) | 25 – 40 % | Varianta B viac (ľudia s peniazmi v bankovom fonde) |
@@ -163,7 +171,7 @@ Varianty `twin` vs. `fees` sú test na úrovni reklamy, preto ich medzi hypotéz
 
 ## 10. Ako som pracoval s AI
 
-Pracoval som v Claude Code v dvoch kolách. Vždy platilo: **najprv plán** ([PLAN.md](PLAN.md)), potom implementácia po krokoch s commitmi a nakoniec kontroly (unit testy, E2E v prehliadači, screenshoty, nezávislý review agent).
+Pracoval som v Claude Code v troch kolách a potom v sérii UX iterácií podľa mojej spätnej väzby. Vždy platilo: **najprv plán** ([PLAN.md](PLAN.md)), potom implementácia po krokoch s commitmi a nakoniec kontroly (unit testy, E2E v prehliadači, screenshoty, nezávislý review agent).
 
 ### Kolo 1 – statická stránka (Vite)
 
@@ -237,6 +245,18 @@ Zadanie od používateľa: „FE Next, BE Nest, DB Postgres“, nasadenie zatia�
 - **Kolízia Docker volume:** nový Postgres by sa pripojil na volume `pgdata`, v ktorom zostali súbory PGlite z predošlej Docker verzie, a neinicializoval by sa. Volume je premenovaný.
 - **Demo služba** po premenovaní `app` → `web` padala na kontrole hostiteľa v simulačnom skripte.
 - **Test open redirectu** hodnotu zakódoval dvakrát, takže netestoval skutočný útok. Opravené na `'/\t/evil.com'`.
+
+### UX iterácie (po kole 3)
+
+Stránku som potom prechádzal ako návštevník a posielal Claudovi screenshoty s krátkou spätnou väzbou, napríklad „príliš overwhelming“, „užívateľ nepochopí, čo znamená ‚měsíčně‘“, „Otevřít přehled je prespamované“ alebo „pri kliknutí na Dvojčata sa zvýrazní Jak koupit“. Claude najprv zmeral, čo je zle (výška sekcií v obrazovkách, poloha výzvy, počet tlačidiel), a až potom upravoval. Pri každej zmene urobil screenshot mobilu aj desktopu a pustil E2E. Mobil sa skrátil z 8 na asi 4,8 obrazovky, hero aj prehľad s formulárom sa zmestia na jednu obrazovku a texty kalkulačky sú napísané pre začiatočníka.
+
+**Kde sa AI v tejto fáze pomýlila:**
+- **Lepkavé CTA na mobile zakrylo ISIN,** teda práve tú hodnotu, ktorá má presvedčiť. Zachytil to screenshot. Neskôr ho nahradil lepkavý header.
+- **Prepínač nástrojov v hero** navrhol Claude ako riešenie dĺžky stránky. Až pri mojej námietke uznal, že návštevník na pár sekúnd ho prehliadne, a nástroje rozdelil do dvoch sekcií.
+- **Animácia viazaná na scroll** nechávala obsah pri spodnej hrane obrazovky polopriehľadný, kým užívateľ nezačal scrollovať. Lighthouse to nahlásil ako kontrast 1,85 : 1. Opravené na reveal, ktorý skrýva len prvky pod prvou obrazovkou.
+- **Po odomknutí sa „Otevřít přehled“ opakoval šesťkrát** a na stránke boli dva formuláre na hovor s rovnakým `id`. Zachytil to E2E pri overovaní mojej námietky.
+- **Navigácia v prehľade** zvýrazňovala zlú sekciu. Pravidlo „najvyššia viditeľná sekcia“ bolo zlé a odstup pri skoku na kotvu sa počítal dvakrát. Claude to najprv „opravil“ bez overenia. Až automatický test kliknutí zo spodku stránky ukázal, že chyba pretrváva. Test je teraz súčasťou E2E.
+- **Drobnosti zo screenshotov:** medzera pred „zdarma“ v tlačidle (flex gap), `\u2011` v JSX texte, ktorý by sa zobrazil doslova, a výška sekcie s prehľadom, ktorá po odomknutí narástla na 12 riadkov.
 
 ## 11. Čo v riešení chýba / pred spustením reklamy
 

@@ -33,10 +33,15 @@ await p.$eval('[data-q="2-10k"]', (b) => b.click());
 await sleep(600);
 await p.screenshot({ path: 'screenshots/sheet-call.png' });
 
-const d = await fresh({ width: 1440, height: 1000, deviceScaleFactor: 1 });
+const d = await fresh({ width: 1440, height: 900, deviceScaleFactor: 1 });
 await d.goto(`${base}/?ad=twin`, { waitUntil: 'networkidle0' });
 await d.evaluate(() => document.fonts.ready);
 await d.screenshot({ path: 'screenshots/desktop-a.png' });
+await d.goto(`${base}/report`, { waitUntil: 'networkidle0' });
+await d.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+await d.$eval('#dvojcata', (el) => window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 90, behavior: 'instant' }));
+await sleep(500);
+await d.screenshot({ path: 'screenshots/report.png' });
 if (token) {
   await d.goto(`${base}/admin/login`, { waitUntil: 'networkidle0' });
   await d.type('#token', token);
