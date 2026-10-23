@@ -2,10 +2,12 @@ import type { Metadata, Viewport } from 'next';
 import { JetBrains_Mono, Lexend, Lora } from 'next/font/google';
 import './globals.css';
 
-// next/font písma self-hostuje při buildu (žádný render-blocking požadavek na Google); latin-ext kvůli češtině
-const lora = Lora({ subsets: ['latin', 'latin-ext'], weight: ['600', '700'], variable: '--font-lora', display: 'swap' });
-const lexend = Lexend({ subsets: ['latin', 'latin-ext'], weight: ['400', '500', '600', '700'], variable: '--font-lexend', display: 'swap' });
-const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['500', '700'], variable: '--font-jetbrains', display: 'swap' });
+// next/font písma self-hostuje při buildu (žádný render-blocking požadavek na Google).
+// Přednačítá se jen Lora 700 (nadpisy = LCP). Lexend (text) a mono (ISIN) se nepřednačítají – krátce se
+// ukáže systémové písmo se stejnými metrikami (adjustFontFallback), takže nic neposkočí (CLS 0).
+const lora = Lora({ subsets: ['latin', 'latin-ext'], weight: ['700'], variable: '--font-lora', display: 'swap' });
+const lexend = Lexend({ subsets: ['latin', 'latin-ext'], variable: '--font-lexend', display: 'swap', preload: false });
+const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['500', '700'], variable: '--font-jetbrains', display: 'swap', preload: false });
 
 const site = process.env.SITE_URL || 'http://localhost:3000';
 

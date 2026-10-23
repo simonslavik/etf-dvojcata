@@ -7,6 +7,7 @@ import { FinalCta } from './FinalCta';
 import { Faq, Footer, Hero, HowItWorks, ProofStrip, SecondTool } from './Sections';
 import { TwinFinder } from './TwinFinder';
 import { SiteHeader } from './SiteHeader';
+import { RevealOnScroll } from '@/components/RevealOnScroll';
 
 /**
  * Pořadí sekcí (zdůvodnění v README): hero = slib reklamy + jeden nástroj → důkaz a důvěra → druhý nástroj
@@ -29,6 +30,7 @@ export function Landing({ variant }: { variant: Variant }) {
       </main>
       <Footer />
       <LeadSheet />
+      <RevealOnScroll />
     </LeadProvider>
   );
 }

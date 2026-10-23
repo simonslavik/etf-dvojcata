@@ -162,24 +162,14 @@
 .btn svg { transition: transform .2s var(--ease-out-soft); }
 .chip[aria-pressed='true'] { animation: pop .3s var(--ease-out-soft); }
 
-/* Sekce se jemně vynoří při scrollu – čisté CSS (scroll-driven animations). Kde podpora chybí, obsah je prostě vidět. */
-@supports (animation-timeline: view()) {
-  /* pevná dráha (ne % výšky): i vysoký blok je plně vidět po ~120 px scrollu, nečte se poloprůhledný */
-  .reveal { animation: rise linear both; animation-timeline: view(); animation-range: entry 0px entry 120px; }
-}
+/* Vynoření při scrollu řídí RevealOnScroll (JS): skrývá jen prvky pod první obrazovkou */
+.pre-reveal { opacity: 0; transform: translateY(14px); }
+.revealed { opacity: 1; transform: none; transition: opacity .55s var(--ease-out-soft) var(--reveal-delay, 0ms), transform .55s var(--ease-out-soft) var(--reveal-delay, 0ms); }
 
 /* Karty: jemné nadzvednutí při najetí */
 .lift { transition: transform .3s var(--ease-out-soft), box-shadow .3s var(--ease-out-soft), border-color .3s; }
 @media (hover: hover) {
   .lift:hover { transform: translateY(-4px); box-shadow: 0 24px 44px -26px rgb(22 59 59 / .45); border-color: var(--color-teal-200); }
-}
-
-/* Postupné vynoření karet: každá má vlastní view timeline, posunutý rozsah = efekt „jedna po druhé“ */
-@supports (animation-timeline: view()) {
-  .stagger > * { animation: rise linear both; animation-timeline: view(); animation-range: entry 0px entry 110px; }
-  .stagger > :nth-child(2) { animation-range: entry 25px entry 135px; }
-  .stagger > :nth-child(3) { animation-range: entry 50px entry 160px; }
-  .stagger > :nth-child(4) { animation-range: entry 75px entry 185px; }
 }
 
 /* Spojnice kroků „Jak to funguje“ se při scrollu nakreslí */
