@@ -15,12 +15,17 @@
     "typecheck": "npm run typecheck -w @etfd/api && npm run typecheck -w @etfd/web",
     "e2e": "node scripts/e2e.mjs",
     "simulate": "node scripts/simulate.mjs",
-    "ads": "node scripts/render-ads.mjs"
+    "ads": "node scripts/render-ads.mjs",
+    "shots": "node scripts/readme-shots.mjs",
+    "shot": "node scripts/shot.mjs",
+    "knip": "knip",
+    "check": "npm run typecheck && npm run knip && npm test"
   },
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
+    "knip": "^5.88.1",
     "puppeteer-core": "^25.15.0",
     "typescript": "5.9",
     "vitest": "^5.0.5"

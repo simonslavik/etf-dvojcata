@@ -4,7 +4,7 @@ import type { Db } from '../db/db.js';
 import { adSpend, emailJobs, events, leads } from '../db/schema.js';
 import { FUNNEL, STAGES, VARIANTS, type Stage, type Variant } from '@etfd/shared';
 
-export type FunnelCounts = Record<string, number>;
+type FunnelCounts = Record<string, number>;
 
 export async function funnel(db: Db, since: Date) {
   const cols = Object.fromEntries(FUNNEL.map((s) => [s.key, sql<number>`(count(distinct ${events.sid}) filter (where ${inArray(events.event, s.events)}))::int`]));

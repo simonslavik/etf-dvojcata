@@ -4,7 +4,7 @@
  */
 import type { EventName, Variant } from '@etfd/shared';
 
-export interface TrackContext {
+interface TrackContext {
   sid: string; variant: Variant; utm_source: string; utm_campaign: string | null; utm_content: string | null; device: 'mobile' | 'desktop';
 }
 

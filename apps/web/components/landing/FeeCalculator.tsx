@@ -10,7 +10,7 @@ import { useLead } from './LeadProvider';
 const { bank, etf, annual_return: annualReturn } = data.calc;
 
 /** Výsledek pro daný vstup – sdílí ho kalkulačka i reklama B (stejná čísla) */
-export function feeView(monthly: number, years: number) {
+function feeView(monthly: number, years: number) {
   const r = compare({ monthly, years, annualReturn, bank, etf });
   return { ...r, etfBarPct: Math.max((r.etfCost / Math.max(r.bankCost, 1)) * 100, 1.5), months: Math.round(r.saved / monthly) };
 }

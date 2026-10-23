@@ -9,7 +9,7 @@ import { TrackingService } from '../tracking/tracking.service.js';
 import { HandoffService, mask } from './handoff.service.js';
 import { leadSid, ScoringService } from './scoring.service.js';
 
-export interface LeadInput {
+interface LeadInput {
   email: string; sid: string | null; variant: Variant; source: string | null;
   utmSource: string | null; utmCampaign: string | null; utmContent: string | null; device: string | null;
   interest: string | null; calcMonthly: number | null; consentText: string | null;

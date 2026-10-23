@@ -4,7 +4,7 @@ import { SEQUENCE, type SequenceStep } from '@etfd/shared';
 import type { Env } from '../config/env.js';
 import { createTemplates } from './templates.js';
 
-export interface SendResult { sent: boolean; reason: string | null; retryable: boolean }
+interface SendResult { sent: boolean; reason: string | null; retryable: boolean }
 
 /** Odesílání přes Resend REST API. Bez RESEND_API_KEY se nic neodešle (job = skipped). */
 @Injectable()

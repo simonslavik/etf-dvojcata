@@ -1,10 +1,5 @@
-import type { Request } from 'express';
-
 export const clip = (v: unknown, n = 80): string | null =>
   typeof v === 'string' ? v.slice(0, n) : v == null ? null : String(v).slice(0, n);
-
-/** IP klienta – app má `trust proxy`, takže req.ip bere první adresu z X-Forwarded-For (Next rewrite ji posílá) */
-export const clientIp = (req: Request) => req.ip || 'unknown';
 
 /** Cíl přesměrování se rozparsuje stejně jako v prohlížeči a musí zůstat na našem originu (\t, \n, //, \\ → zpět na /) */
 export function sameOriginUrl(to: string | null | undefined, origin: string) {

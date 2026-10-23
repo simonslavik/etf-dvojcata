@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { track } from '@/lib/track';
 
 /* Slovníček – pojem s otazníkem (jako „leadgeneraci?“ na clientelo.cz). Začátečník nemusí odcházet googlit. */
-export const GLOSSARY = {
+const GLOSSARY = {
   UCITS: 'Evropská pravidla pro fondy pro drobné investory. Fond UCITS má dokument KID v češtině, takže ho evropský broker smí prodat.',
   TER: 'Celkové roční náklady fondu v % z investované částky. Strhávají se průběžně z hodnoty fondu – na výpisu je neuvidíte.',
   ISIN: 'Dvanáctimístný kód cenného papíru. Na rozdíl od tickeru je jednoznačný: vložte ho do vyhledávání v aplikaci brokera.',
@@ -12,7 +12,7 @@ export const GLOSSARY = {
   PRIIPs: 'Nařízení EU 1286/2014. Vyžaduje KID u investičních produktů pro drobné investory – proto v EU nekoupíte americká ETF.',
   Acc: 'Akumulační fond dividendy nevyplácí, ale sám je reinvestuje. V Česku je nemusíte danit ani přiznávat.',
 } as const;
-export type GlossaryKey = keyof typeof GLOSSARY;
+type GlossaryKey = keyof typeof GLOSSARY;
 
 export function Term({ k, children, tone = 'light' }: { k: GlossaryKey; children?: ReactNode; tone?: 'light' | 'dark' }) {
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);

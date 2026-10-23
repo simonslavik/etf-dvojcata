@@ -46,10 +46,3 @@ export const HOW_TO_BUY = [
   { t: 'Do vyhledávání vložte ISIN dvojčete', d: 'Je jednoznačný – ticker se mezi burzami liší.' },
   { t: 'Vyberte burzu Xetra a měnu EUR', d: 'Případně Londýn v USD. Akumulační verze („Acc“) dividendy sama reinvestuje.' },
 ];
-
-export const TAX = [
-  { t: 'Časový test 3 roky', f: f.time_test },
-  { t: 'Příjmy z prodeje do limitu', f: f.value_limit },
-  { t: 'Strop osvobození', f: f.cap },
-  { t: 'Dividendy a akumulační fondy', f: f.dividends },
-];

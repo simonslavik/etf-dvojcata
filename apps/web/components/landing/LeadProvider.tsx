@@ -8,7 +8,7 @@ import { initPosthog, initTracking, track, trackContext, trackScrollDepth } from
 const UNLOCK_KEY = 'etfd_unlocked';
 const TOKEN_KEY = 'etfd_lead';
 const CALLED_KEY = 'etfd_called';
-export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 type SheetStep = 'form' | 'done';
 interface SubmitResult { ok: boolean; message?: string }

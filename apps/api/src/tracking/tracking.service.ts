@@ -3,7 +3,7 @@ import type { Variant } from '@etfd/shared';
 import { InjectDb, type Db } from '../db/db.js';
 import { events } from '../db/schema.js';
 
-export interface EventInput {
+interface EventInput {
   sid: string; event: string; variant: Variant;
   utmSource?: string | null; utmCampaign?: string | null; utmContent?: string | null; device?: string | null;
   props?: Record<string, unknown> | null; tMs?: number | null;
