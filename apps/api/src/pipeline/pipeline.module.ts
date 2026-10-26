@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { EmailModule } from '../email/email.module.js';
+import { MarketingModule } from '../marketing/marketing.module.js';
 import { TrackingModule } from '../tracking/tracking.module.js';
 import { HandoffService } from './handoff.service.js';
 import { LeadsController } from './leads.controller.js';
@@ -10,7 +11,7 @@ import { PipelineScheduler } from './scheduler.js';
 import { ScoringService } from './scoring.service.js';
 
 @Module({
-  imports: [TrackingModule, EmailModule],
+  imports: [TrackingModule, EmailModule, MarketingModule],
   controllers: [LeadsController, LinksController, CronController],
   providers: [ScoringService, HandoffService, LeadsService, PipelineScheduler],
   exports: [HandoffService, LeadsService, PipelineScheduler],

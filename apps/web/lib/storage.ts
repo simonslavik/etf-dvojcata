@@ -7,6 +7,7 @@ export const KEYS = {
   leadToken: 'etfd_lead', // sessionStorage – token jen pro tuto relaci (kvalifikace, hovor)
   called: 'etfd_called', // sessionStorage – o hovor už požádal, další nabídky se nezobrazí
   sid: 'etfd_sid', // sessionStorage – anonymní ID relace pro měření
+  fbc: 'etfd_fbc', // sessionStorage – Meta click ID z reklamy (fbclid), odejde jen s leadem
 } as const;
 
 export const storage = {

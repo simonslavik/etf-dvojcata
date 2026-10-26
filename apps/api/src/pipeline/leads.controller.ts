@@ -1,4 +1,16 @@
-import { Body, Controller, HttpCode, HttpException, HttpStatus, Ip, Logger, NotFoundException, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Headers,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Ip,
+  Logger,
+  NotFoundException,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
   CALL_CONSENT,
@@ -35,6 +47,12 @@ const RealLead = z
     utm_campaign: clipped(60),
     utm_content: clipped(60),
     device: clipped(10),
+    // Meta click ID ve formátu fb.1.<čas>.<fbclid>; cokoli jiného zahodíme
+    fbc: z
+      .string()
+      .max(300)
+      .nullish()
+      .transform((v) => (v && /^fb\.1\.\d{10,13}\.[\w-]+$/.test(v) ? v : null)),
     interest: clipped(20),
     calc_monthly: z.number().int().nonnegative().max(1_000_000).nullish(),
     // klient posílá jen ID verze souhlasu – kanonické znění uloží server; bez souhlasu žádný lead
@@ -49,6 +67,7 @@ const RealLead = z
     utmCampaign: b.utm_campaign,
     utmContent: b.utm_content,
     device: b.device,
+    fbc: b.fbc,
     interest: b.interest,
     calcMonthly: b.calc_monthly ?? null,
     consentText: consentRecord(b.consent_id),
@@ -83,7 +102,11 @@ export class LeadsController {
   @Post('lead')
   @HttpCode(200)
   @Throttle({ default: LIMITS.lead })
-  async lead(@Body(new ZodPipe(LeadBody, 'Zkontrolujte prosím e-mail.')) b: z.infer<typeof LeadBody>, @Ip() ip: string) {
+  async lead(
+    @Body(new ZodPipe(LeadBody, 'Zkontrolujte prosím e-mail.')) b: z.infer<typeof LeadBody>,
+    @Ip() ip: string,
+    @Headers('user-agent') userAgent?: string,
+  ) {
     if ('honeypot' in b) return { ok: true, emailSent: false, token: null };
     // Denní strop na IP v Postgresu (platí napříč instancemi) – /lead nejde použít k rozesílání reportu na cizí adresy
     const { limit, ttl } = LIMITS.leadPerDay;
@@ -93,7 +116,7 @@ export class LeadsController {
         HttpStatus.TOO_MANY_REQUESTS,
       );
     try {
-      return { ok: true, ...(await this.leads.capture(b)) };
+      return { ok: true, ...(await this.leads.capture(b, { ip, userAgent })) };
     } catch (e) {
       // Záměrně ok: true – návštěvník už má přehled odemčený na stránce; do logu jde jen maskovaný e-mail
       this.log.error(JSON.stringify({ k: 'lead_db_error', err: (e as Error).message, lead: maskEmail(b.email), variant: b.variant }));
@@ -103,16 +126,24 @@ export class LeadsController {
 
   @Post('qualify')
   @HttpCode(200)
-  async qualify(@Body(new ZodPipe(QualifyBody)) b: z.infer<typeof QualifyBody>) {
-    if (!(await this.leads.qualify(b.token, b.band))) throw new NotFoundException({ error: 'lead' });
+  async qualify(
+    @Body(new ZodPipe(QualifyBody)) b: z.infer<typeof QualifyBody>,
+    @Ip() ip: string,
+    @Headers('user-agent') userAgent?: string,
+  ) {
+    if (!(await this.leads.qualify(b.token, b.band, { ip, userAgent }))) throw new NotFoundException({ error: 'lead' });
     return { ok: true };
   }
 
   @Post('call')
   @HttpCode(200)
   @Throttle({ default: LIMITS.call })
-  async call(@Body(new ZodPipe(CallBody, 'Potvrďte prosím souhlas s kontaktováním.')) b: z.infer<typeof CallBody>) {
-    const lead = await this.leads.requestCall(b.token, b.phone, consentRecord(b.consent_id)!);
+  async call(
+    @Body(new ZodPipe(CallBody, 'Potvrďte prosím souhlas s kontaktováním.')) b: z.infer<typeof CallBody>,
+    @Ip() ip: string,
+    @Headers('user-agent') userAgent?: string,
+  ) {
+    const lead = await this.leads.requestCall(b.token, b.phone, consentRecord(b.consent_id)!, { ip, userAgent });
     if (!lead) throw new NotFoundException({ error: 'lead', message: 'Odkaz už neplatí. Zkuste prosím formulář na hlavní stránce.' });
     return { ok: true };
   }

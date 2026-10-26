@@ -3,10 +3,11 @@ import type { MonthlyBand, Variant } from '@etfd/shared';
 import { and, eq, sql } from 'drizzle-orm';
 import { randomBytes } from 'node:crypto';
 import { InjectDb, type Db } from '../db/db.js';
-import { emailJobs, leads } from '../db/schema.js';
+import { emailJobs, leads, type Lead } from '../db/schema.js';
 import { SequenceService } from '../email/sequence.service.js';
 import { TrackingService } from '../tracking/tracking.service.js';
 import { maskEmail } from '../common/http.js';
+import { MetaCapiService, type RequestContext } from '../marketing/meta-capi.service.js';
 import { HandoffService } from './handoff.service.js';
 import { leadSid, ScoringService } from './scoring.service.js';
 
@@ -19,6 +20,7 @@ export interface LeadInput {
   utmCampaign: string | null;
   utmContent: string | null;
   device: string | null;
+  fbc: string | null;
   interest: string | null;
   calcMonthly: number | null;
   consentText: string | null;
@@ -35,9 +37,10 @@ export class LeadsService {
     private readonly scoring: ScoringService,
     private readonly handoffs: HandoffService,
     private readonly sequence: SequenceService,
+    private readonly meta: MetaCapiService,
   ) {}
 
-  async capture(input: LeadInput) {
+  async capture(input: LeadInput, ctx: RequestContext = {}) {
     const [row] = await this.db
       .insert(leads)
       .values({ ...input, token: randomBytes(18).toString('base64url') })
@@ -62,7 +65,8 @@ export class LeadsService {
       await this.sequence.schedule(row.id);
       emailSent = await this.sequence.sendJob(row.id, 'd0_report');
     }
-    await this.scoring.rescore(row.id);
+    const scored = await this.scoring.rescore(row.id);
+    if (isNew && scored) await this.meta.send('Lead', scored, ctx);
     this.log.log(
       JSON.stringify({ k: 'lead', email: maskEmail(input.email), variant: input.variant, source: input.source, isNew, mail: emailSent }),
     );
@@ -72,21 +76,27 @@ export class LeadsService {
 
   byToken = async (token: string) => (await this.db.select().from(leads).where(eq(leads.token, token)))[0] ?? null;
 
-  async qualify(token: string, band: MonthlyBand) {
+  async qualify(token: string, band: MonthlyBand, ctx: RequestContext = {}) {
     const lead = await this.byToken(token);
     if (!lead) return false;
     await this.db.update(leads).set({ monthlyBand: band }).where(eq(leads.id, lead.id));
     await this.tracking.record({ sid: leadSid(lead), event: 'qualify', variant: lead.variant, props: { band } });
-    await this.scoring.rescore(lead.id);
+    await this.notifyIfQualified(lead, await this.scoring.rescore(lead.id), ctx);
     return true;
   }
 
-  async requestCall(token: string, phone: string, consentText: string) {
+  /** Lead právě překročil hranici kvalifikace → Meta dostane signál kvalitního leadu (jednou za lead) */
+  private async notifyIfQualified(before: Lead, after: Lead | null, ctx: RequestContext) {
+    if (after && before.stage === 'lead' && after.stage === 'qualified') await this.meta.send('QualifiedLead', after, ctx);
+  }
+
+  async requestCall(token: string, phone: string, consentText: string, ctx: RequestContext = {}) {
     const lead = await this.byToken(token);
     if (!lead || lead.unsubscribedAt) return null;
     await this.db.update(leads).set({ wantsCall: true, phone, callConsentText: consentText }).where(eq(leads.id, lead.id));
     await this.tracking.record({ sid: leadSid(lead), event: 'call_request', variant: lead.variant });
     const updated = await this.scoring.rescore(lead.id);
+    await this.notifyIfQualified(lead, updated, ctx);
     // Už předaný lead (dvojí odeslání, /help z e-mailu) se do CRM neposílá znovu – jen se aktualizuje telefon
     if (!updated || lead.handedOverAt) return updated;
     return this.handoffs.handoff(updated);

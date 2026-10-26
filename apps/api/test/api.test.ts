@@ -6,7 +6,7 @@ import 'reflect-metadata';
 import type { INestApplication } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
-import { createHmac } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 import { createServer, type Server } from 'node:http';
 import pg from 'pg';
 import request from 'supertest';
@@ -24,6 +24,7 @@ const HOOK_SECRET = 'test-hook-secret';
 const webhooks: { lead: { id: string; phone: string }; idempotency_key: string }[] = [];
 const hookSignatures: boolean[] = [];
 const resendCalls: { to: string; subject: string }[] = [];
+const metaCalls: { url: string; body: string }[] = [];
 let sql: pg.Client;
 
 const http = () => request(app.getHttpServer());
@@ -61,6 +62,10 @@ beforeAll(async () => {
       resendCalls.push({ to: b.to, subject: b.subject });
       return new Response('{"id":"x"}', { status: 200 });
     }
+    if (String(input).startsWith('https://graph.facebook.com')) {
+      metaCalls.push({ url: String(input), body: String(init?.body) });
+      return new Response('{"events_received":1}', { status: 200 });
+    }
     return realFetch(input, init);
   });
 
@@ -74,6 +79,8 @@ beforeAll(async () => {
     RESEND_FROM: 'ETF <test@example.com>',
     HANDOFF_WEBHOOK_URL: `http://127.0.0.1:${hookPort}/hook`,
     HANDOFF_WEBHOOK_SECRET: HOOK_SECRET,
+    META_PIXEL_ID: '1234567890',
+    META_CAPI_TOKEN: 'test-capi-token-0123456789',
   });
   // AppModule až po nastavení env – ConfigModule ho validuje při importu
   const { AppModule } = await import('../src/app.module.js');
@@ -178,6 +185,52 @@ describe('lead → kvalifikace → předání', () => {
     const { rows } = await sql.query("select stage, phone, call_consent_text from leads where email = 'anna@example.com'");
     expect(rows[0]).toMatchObject({ stage: 'handed_over', phone: '+420777999888' });
     expect(rows[0].call_consent_text).toMatch(/^call_v1: Souhlasím/);
+  });
+});
+
+describe('Meta Conversions API', () => {
+  const sha = (s: string) => createHash('sha256').update(s).digest('hex');
+  const events = (name: string) => metaCalls.map((c) => JSON.parse(c.body)).filter((b) => b.data[0].event_name === name);
+
+  test('nový lead odejde do Mety jen s hashovaným e-mailem a click ID z reklamy', async () => {
+    const before = events('Lead').length;
+    const fbc = 'fb.1.1792700000000.IwAR0abc_DEF-123';
+    await post('/lead', { email: 'meta@example.com', sid: 's-meta', variant: 'twin', consent_id: 'email_v1', fbc }, '10.7.0.1').expect(200);
+    const sent = events('Lead');
+    expect(sent).toHaveLength(before + 1);
+    const { rows } = await sql.query("select id from leads where email = 'meta@example.com'");
+    const ev = sent.at(-1).data[0];
+    expect(ev).toMatchObject({ event_id: `lead_${rows[0].id}`, action_source: 'website' });
+    expect(ev.user_data).toMatchObject({ em: [sha('meta@example.com')], fbc, client_ip_address: '10.7.0.1' });
+    const raw = metaCalls.at(-1)!;
+    expect(raw.body).not.toContain('meta@example.com');
+    expect(raw.url).not.toContain('test-capi-token');
+  });
+
+  test('neplatné click ID se zahodí a opakovaný lead se do Mety neposílá znovu', async () => {
+    await post(
+      '/lead',
+      { email: 'meta2@example.com', sid: 's-meta2', variant: 'fees', consent_id: 'email_v1', fbc: 'evil' },
+      '10.7.0.2',
+    ).expect(200);
+    expect(events('Lead').at(-1).data[0].user_data.fbc).toBeUndefined();
+    const before = events('Lead').length;
+    await post('/lead', { email: 'meta2@example.com', sid: 's-meta2', variant: 'fees', consent_id: 'email_v1' }, '10.7.0.3').expect(200);
+    expect(events('Lead')).toHaveLength(before);
+  });
+
+  test('překročení hranice kvalifikace pošle QualifiedLead právě jednou', async () => {
+    const r = await post(
+      '/lead',
+      { email: 'meta3@example.com', sid: 's-meta3', variant: 'fees', consent_id: 'email_v1' },
+      '10.7.0.4',
+    ).expect(200);
+    const before = events('QualifiedLead').length;
+    await post('/qualify', { token: r.body.token, band: '2-10k' }).expect(200);
+    await post('/qualify', { token: r.body.token, band: 'gt10k' }).expect(200);
+    const q = events('QualifiedLead');
+    expect(q).toHaveLength(before + 1);
+    expect(q.at(-1).data[0].custom_data).toMatchObject({ monthly_band: '2-10k', variant: 'fees' });
   });
 });
 

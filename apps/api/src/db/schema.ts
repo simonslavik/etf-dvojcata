@@ -38,6 +38,8 @@ export const leads = pgTable(
     utmCampaign: text('utm_campaign'),
     utmContent: text('utm_content'),
     device: text('device'),
+    /** Meta click ID (fbclid z reklamy ve formátu fbc) – pro Conversions API */
+    fbc: text('fbc'),
     interest: text('interest'),
     calcMonthly: integer('calc_monthly'),
     consentText: text('consent_text'),

@@ -32,8 +32,24 @@ function sid() {
   }
 }
 
+/**
+ * Meta click ID: reklama přidá do URL ?fbclid=…, Conversions API ho chce ve formátu fb.1.<čas>.<fbclid>.
+ * Drží se v relaci, protože formulář může přijít až po přechodu na jinou stránku. Odchází jen s leadem.
+ */
+export function adClickId(): string | null {
+  try {
+    const id = new URLSearchParams(location.search).get('fbclid');
+    const stored = sessionStorage.getItem(KEYS.fbc);
+    if (id && !stored?.endsWith(`.${id}`)) sessionStorage.setItem(KEYS.fbc, `fb.1.${Date.now()}.${id}`);
+    return sessionStorage.getItem(KEYS.fbc);
+  } catch {
+    return null;
+  }
+}
+
 export function initTracking(variant: Variant) {
   if (ctx) return ctx;
+  adClickId();
   const p = new URLSearchParams(location.search);
   let ref: string | null = null;
   try {

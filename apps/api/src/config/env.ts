@@ -18,10 +18,20 @@ export const EnvSchema = z
     DAILY_NURTURE_CAP: z.coerce.number().int().positive().default(300),
     HANDOFF_WEBHOOK_URL: z.string().url().optional(),
     HANDOFF_WEBHOOK_SECRET: z.string().optional(),
+    /** Meta Conversions API (lead zpět do Mety). Bez obou hodnot vypnuté */
+    META_PIXEL_ID: z.string().regex(/^\d+$/).optional(),
+    META_CAPI_TOKEN: z.string().min(20).optional(),
+    META_TEST_EVENT_CODE: z.string().optional(),
+    META_GRAPH_VERSION: z
+      .string()
+      .regex(/^v\d+\.\d+$/)
+      .default('v23.0'),
     /** Vercel nastavuje VERCEL=1 – serverless: migrace běží při buildu a denní běh spouští Vercel Cron */
     VERCEL: z.string().optional(),
   })
   .superRefine((env, ctx) => {
+    if (Boolean(env.META_PIXEL_ID) !== Boolean(env.META_CAPI_TOKEN))
+      ctx.addIssue({ code: 'custom', path: ['META_CAPI_TOKEN'], message: 'META_PIXEL_ID a META_CAPI_TOKEN se nastavují spolu' });
     // Veřejné nasazení (https) nesmí běžet s demo hodnotami z docker-compose ani s webhookem bez podpisu
     if (env.NODE_ENV !== 'production' || !env.SITE_URL.startsWith('https://')) return;
     for (const key of ['ADMIN_TOKEN', 'CRON_SECRET'] as const) {

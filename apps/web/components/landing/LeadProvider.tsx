@@ -5,7 +5,7 @@ import { data, EMAIL_RE, pairByTicker, type Variant } from '@etfd/shared';
 import { useRouter } from 'next/navigation';
 import { useSearchParam, useStoredValue } from '@/hooks/useBrowserState';
 import { KEYS, storage } from '@/lib/storage';
-import { initPosthog, initTracking, track, trackContext, trackScrollDepth } from '@/lib/track';
+import { adClickId, initPosthog, initTracking, track, trackContext, trackScrollDepth } from '@/lib/track';
 
 type SheetStep = 'form' | 'done';
 interface SubmitResult {
@@ -110,6 +110,7 @@ export function LeadProvider({ variant, children }: { variant: Variant; children
             hp_f7: hp,
             source,
             ...trackContext(),
+            fbc: adClickId(),
             interest: selected,
             calc_monthly: calcTouched.current ? calc.monthly : null,
             consent_id: consentId,
