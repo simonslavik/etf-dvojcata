@@ -18,7 +18,7 @@ Monorepo (npm workspaces): **FE Next.js · BE NestJS · DB Postgres**, spustené
 | E-maily | **Resend** (REST) | Okamžitý e-mail + sekvencia, one-click odhlásenie (RFC 8058), atomické „zabratie“ jobu, retry |
 | Beh lokálne | **Docker Compose**: `db` + `api` + `web` (+ `demo-data`) | Reviewer spustí všetko jedným príkazom. Image sú multi-stage, bežia pod neprivilegovaným používateľom a majú health checky |
 | Produkcia | **Vercel** (2 projekty, región Frankfurt) + **Neon Postgres** | Web je Next.js projekt, API beží ako Vercel Function: tsc výstup zabalený cez esbuild do jedného ESM súboru ([bundle.mjs](../apps/api/bundle.mjs)). Migrácie bežia raz pri builde, denný beh spúšťa Vercel Cron s `CRON_SECRET`. Kód je rovnaký ako v Dockeri, líši sa len vstupný bod ([serverless.ts](../apps/api/src/serverless.ts) vs. [main.ts](../apps/api/src/main.ts)) |
-| Testy | **Vitest** (25 shared + 39 API proti reálnemu Postgresu cez supertest) + **Puppeteer E2E** | E2E prejde celú cestu v oboch variantoch cez celý stack až po žiadosť o hovor, vrátane navigácie v prehľade |
+| Testy | **Vitest** (25 shared + 42 API proti reálnemu Postgresu cez supertest) + **Puppeteer E2E** | E2E prejde celú cestu v oboch variantoch cez celý stack až po žiadosť o hovor, vrátane navigácie v prehľade |
 | Kvalita kódu | **ESLint** (Next core-web-vitals + typescript-eslint), **Prettier** (+ triedenie Tailwind tried), **knip** (mŕtvy kód a závislosti), striktný TypeScript | `npm run check` spustí typecheck, lint, formát, knip aj testy jedným príkazom |
 
 ```
@@ -50,6 +50,22 @@ PipelineScheduler (@nestjs/schedule, denne) → SequenceService.runDue (D2/D5/D9
 **Skóre leadu:** e-mail +10 · investuje do 2 tis. +10 / 2 – 10 tis. +25 / nad 10 tis. +40 · počítal poplatky +5 · skopíroval ISIN +10 · otvoril prehľad +5 · klikol v e-maile +10 · chce hovor +30. Dashboard pri každom leade ukazuje rozpis, takže obchodník vidí, prečo je lead „horúci“.
 
 **Admin** (`/admin`, `ADMIN_TOKEN`): pipeline s počtami, KPI (leady, **náklad na lead** z útraty zadanej ku kreatíve, kvalifikovaní, odovzdaní), lievik návštevníka, leady za 14 dní, tabuľka A/B, kampane podľa `utm_content`, štatistiky sekvencie, posledné leady, detail leadu s celou cestou relácie, náhľad e-mailov a CSV export. Postrehy počíta jednoduché pravidlo, nie LLM: najväčší únik pred leadom a z-test konverzie A vs. B.
+
+## Meta Conversions API
+
+Lead a kvalitný lead idú zo servera späť do Mety, aby kampaň optimalizovala na leady, nie na kliky ([meta-capi.service.ts](../apps/api/src/marketing/meta-capi.service.ts)).
+
+| Udalosť | Kedy | Čo sa posiela |
+|---|---|---|
+| `Lead` | nový lead (opakované odoslanie nie) | `em` = SHA-256 e-mailu, `external_id` = SHA-256 ID leadu, `fbc` z reklamy, IP a prehliadač z daného požiadavku, variant a kreatíva |
+| `QualifiedLead` | lead prvýkrát prekročí 35 bodov (kvalifikácia alebo žiadosť o hovor) | to isté + pásmo mesačnej investície |
+
+- **Click ID:** web zachytí `?fbclid=` pri príchode, uloží ho v relácii ako `fb.1.<čas>.<fbclid>` a pošle iba s leadom. Server prijme len tento formát.
+- **Deduplikácia:** `event_id` je `lead_<id>` a `qualified_<id>`. Keby sa neskôr pridal pixel v prehliadači s rovnakým ID, Meta udalosť nezapočíta dvakrát.
+- **Súkromie:** e-mail nikdy nejde v čitateľnej podobe, IP a prehliadač sa neukladajú, token je v tele požiadavku, nie v URL. Pred zapnutím v produkcii treba súhlas s meraním reklamy.
+- **Spoľahlivosť:** timeout 4 s, chyba Mety lead nikdy nezastaví a do logu ide len ID leadu a výsledok.
+- **Zapnutie:** `META_PIXEL_ID` + `META_CAPI_TOKEN` (spolu, inak API nenaštartuje), voliteľne `META_TEST_EVENT_CODE` pre Test Events v Events Manageri a `META_GRAPH_VERSION`.
+- **Testy:** [api.test.ts](../apps/api/test/api.test.ts) overuje hash e-mailu, click ID, zahodenie neplatného ID, že opakovaný lead neodíde znovu a `QualifiedLead` práve raz.
 
 ## Meranie celej cesty
 
@@ -99,7 +115,7 @@ cp .env.example .env             # DATABASE_URL na Postgres z docker compose
 npm run db                       # iba Postgres v Dockeri (localhost:5544, + testovacia DB etfd_test)
 npm run dev:api                  # NestJS na :4000 (watch)
 npm run dev:web                  # Next.js na :3000, /api/* → :4000
-npm test                         # 25 testov shared + 39 integračných testov API proti Postgresu
+npm test                         # 25 testov shared + 42 integračných testov API proti Postgresu
 npm run check                    # typecheck + lint + prettier + knip + testy
 npm run format                   # Prettier na celý repozitár
 npm run e2e -- http://localhost:3000                              # celá cesta v prehliadači (vývoj: admin otvorený)

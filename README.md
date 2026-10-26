@@ -63,6 +63,8 @@ Meria sa každý krok od príchodu po odoslanie formulára: návšteva, použiti
 
 V admine je celý lievik, porovnanie A a B s výpočtom, či je rozdiel štatisticky významný, a cena za lead, keď zadáte útratu za reklamu. Pri každom leade je jeho celá cesta po stránke.
 
+**Späť do Mety:** nový lead a lead, ktorý prekročí hranicu kvalifikácie, odíde zo servera do Meta Conversions API. Kampaň sa potom môže učiť na skutočných a kvalitných leadoch, nie na klikoch. E-mail ide len ako hash a nič navyše sa neukladá. Zapne sa dvoma premennými (`META_PIXEL_ID`, `META_CAPI_TOKEN`), dovtedy je vypnuté.
+
 ## Očakávaná konverzia
 
 | Krok | Odhad |
@@ -109,6 +111,7 @@ Kľúčové prompty doslovne, s odkazom na commit, ktorý z nich vznikol: [ai-lo
 
 - **Odosielanie e-mailov:** je hotové, chýba len overená odosielacia doména (Resend). Kým nie je, prehľad sa ukáže iba na stránke.
 - **Právne veci:** doplniť prevádzkovateľa na stránke o ochrane údajov a nechať posúdiť súhlasy aj porovnanie s konkrétnym fondom v reklame B.
+- **Súhlas pre Meta Conversions API:** posielanie leadov do Mety je hotové a otestované, ale pred zapnutím treba súhlas návštevníka s meraním reklamy (napríklad cookie lišta). Preto je zatiaľ vypnuté.
 - **Ochrana proti botom:** captcha pred väčším rozpočtom. Teraz chráni skryté pole pre boty, kontrola pôvodu formulára a denný limit na IP.
 - **Aktualizácia dát:** údaje sú k 22. 10. 2026. V produkcii by ich mal raz mesačne overiť agent.
 - **Prehľad je zamknutý len mäkko:** kto pozná adresu `/report`, otvorí ho aj bez e-mailu.

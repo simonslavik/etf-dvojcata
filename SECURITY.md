@@ -13,6 +13,7 @@ Ukážkový projekt k výberovému konaniu. Zraniteľnosť nahláste e-mailom au
 | Odovzdanie do CRM | Iba so súhlasom, `idempotency_key`, HMAC-SHA256 podpis s časovou pečiatkou, na https povinný | [handoff.service.ts](apps/api/src/pipeline/handoff.service.ts) |
 | Konfigurácia | Env validované Zodom pri štarte. Bez `NODE_ENV` platí `production` (fail closed). Na https odmietne slabé tokeny | [env.ts](apps/api/src/config/env.ts) |
 | Prehliadač | CSP (`frame-ancestors 'none'`, `object-src 'none'`), HSTS, `X-Frame-Options`, `nosniff`, Referrer-Policy | [next.config.ts](apps/web/next.config.ts) |
+| Meta Conversions API | Vypnuté bez kľúčov. E-mail len ako SHA-256, IP a prehliadač sa neukladajú, token v tele požiadavku, click ID len v presnom formáte | [meta-capi.service.ts](apps/api/src/marketing/meta-capi.service.ts) |
 | Osobné údaje | E-maily v logoch maskované, IP sa neukladá (pre limit iba otisk na 24 h), súhlasy ako kanonický text s verziou, CSV export chránený proti vzorcom | [consent.ts](packages/shared/src/consent.ts) |
 
 ## Tajomstvá
